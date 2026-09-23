@@ -4,6 +4,7 @@ from types import SimpleNamespace
 import pytest
 
 from chia_maco.agent_search import AgentConfig, LocalModel, OriginalAgents, candidates_for, run_agent_search, validate_plan
+from chia_maco.architecture import BASE_FUS
 from chia_maco.schema import MappingResult
 from chia_maco.workload import Workload
 
@@ -11,8 +12,8 @@ from chia_maco.workload import Workload
 P1 = {"tile_size": "4x4", "unroll_factors": [2, 2, 2, 2, 1], "reasoning": "Balanced plan"}
 P2 = {"tile_size": "6x6", "unroll_factors": [4, 2, 4, 4, 1], "reasoning": "Wider plan"}
 FULL = {"tile_size": "2x2", "FUs": {
-    "tile0": ["Ld", "St", "Add"], "tile1": ["Add", "FMul"],
-    "tile2": ["FAdd", "Cmp"], "tile3": ["Logic", "Sel"],
+    "tile0": [*BASE_FUS, "Ld", "St", "Mul"], "tile1": [*BASE_FUS, "FMul"],
+    "tile2": [*BASE_FUS, "FAdd"], "tile3": [*BASE_FUS],
 }, "config_mem": 128, "data_spm_kb": 32, "memory_banks": 4,
     "unroll": {"window": 4, "fft": 2, "transpose": 3, "power": 4, "cfar": 1},
     "vectorize": "none", "reasoning": "Workload-specific per-tile architecture"}
@@ -107,7 +108,7 @@ def test_full_maco_space_preserves_per_tile_architecture():
     candidates = candidates_for(FULL, Workload(max_pes=64))
     assert [candidate.unroll_factor for candidate in candidates] == [4, 2, 3, 4, 1]
     assert all(candidate.fu_profile == "custom" for candidate in candidates)
-    assert all(candidate.tile_fus["1"] == ["Add", "FMul"] for candidate in candidates)
+    assert all(candidate.tile_fus["1"] == [*BASE_FUS, "FMul"] for candidate in candidates)
     assert all(candidate.control_memory == 128 for candidate in candidates)
     assert all(candidate.memory_banks == 4 and candidate.bank_kib == 8 for candidate in candidates)
 
@@ -156,6 +157,19 @@ def test_live_search_methods(monkeypatch, tmp_path, method, expected_calls):
 def test_reject_invalid_full_maco_design(change):
     with pytest.raises(ValueError):
         validate_plan({**FULL, **change})
+
+
+def test_full_maco_requires_base_fus_on_every_tile():
+    sparse = {tile: list(fus) for tile, fus in FULL["FUs"].items()}
+    sparse["tile2"].remove("Shift")
+    with pytest.raises(ValueError, match="tile2 is missing fixed base FUs: Shift"):
+        validate_plan({**FULL, "FUs": sparse})
+
+
+def test_full_maco_requires_workload_fus_somewhere():
+    without_mul = {tile: [fu for fu in fus if fu != "Mul"] for tile, fus in FULL["FUs"].items()}
+    with pytest.raises(ValueError, match="workload operations across the array: Mul"):
+        validate_plan({**FULL, "FUs": without_mul})
 
 
 def test_truncated_model_json_is_retained_and_rejected():

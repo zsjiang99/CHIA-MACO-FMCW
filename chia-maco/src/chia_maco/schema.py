@@ -49,7 +49,7 @@ class CoDesignCandidate:
 
     def validate(self) -> None:
         from .workload import Workload
-        from .architecture import FU_PROFILES, FU_TYPES
+        from .architecture import BASE_FUS, FU_PROFILES, FU_TYPES, WORKLOAD_FUS
         Workload(samples=self.range_bins, chirps=self.doppler_bins, rx=self.rx_channels).validate()
         if self.fu_profile not in ("legacy", "custom", *FU_PROFILES):
             raise ValueError("unsupported FU profile")
@@ -64,6 +64,11 @@ class CoDesignCandidate:
             if any(not isinstance(fus, list) or not fus or any(fu not in FU_TYPES for fu in fus)
                    for fus in self.tile_fus.values()):
                 raise ValueError("custom architecture contains unsupported FUs")
+            if any(set(BASE_FUS) - set(fus) for fus in self.tile_fus.values()):
+                raise ValueError("every custom tile must retain the fixed base FUs")
+            available = set().union(*(set(fus) for fus in self.tile_fus.values()))
+            if WORKLOAD_FUS - available:
+                raise ValueError("custom architecture is missing required workload FUs")
         elif self.tile_fus is not None:
             raise ValueError("tile_fus is valid only for a custom architecture")
         if self.kernel not in KERNEL_LOOPS:

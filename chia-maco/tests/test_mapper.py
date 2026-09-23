@@ -44,9 +44,15 @@ def test_cgra_flow_architecture_has_real_fu_and_memory_configuration() -> None:
 
 
 def test_custom_architecture_keeps_exact_fu_assignment() -> None:
-    fus = {"0": ["Ld", "St", "Add"], "1": ["FMul"], "2": ["FAdd"], "3": ["Cmp", "Sel"]}
+    from chia_maco.architecture import BASE_FUS
+    fus = {
+        "0": [*BASE_FUS, "Ld", "St", "Mul"],
+        "1": [*BASE_FUS, "FMul"],
+        "2": [*BASE_FUS, "FAdd"],
+        "3": [*BASE_FUS],
+    }
     arch = custom_architecture(2, 2, fus, 128, 4, 32)
     assert arch["fu_profile"] == "custom"
     assert arch["control_memory"] == 128
     assert arch["memory"]["bank_kib"] == 8
-    assert arch["tiles"]["1"]["supportedFUs"] == ["FMul"]
+    assert arch["tiles"]["1"]["supportedFUs"] == [*BASE_FUS, "FMul"]

@@ -24,7 +24,7 @@ from .report import estimate_frame_cycles
 from .schema import CoDesignCandidate, MappingResult, KERNEL_LOOPS
 from .search import KERNEL_UNROLL_FACTORS, summarize_search
 from .workload import Workload
-from .architecture import FU_PROFILES, FU_TYPES, architecture_config, custom_architecture
+from .architecture import BASE_FUS, FU_PROFILES, FU_TYPES, WORKLOAD_FUS, architecture_config, custom_architecture
 
 UPSTREAM_COMMIT = "31c02ce013838d89ef2a6d211acfdf639ecb178d"
 KERNELS = list(KERNEL_LOOPS)
@@ -59,6 +59,9 @@ tile_size, FUs, config_mem, data_spm_kb, memory_banks, unroll, vectorize, reason
 tile_size is square from 2x2 through 8x8 and must respect workload.max_pes.
 FUs maps every tile0..tileN to a non-empty subset of
 [Ld,St,Cmp,Phi,Br,Sel,Ret,Add,Mul,Div,Logic,Shift,FAdd,FMul,FDiv].
+Every tile MUST include the fixed base set [Add,Br,Cmp,Logic,Phi,Ret,Sel,Shift].
+Across the array, at least one tile MUST include each of [Ld,St,Mul].
+Only the placement of Ld, St, Mul, Div, FAdd, FMul and FDiv is variable.
 config_mem is 16..1024 instructions per tile.
 data_spm_kb is 4..256 KiB and divides evenly across memory_banks in [1,2,4,8].
 unroll is an object with exactly window,fft,transpose,power,cfar; each value is 1..6.
@@ -134,6 +137,23 @@ def validate_plan(plan: dict) -> dict:
         if any(not isinstance(values, list) or not values or len(values) != len(set(values))
                or any(fu not in FU_TYPES for fu in values) for values in fus.values()):
             raise ValueError("Each tile needs a unique, supported FU list")
+        missing_by_tile = {
+            tile: sorted(set(BASE_FUS) - set(values))
+            for tile, values in fus.items()
+            if set(BASE_FUS) - set(values)
+        }
+        if missing_by_tile:
+            tile = min(missing_by_tile, key=lambda name: int(name.removeprefix("tile")))
+            raise ValueError(
+                f"{tile} is missing fixed base FUs: {', '.join(missing_by_tile[tile])}"
+            )
+        available = set().union(*(set(values) for values in fus.values()))
+        missing = WORKLOAD_FUS - available
+        if missing:
+            raise ValueError(
+                "FUs must provide workload operations across the array: "
+                + ", ".join(sorted(missing))
+            )
         if type(plan["config_mem"]) is not int or not 16 <= plan["config_mem"] <= 1024:
             raise ValueError("config_mem must be 16..1024")
         if type(plan["data_spm_kb"]) is not int or not 4 <= plan["data_spm_kb"] <= 256:

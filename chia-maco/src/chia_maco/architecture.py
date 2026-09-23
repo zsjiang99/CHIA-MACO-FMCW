@@ -3,6 +3,7 @@
 FU_PROFILES = ("uniform", "checkerboard", "column")
 BASE_FUS = ["Add", "Br", "Cmp", "Logic", "Phi", "Ret", "Sel", "Shift"]
 FU_TYPES = frozenset((*BASE_FUS, "Ld", "St", "Mul", "Div", "FAdd", "FMul", "FDiv"))
+WORKLOAD_FUS = frozenset(("Ld", "St", "Mul"))
 
 
 def _mesh_links(rows, columns):
@@ -26,8 +27,19 @@ def custom_architecture(rows, columns, tile_fus, config_mem, banks, data_spm_kib
         fus = list(dict.fromkeys(tile_fus[key]))
         if not fus or any(fu not in FU_TYPES for fu in fus):
             raise ValueError(f"Unsupported functional units for tile {key}")
+        missing = set(BASE_FUS) - set(fus)
+        if missing:
+            raise ValueError(
+                f"Tile {key} is missing fixed base FUs: {', '.join(sorted(missing))}"
+            )
         tiles[key] = {"disabled": False, "supportAllFUs": False, "supportedFUs": fus,
                       "accessMem": "Ld" in fus or "St" in fus}
+    available = set().union(*(set(tile["supportedFUs"]) for tile in tiles.values()))
+    missing = WORKLOAD_FUS - available
+    if missing:
+        raise ValueError(
+            "Custom architecture is missing workload FUs: " + ", ".join(sorted(missing))
+        )
     interfaces = [int(key) for key, tile in tiles.items() if tile["accessMem"]]
     if not interfaces:
         raise ValueError("At least one tile must provide Ld or St")
