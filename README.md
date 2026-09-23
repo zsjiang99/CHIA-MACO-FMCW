@@ -8,9 +8,9 @@
 
 ## 🧭 What this artifact explores
 
-The FMCW range–Doppler workload uses **256 samples/chirp × 128 chirps/frame × 4 RX channels** of FP32 complex data. Its five C mapping views are window, FFT (range and Doppler), transpose, power, and CA-CFAR.
+MACO explores a bounded hardware/software design space for FMCW range–Doppler detection. Each candidate combines **one CGRA architecture shared by five kernels** with a compiler unroll choice for each kernel. The architecture space covers **2×2, 4×4, or 6×6 arrays** (subject to the PE limit), **uniform, checkerboard, or column multiplier placement**, and **1, 2, 4, or 8 scratchpad banks** of 4–64 KiB each. CHIA maps the kernels and returns tool feedback for the next agent round. The objective can be estimated cycles/frame or modeled scratchpad dynamic energy/frame.
 
-One candidate uses a **single CGRA array for all five kernels**: a 2×2, 4×4, or 6×6 array plus one compiler unroll factor per kernel. The reported objective is **minimum estimated cycles/frame**; FU mix, memory banks, and interconnect are fixed in this search.
+The workload has **256 samples/chirp × 128 chirps/frame × 4 RX channels** of FP32 complex data. Its mapping views cover window, FFT (range and Doppler), transpose, power, and CA-CFAR.
 
 ## 🔁 Agent–tool loop
 
@@ -31,6 +31,8 @@ One candidate uses a **single CGRA array for all five kernels**: a 2×2, 4×4, o
 The Fine-grained Judge predicts a winner; CHIA maps shortlisted plans that fit the budget. The reported frame estimate uses mapper II and fixed workload counts, not the agent's prediction.
 
 ## 📊 Findings
+
+The archived paper experiment evaluates the array/unroll slice of this larger design space.
 
 | Search | Unique mapper runs | Best estimated cycles/frame | Archived wall time |
 | --- | ---: | ---: | ---: |
