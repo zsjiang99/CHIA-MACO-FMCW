@@ -8,29 +8,21 @@
 
 MACO proposes CGRA designs; CHIA evaluates them with compiler tools and returns evidence for the next round. This release applies that loop to an FMCW range–Doppler pipeline: **256 samples/chirp × 128 chirps/frame × 4 RX channels**, with FP32 complex data. Five C kernel views cover windowing, FFT (used for both range and Doppler), transpose, power, and CA-CFAR.
 
-```mermaid
-flowchart LR
-    W["FMCW C kernels"] --> A
-    subgraph A["MACO agents"]
-      direction LR
-      D["Co-designer"] --> X["Fixer"] --> C["Coarse judge"] --> F["Fine judge"]
-    end
-    A --> P["Shortlisted array + unroll plans"]
-    P --> E["CHIA evaluator"]
-    W --> E
-    E --> M["LLVM 12 + CGRA-Mapper"]
-    M --> R["Mapping II + frame-cycle estimate"]
-    R -->|feedback| A
+```text
+┌──────────────┐   ┌──────────────┐   ┌──────────────────┐   ┌──────────────────┐
+│ CGRA         │ → │ CGRA         │ → │ Coarse-grained   │ → │ Fine-grained     │
+│ Co-designer  │   │ Fixer        │   │ Judge            │   │ Judge            │
+│ propose      │   │ repair       │   │ shortlist        │   │ predict best     │
+└──────────────┘   └──────────────┘   └──────────────────┘   └─────────┬────────┘
+       ↑                                                               │ shortlist
+       │                                                               ▼
+       │                 ┌─────────────────────────────────────────────────────────┐
+       └── feedback ──── │ CHIA → LLVM 12 → CGRA-Mapper → frame-cycle model       │
+          (II, cycles)   │ Evaluate every shortlisted array/unroll plan           │
+                         └─────────────────────────────────────────────────────────┘
 ```
 
-| Agent | Role |
-| --- | --- |
-| **Co-designer** | Proposes array-size and per-kernel unroll choices. |
-| **Fixer** | Repairs proposals and enforces the legal search space. |
-| **Coarse judge** | Shortlists valid candidates. |
-| **Fine judge** | Predicts the best shortlist member; shortlisted plans are evaluated. |
-
-The [agent loop](chia-maco/src/chia_maco/agent_search.py) calls the original MACO agent roles; the [CHIA node](chia-maco/src/chia_maco/nodes.py) evaluates candidates through [CGRA-Mapper](chia-maco/src/chia_maco/mapper.py). The [frame model](chia-maco/src/chia_maco/report.py) converts mapping results into feedback. Agent sources are fetched from a pinned [upstream MACO](https://github.com/coredac/MACO) checkout rather than redistributed here.
+Implementation: [MACO agent loop](chia-maco/src/chia_maco/agent_search.py) · [CHIA evaluator](chia-maco/src/chia_maco/nodes.py) · [CGRA-Mapper adapter](chia-maco/src/chia_maco/mapper.py) · [frame model](chia-maco/src/chia_maco/report.py). Original agent sources come from a pinned [upstream MACO](https://github.com/coredac/MACO) checkout.
 
 ## 🚀 Quick start
 
