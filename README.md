@@ -2,7 +2,7 @@
 
 **Agent-guided CGRA co-design for FMCW radar.**
 
-[Paper (PDF)](paper/paper.pdf) · [Run the artifact](#-run-the-artifact) · [Results and logs](chia-maco/results/README.md) · [Browser demo](#browser-demo)
+[Paper (PDF)](paper/paper.pdf) · [Quick start](#-quick-start) · [Results and logs](chia-maco/results/README.md) · [Browser demo](#-browser-demo)
 
 ## 🧭 What this artifact explores
 
@@ -26,7 +26,7 @@ One candidate uses a **single CGRA array for all five kernels**: a 2×2, 4×4, o
                          └─────────────────────────────────────────────────────────┘
 ```
 
-The Fine-grained Judge predicts a winner; CHIA maps the shortlisted plans that fit the budget. **Only mapper results**, not the agent's prediction, enter the reported frame estimate.
+The Fine-grained Judge predicts a winner; CHIA maps shortlisted plans that fit the budget. The reported frame estimate uses mapper II and fixed workload counts, not the agent's prediction.
 
 ## 📊 Findings
 
@@ -37,13 +37,9 @@ The Fine-grained Judge predicts a winner; CHIA maps the shortlisted plans that f
 
 The agent run matched the best estimate with fewer mappings, but took longer because of model calls. Its best measured plan is **4×4 with unroll factors [4, 2, 4, 4, 1]**; CA-CFAR accounts for **89.7%** of modeled frame cycles. [Inspect the raw evidence.](chia-maco/results/README.md)
 
-## 🚀 Run the artifact
+## 🚀 Quick start
 
-After cloning, run commands from the repository root. New runs write separate output files; they do not replace the [archived paper evidence](chia-maco/results/README.md).
-
-### 1. Check the archive
-
-Requires a C compiler, `make`, and Python 3.10+. This runs one native FMCW frame and checks the saved results; it does **not** run an LLM or CGRA-Mapper.
+Verify the archived paper results with a C compiler, `make`, and Python 3.10+:
 
 ```bash
 git clone https://github.com/zsjiang99/CHIA-MACO-FMCW.git
@@ -51,9 +47,18 @@ cd CHIA-MACO-FMCW
 make -C chia-maco artifact-check
 ```
 
-### 2. Re-run the mapper search
+This runs one native FMCW frame and checks the saved results. It does **not** run an LLM or CGRA-Mapper.
 
-Requires Python 3.10, Docker, a C compiler, and network access during setup. After step 1:
+## ⚙️ Full reproduction
+
+The following steps build on Quick start and run from the repository root. They require Docker and network access for installation. New runs do not overwrite the [paper's archived evidence](chia-maco/results/README.md).
+
+### 🛠️ 1. Prepare the evaluator
+
+Install the pinned mapper, CHIA, and this package. Expand for the setup commands.
+
+<details>
+<summary>Show setup commands</summary>
 
 ```bash
 mkdir -p external
@@ -63,21 +68,36 @@ docker build -t cgramapper:v1 external/CGRA-Mapper/docker
 python3.10 -m venv .venv
 .venv/bin/python -m pip install 'git+https://github.com/ucb-bar/chia.git@16c35e92aaaf9511c6453bf94cd5cf589698f4e3'
 .venv/bin/python -m pip install -e 'chia-maco[test]'
+```
+
+</details>
+
+### 🧪 2. Run the mapper search
+
+```bash
 make -C chia-maco test PYTHON=../.venv/bin/python
 make -C chia-maco mapper-smoke PYTHON=../.venv/bin/python
 make -C chia-maco codesign-search PYTHON=../.venv/bin/python
 ```
 
-`mapper-smoke` maps the five kernel views. `codesign-search` runs the 36-mapping CHIA search and writes `chia-maco/results/codesign_search.json`, leaving the [reported archive](chia-maco/results/codesign_search_certified.json) unchanged. To recompute a summary *from saved mappings* without running the mapper:
+`mapper-smoke` maps the five kernel views. `codesign-search` runs 36 CHIA mapping evaluations and writes `chia-maco/results/codesign_search.json`; the [reported archive](chia-maco/results/codesign_search_certified.json) is unchanged.
+
+<details>
+<summary>Recompute the summary from saved mappings (no mapper run)</summary>
 
 ```bash
 .venv/bin/chia-maco summarize-search chia-maco/results/codesign_search_certified.json \
   --output chia-maco/results/my_summary.json
 ```
 
-### 3. Re-run the MACO agents
+</details>
 
-Use the evaluator setup above and an OpenAI-compatible model service. The reported run used locally served Qwen3.8-27B with NF4 double quantization; model weights and credentials are not included.
+### 🤖 3. Run the MACO agents
+
+Start an OpenAI-compatible model service, then expand the commands below. The reported run used locally served Qwen3.8-27B with NF4 double quantization; model weights and credentials are not included.
+
+<details>
+<summary>Show agent setup and run commands</summary>
 
 ```bash
 git clone https://github.com/coredac/MACO.git external/MACO
@@ -89,11 +109,13 @@ export MACO_LLM_MODEL=your-served-model-id
   --rounds 3 --mapping-budget 30 --seed 37
 ```
 
+</details>
+
 Use a new output directory. The [reported seed-37 run](chia-maco/results/agent_qwen38_27b_seed37_v3/) contains its model trace and mapper logs; a new model or sampling run may propose different designs.
 
-### Browser demo
+## 💻 Browser demo
 
-The GUI can display archived evidence without a model. With the Python environment above and Node 20.19+:
+The GUI can display archived evidence without a model. After evaluator setup, install the GUI requirements and build the frontend (Node 20.19+):
 
 ```bash
 .venv/bin/python -m pip install -r gui/requirements.txt
@@ -103,23 +125,22 @@ bash gui/start.sh
 
 Open `http://127.0.0.1:8765`, or forward port 8765 over SSH. The server binds to loopback and has no authentication; do not expose it publicly. **Run MACO exploration** starts the agent/mapper loop. RTL, synthesis, and layout are separate experimental paths requiring `cgra/neura-flow:20260114`, not prerequisites for the paper.
 
-## 📂 Repository map
+## 📂 Project structure
 
-| Path | Purpose |
-| --- | --- |
-| [`chia-maco/src/chia_maco/`](chia-maco/src/chia_maco/) | [Agent loop](chia-maco/src/chia_maco/agent_search.py), [CHIA evaluator](chia-maco/src/chia_maco/nodes.py), [mapper adapter](chia-maco/src/chia_maco/mapper.py), [frame model](chia-maco/src/chia_maco/report.py) |
-| [`chia-maco/workload/`](chia-maco/workload/) | FMCW C reference and compiler-mapping views |
-| [`chia-maco/results/`](chia-maco/results/) | Archived searches, raw tool evidence, and validation |
-| [`gui/`](gui/) | Local browser demo and optional hardware-flow controls |
-| [`paper/`](paper/) | Four-page IEEE-style paper and LaTeX source |
+| Part | Where to look | What it contains |
+| --- | --- | --- |
+| 🤖 Agents | [agent_search.py](chia-maco/src/chia_maco/agent_search.py) | Four-role MACO loop and feedback history |
+| ⚙️ Evaluation | [CHIA node](chia-maco/src/chia_maco/nodes.py) · [mapper](chia-maco/src/chia_maco/mapper.py) · [frame model](chia-maco/src/chia_maco/report.py) | Tool execution and frame estimate |
+| 📡 Workload | [workload/](chia-maco/workload/) | Native FMCW C and mapping views |
+| 📊 Evidence | [results/](chia-maco/results/) | Candidates, traces, logs, validation |
+| 💻 Demo | [gui/](gui/) | Browser viewer and optional hardware-flow controls |
+| 📄 Paper | [paper/](paper/) | Four-page PDF and LaTeX source |
 
 ## 🔬 What the evidence supports
 
-Mapping II comes from CGRA-Mapper; full-frame cycles are an **analytical estimate**, not measured FPS or energy. Tile count is not synthesized area.
-
-The frame model excludes loop setup, memory stalls, FFT bit reversal, and host–CGRA transfers. The archived 38.71 s and 210.43 s are original-host wall times, not runtime guarantees.
-
-The native smoke test is separate from candidate-hardware correctness. The independent [NumPy comparison](chia-maco/results/validation_v1/) passes the FFT and power criteria, but exact CA-CFAR masks agree in only **2 of 6** scenes. A fresh `validate-native` therefore exits nonzero; mapper success and component RTL tests do not certify full-frame hardware execution. FU/memory exploration and RTL/layout in the GUI are outside the paper's reported search. See the [implementation status](chia-maco/IMPLEMENTATION_STATUS.md).
+- **Performance:** CGRA-Mapper reports mapping II; the full-frame cycle count is an analytical estimate, not measured FPS or energy. It omits loop setup, memory stalls, FFT bit reversal, and host–CGRA transfers. Archived wall times are not runtime guarantees.
+- **Correctness:** The native smoke test is not a hardware test. The independent [NumPy comparison](chia-maco/results/validation_v1/) meets FFT and power error criteria, but exact CA-CFAR masks agree in only **2 of 6** scenes; a fresh `validate-native` exits nonzero. Mapper and component RTL tests do not certify full-frame execution.
+- **Hardware:** Tile count is not synthesized area. FU/memory exploration and RTL/layout in the GUI are experimental, outside the paper's reported search. See the [implementation status](chia-maco/IMPLEMENTATION_STATUS.md).
 
 ## 📄 License and credit
 
