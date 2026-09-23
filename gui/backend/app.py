@@ -26,8 +26,6 @@ allowed_hosts = ["127.0.0.1", "localhost", "testserver"]
 allowed_hosts += [host.strip() for host in os.environ.get("A3_GUI_ALLOWED_HOSTS", "").split(",") if host.strip()]
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=allowed_hosts)
 _lock = threading.Lock()
-_active: subprocess.Popen | None = None
-_active_id: str | None = None
 
 
 def _worker_pid(job_id: str) -> int | None:
@@ -58,12 +56,10 @@ def _worker_pid(job_id: str) -> int | None:
     return None
 
 
-def _running_job_id() -> str | None:
-    if _active is not None and _active.poll() is None:
-        return _active_id
+def _running_jobs() -> list[tuple[float, str, str]]:
     if not RUNTIME.is_dir():
-        return None
-    running: list[tuple[float, str]] = []
+        return []
+    running: list[tuple[float, str, str]] = []
     for meta_path in RUNTIME.glob("*/meta.json"):
         try:
             meta = read_json(meta_path)
@@ -71,8 +67,12 @@ def _running_job_id() -> str | None:
             continue
         job_id = meta_path.parent.name
         if meta.get("state") == "running" and _worker_pid(job_id) is not None:
-            running.append((float(meta.get("started_at", 0)), job_id))
-    return max(running, default=(0, ""))[1] or None
+            running.append((float(meta.get("started_at", 0)), job_id, str(meta.get("kind", ""))))
+    return sorted(running)
+
+
+def _job_group(kind: str) -> str:
+    return "layout" if kind == "cgra-layout" else "workflow"
 
 
 @app.middleware("http")
@@ -86,8 +86,10 @@ async def same_origin(request: Request, call_next):
 
 @app.get("/api/health")
 def health():
+    jobs = _running_jobs()
     return {"ok": True, "project": "maco", "mode": "local demo", "live_openroad": True,
-            "active_job": _running_job_id()}
+            "active_job": jobs[-1][1] if jobs else None,
+            "active_jobs": [job_id for _, job_id, _ in jobs]}
 
 
 @app.get("/api/archive/maco")
@@ -228,7 +230,7 @@ def _finish(proc: subprocess.Popen, path: Path, log) -> None:
 
 @app.post("/api/jobs", status_code=202)
 def start_job(spec: JobRequest):
-    global _active, _active_id
+    group = _job_group(spec.kind)
     if spec.kind == "cgra-layout":
         if not spec.source_run:
             raise HTTPException(422, "Select a completed MACO run before layout")
@@ -268,16 +270,19 @@ def start_job(spec: JobRequest):
         if spec.interpretation and spec.interpretation.get("unsupported"):
             raise HTTPException(422, "Revise unsupported requirements before launching")
     with _lock:
-        if _active is not None and _active.poll() is None:
-            raise HTTPException(409, "A CHIA job is already running")
-        # The worker inherits this lock, so server restarts cannot create overlaps.
+        for _, _, running_kind in _running_jobs():
+            if _job_group(running_kind) == group:
+                label = "layout" if group == "layout" else "MACO workflow"
+                raise HTTPException(409, f"A {label} job is already running")
+        # Layout and the main workflow have isolated outputs and may run together.
+        # A group-specific inherited lock prevents duplicate starts across servers.
         RUNTIME.mkdir(parents=True, exist_ok=True)
-        job_lock = (RUNTIME / "job.lock").open("a")
+        job_lock = (RUNTIME / f"{group}.lock").open("a")
         try:
             fcntl.flock(job_lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError:
             job_lock.close()
-            raise HTTPException(409, "Another demo worker holds the execution lock")
+            raise HTTPException(409, f"Another {group} job is already running")
         if spec.kind in ("maco", "maco-agent", "cgra-verify", "cgra-synth", "cgra-layout"):
             images = (["cgramapper:v1", "cgra/neura-flow:20260114"] if spec.kind == "maco-agent" and spec.workload
                       else ["cgra/neura-flow:20260114" if spec.kind.startswith("cgra-") else "cgramapper:v1"])
@@ -302,19 +307,18 @@ def start_job(spec: JobRequest):
                                            env.get("PYTHONPATH", "")])
         log = (path / "worker.log").open("w")
         try:
-            _active = subprocess.Popen([sys.executable, "-m", "backend.worker", spec.kind, str(path)],
-                                       cwd=ROOT, env=env, stdout=log, stderr=subprocess.STDOUT,
-                                       start_new_session=True, pass_fds=(job_lock.fileno(),))
+            proc = subprocess.Popen([sys.executable, "-m", "backend.worker", spec.kind, str(path)],
+                                    cwd=ROOT, env=env, stdout=log, stderr=subprocess.STDOUT,
+                                    start_new_session=True, pass_fds=(job_lock.fileno(),))
             meta = read_json(path / "meta.json")
-            save(path / "meta.json", {**meta, "worker_pid": _active.pid})
+            save(path / "meta.json", {**meta, "worker_pid": proc.pid})
         except OSError:
             log.close()
             save(path / "meta.json", {"id": job_id, "kind": spec.kind, "state": "failed"})
             raise HTTPException(503, "Could not start worker; check the local runtime log")
         finally:
             job_lock.close()
-        _active_id = job_id
-        threading.Thread(target=_finish, args=(_active, path, log), daemon=True).start()
+        threading.Thread(target=_finish, args=(proc, path, log), daemon=True).start()
         return {"id": job_id}
 
 
