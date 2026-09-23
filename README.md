@@ -55,11 +55,19 @@ This runs one native FMCW frame and checks the saved results. It does **not** ru
 
 ## 🧰 Environment
 
-The archive check above needs no Docker, Node.js, model service, or GPU. Archive checking, Python setup, tests, and the browser build were verified in a clean **Ubuntu 22.04 x86-64** container; a pinned mapper image was separately built and used for a real mapping. Other systems and a fresh live-model or RTL/layout run are not yet verified.
+The following combinations are supported:
 
-- **Live mapper:** Python 3.10 with `venv` and `pip`, network access during setup, and Docker Engine running with permission to use its daemon. Compilation uses LLVM/Clang 12 inside the mapper image, not on the host.
-- **Live agents:** an OpenAI-compatible model endpoint in addition to the mapper. Set `MACO_LLM_BASE_URL`, `MACO_LLM_MODEL`, and `MACO_LLM_API_KEY` if the endpoint requires a key; a remote endpoint needs no local GPU.
-- **Browser demo:** Node.js 20.19+ or 22.12+ and npm to build the frontend. Archived replay does not need Docker or a model. Architecture-aware live search, SRAM-energy evaluation, and experimental RTL/layout also need the public `cgra/neura-flow:20260114` image (Linux x86-64); the installed image occupies about 17 GB, so allow at least 25 GB of free Docker storage.
+| Use | Required environment |
+| --- | --- |
+| Archived result check | Linux x86-64, Git, `make`, a C compiler, Python 3.10+ |
+| Browser archive | The above, plus Node.js 20.19+ or 22.12+ and npm |
+| Live MACO search | Python 3.10, Docker Engine, `cgramapper:v1`, the pinned MACO checkout, and an OpenAI-compatible model endpoint |
+| RTL generation, verification and synthesis | The live-search environment plus `cgra/neura-flow:20260114` |
+| Optional layout | The same CGRA-Flow image; layout is launched separately after synthesis |
+
+Archive checking, Python installation, tests, and the browser build were verified in a clean **Ubuntu 22.04 x86-64** container. A pinned mapper image was also built and used for a real mapping. A complete fresh live-model-to-layout run has not been certified, so the README does not claim that result.
+
+The Docker images contain the required LLVM/Clang and EDA tools; they are not required on the host. The CGRA-Flow image occupies about 17 GB, so allow at least 25 GB of free Docker storage. A remote model endpoint does not require a local GPU. If authentication is required, set `MACO_LLM_API_KEY` in addition to `MACO_LLM_BASE_URL` and `MACO_LLM_MODEL`.
 
 ## 📂 Project structure
 
@@ -150,9 +158,11 @@ python3.10 -m venv .venv
 bash gui/start.sh
 ```
 
-Open `http://127.0.0.1:8765/`, or forward port 8765 over SSH. The default **Paper result** tab shows the seed-37 agent trace, exhaustive reference, per-kernel mapping evidence and scope limits. Follow the [three-minute walkthrough](chia-maco/DEMO.txt). **Live exploration** (`/?mode=live`) can start a new agent/mapper loop with a configured model service. The server binds to loopback and has no authentication; do not expose it publicly.
+Open `http://127.0.0.1:8765/`, or forward port 8765 over SSH. Set `A3_GUI_PORT` before `bash gui/start.sh` to use another local port. The default **Paper result** tab shows the seed-37 agent trace, exhaustive reference, per-kernel mapping evidence and scope limits. Follow the [three-minute walkthrough](chia-maco/DEMO.txt). **Live exploration** (`/?mode=live`) runs architecture search, generates and verifies RTL, then synthesizes the selected design. Layout remains an explicit optional action after that flow completes.
 
-For architecture-aware live search (including SRAM energy), RTL, synthesis, or layout, also install the CGRA-Flow image:
+The server binds to loopback and has no authentication; do not expose it publicly.
+
+For architecture-aware live search (including SRAM energy), RTL generation and verification, synthesis, or optional layout, install the CGRA-Flow image:
 
 ```bash
 docker pull cgra/neura-flow:20260114

@@ -12,4 +12,4 @@ if [[ ! -f "${gui_dir}/../chia-maco/gui/dist/index.html" ]]; then
 fi
 export PYTHONPATH="${gui_dir}:${gui_dir}/../chia-maco/src${PYTHONPATH:+:${PYTHONPATH}}"
 exec "${A3_PYTHON:-${gui_dir}/../.venv/bin/python}" -m uvicorn backend.app:app \
-  --host 127.0.0.1 --port "${A3_GUI_PORT:-8765}"
+  --host "${A3_GUI_HOST:-127.0.0.1}" --port "${A3_GUI_PORT:-8765}"

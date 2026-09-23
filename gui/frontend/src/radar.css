@@ -100,7 +100,7 @@ body{margin:0;overflow:hidden;background:#171817;color:#e7e9e7}
 .layout-note{margin:0 7px;color:#8f9992;font-size:clamp(9px,.55vw,11px);line-height:1.35}
 .design-flow{min-width:0;padding:8px;border-bottom:1px solid var(--line)}
 .maco-panel .agent-trace{display:flex;flex-direction:column;overflow:hidden!important}
-.design-flow>.flow-status{display:grid;grid-template-columns:1fr 1fr;gap:3px}
+.design-flow>.flow-status{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px}
 .design-flow .flow-step{display:grid;grid-template-columns:18px minmax(0,1fr);align-items:center;gap:4px;min-width:0;padding:5px;border:1px solid #383e3a;background:#242824;color:#b4bdb7;font-size:var(--fs-xs)}
 .design-flow .flow-step b{display:grid;place-items:center;width:17px;height:17px;border-radius:50%;background:#3a413c;color:#bbc5be;font-size:10px}
 .design-flow .flow-step span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}

@@ -15,12 +15,14 @@ scenes; all four failures are retained in `results/validation_v1/`.
 
 ## Experimental hardware extension
 
-The GUI can request memory-bank/FU exploration, RTL generation, synthesis,
-and CGRA-core layout. These are separate from the paper's search. FP32 FU/tile
-regressions pass, but a complete mapper-schedule loader and whole-frame
-candidate execution have not been established. No archived mapper result is
-therefore labeled hardware-correct, area-feasible, or FPS-feasible. Core-only
-layout excludes the Data SPM; it must not be presented as full-chip PPA.
+The live GUI runs architecture search, RTL generation and component
+verification, then synthesis. CGRA-core layout is a separate optional action
+enabled only after those stages pass. These extensions are separate from the
+paper's search. FP32 FU/tile regressions pass, but a complete mapper-schedule
+loader and whole-frame candidate execution have not been established. No
+archived mapper result is therefore labeled hardware-correct, area-feasible,
+or FPS-feasible. Core-only layout excludes the Data SPM; it must not be
+presented as full-chip PPA.
 
 ## Reproduce
 

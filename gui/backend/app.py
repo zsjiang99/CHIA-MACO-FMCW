@@ -22,7 +22,9 @@ from .data import ARCHIVES, ROOT, array_model, read_json
 
 RUNTIME = ROOT / "chia-maco/gui/runtime"
 app = FastAPI(title="CHIA MACO Studio")
-app.add_middleware(TrustedHostMiddleware, allowed_hosts=["127.0.0.1", "localhost", "testserver"])
+allowed_hosts = ["127.0.0.1", "localhost", "testserver"]
+allowed_hosts += [host.strip() for host in os.environ.get("A3_GUI_ALLOWED_HOSTS", "").split(",") if host.strip()]
+app.add_middleware(TrustedHostMiddleware, allowed_hosts=allowed_hosts)
 _lock = threading.Lock()
 _active: subprocess.Popen | None = None
 _active_id: str | None = None
@@ -69,6 +71,7 @@ class JobRequest(BaseModel):
     rounds: int = Field(default=3, ge=1, le=6)
     interpretation: dict | None = None
     architecture: dict | None = None
+    source_run: str | None = None
 
 
 class DescriptionRequest(BaseModel):
@@ -181,6 +184,28 @@ def _finish(proc: subprocess.Popen, path: Path, log) -> None:
 @app.post("/api/jobs", status_code=202)
 def start_job(spec: JobRequest):
     global _active, _active_id
+    if spec.kind == "cgra-layout":
+        if not spec.source_run:
+            raise HTTPException(422, "Select a completed MACO run before layout")
+        source = _job_dir(spec.source_run)
+        if read_json(source / "meta.json").get("kind") != "maco-agent":
+            raise HTTPException(422, "Layout requires a completed MACO run")
+        record_path = source / "implementation.json"
+        if not record_path.is_file():
+            raise HTTPException(422, "RTL verification and synthesis must finish before layout")
+        record = read_json(record_path)
+        stages = record.get("stages", {})
+        if any(stages.get(name, {}).get("state") != "passed" for name in ("verify", "synth")):
+            raise HTTPException(422, "RTL verification and synthesis must finish before layout")
+        from chia_maco.evidence import candidate_id
+        winner = read_json(source / "result.json").get("best_evaluated_plan") or {}
+        if (not winner.get("design") or not winner.get("architecture")
+                or record.get("design_id") != candidate_id(winner["design"])
+                or (spec.architecture or {}).get("design") != winner["design"]):
+            raise HTTPException(422, "Layout architecture must match the verified design")
+        spec.architecture = {"design": winner["design"], "architecture": winner["architecture"]}
+    elif spec.source_run is not None:
+        raise HTTPException(422, "source_run is only valid for optional layout")
     if spec.kind.startswith("cgra-"):
         try:
             from chia_maco.cgra_flow import architecture_yaml
@@ -209,7 +234,8 @@ def start_job(spec: JobRequest):
             job_lock.close()
             raise HTTPException(409, "Another demo worker holds the execution lock")
         if spec.kind in ("maco", "maco-agent", "cgra-verify", "cgra-synth", "cgra-layout"):
-            images = ["cgra/neura-flow:20260114" if spec.kind.startswith("cgra-") else "cgramapper:v1"]
+            images = (["cgramapper:v1", "cgra/neura-flow:20260114"] if spec.kind == "maco-agent" and spec.workload
+                      else ["cgra/neura-flow:20260114" if spec.kind.startswith("cgra-") else "cgramapper:v1"])
             for image in images:
                 try:
                     probe = subprocess.run(["docker", "image", "inspect", image],
