@@ -1,87 +1,77 @@
-# CHIA-MACO-FMCW artifact
+# CHIA-MACO-FMCW
 
-Public release: https://github.com/zsjiang99/CHIA-MACO-FMCW
+Agent-guided compiler–architecture exploration for an FMCW radar pipeline on a CGRA.
 
-This MACO-only repository contains the CHIA loop, FMCW C workload, compiler
-mapping views, archived tool/model evidence, tests, and a local browser demo
-for the four-page paper in `paper/paper.pdf`.
+[Paper (PDF)](paper/paper.pdf) · [Results and provenance](chia-maco/results/README.md) · [Reproduce](docs/REPRODUCE.md) · [Browser demo](docs/REPRODUCE.md#browser-demo)
 
-The reported experiment searches array size and per-kernel unroll factors with
-CGRA-Mapper feedback. Memory-bank/FU exploration and RTL/layout controls are
-experimental extensions in the GUI; their outputs are not substituted for the
-paper's mapper-only results.
+## What this release does
 
-## Reproduce the reported result
+Four MACO agent roles propose array sizes and compiler unroll factors. A CHIA
+evaluator compiles five FMCW kernel views with LLVM 12, maps them with
+CGRA-Mapper, and returns mapping results for the next agent round. The workload
+represents 256 samples/chirp, 128 chirps/frame, and four receive channels;
+the FFT kernel is used for both range and Doppler processing.
 
-Requires Python 3.10, Docker, and a C compiler. CHIA, CGRA-Mapper, and MACO
-source revisions are pinned below. The original MACO agent files are fetched
-from upstream rather than redistributed here because its checkout has no
-explicit license.
-
-```bash
-git clone https://github.com/tancheng/CGRA-Mapper.git external/CGRA-Mapper
-git -C external/CGRA-Mapper checkout 5f8393acb6b3a17146806ec93a57f76f875be232
-docker build -t cgramapper:v1 external/CGRA-Mapper/docker
-git clone https://github.com/coredac/MACO.git external/MACO
-git -C external/MACO checkout 31c02ce013838d89ef2a6d211acfdf639ecb178d
-export MACO_AGENT_DIR="$PWD/external/MACO/agent"
-python3 -m venv .venv
-.venv/bin/pip install 'git+https://github.com/ucb-bar/chia.git@16c35e92aaaf9511c6453bf94cd5cf589698f4e3'
-.venv/bin/pip install -e 'chia-maco[test]'
-make -C chia-maco smoke
-make -C chia-maco test PYTHON=../.venv/bin/python
-make -C chia-maco codesign-search PYTHON=../.venv/bin/python
+```mermaid
+flowchart LR
+    W["FMCW C kernels"] --> A["MACO agents"]
+    A --> C["Array + unroll candidate"]
+    C --> H["CHIA evaluator"]
+    W --> H
+    H --> M["LLVM + CGRA-Mapper"]
+    M --> F["Mapping II + frame estimate"]
+    F -->|feedback| A
 ```
 
-The last command performs 36 real mapper evaluations; its output is separate
-from the archived `chia-maco/results/codesign_search_certified.json` used in
-the paper. `make -C chia-maco mapper-smoke PYTHON=../.venv/bin/python` is a smaller
-five-kernel check.
+The reported search varies **array size and per-kernel unroll factors**.
+Functional-unit placement, memory banking, RTL, and layout are separate
+experimental extensions, not part of the paper's search result.
 
-## Reproduce the agent loop
+## Main result
 
-The upstream MACO checkout and `MACO_AGENT_DIR` are set up above. To run a new
-agent search, provide an OpenAI-compatible model endpoint:
+| Search | Unique mapper runs | Best estimated cycles/frame | Archived wall time |
+| --- | ---: | ---: | ---: |
+| Exhaustive reference | 36 | 39,154,344 | 38.71 s |
+| MACO agents (12 model calls) | 18 | 39,154,344 | 210.43 s |
 
-```bash
-export MACO_LLM_BASE_URL=http://127.0.0.1:18161/v1
-export MACO_LLM_MODEL=your-openai-compatible-model-id
-.venv/bin/chia-maco agent-search --output-dir chia-maco/results/my_run \
-  --rounds 3 --mapping-budget 30 --seed 37
-```
+The agent reached the reference's best estimate with fewer mappings, **but took
+longer overall**. Cycles/frame is calculated from measured mapper initiation
+intervals; it is not measured throughput or physical-design energy. The
+[results index](chia-maco/results/README.md) links each claim to its source.
 
-An OpenAI-compatible model server must already be running; model weights and
-API credentials are not included. The paper's Qwen run is preserved at
-`chia-maco/results/agent_qwen38_27b_seed37_v3/`, including its model trace,
-mapper logs, and evaluated candidates. A new model/backend may produce
-different proposals.
+## Start here
 
-## Browser demo
-
-The archived evidence can be viewed without running a model. In this release,
-**Run MACO exploration** launches the agent/mapper loop only. RTL generation,
-synthesis, and CGRA-core layout are separate optional actions and require the
-`cgra/neura-flow:20260114` image. Node 20.19+ is needed to build the frontend:
+To check the native radar workload and archived paper numbers without Docker
+or an LLM:
 
 ```bash
-.venv/bin/pip install -r gui/requirements.txt
-cd gui/frontend && npm ci && npm run build && cd ../..
-bash chia-maco/gui/start.sh
+git clone https://github.com/zsjiang99/CHIA-MACO-FMCW.git
+cd CHIA-MACO-FMCW
+make -C chia-maco artifact-check
 ```
 
-Open `http://127.0.0.1:8765` locally. For a remote server, forward port 8765
-over SSH; the demo is intentionally bound to loopback and is not authenticated.
+For a fresh CGRA-Mapper search, an agent run, or the local GUI, follow the
+[reproduction guide](docs/REPRODUCE.md). A new LLM run may propose different
+candidates; the reported run and raw evidence remain in the repository.
 
-## Scope of the evidence
+## Repository map
 
-The reported 39.15-million-cycle frame value is a mapper-II analytical estimate,
-not measured throughput. The native FMCW reference passes its smoke test, but
-strict NumPy/native CFAR-mask equality passes only 2 of 6 validation scenes.
-Mapper success does not certify candidate hardware correctness. The optional
-RTL/layout path is under development; no area, power, FPS, or full hardware
-correctness claim follows from the archived search.
+| Path | Contents |
+| --- | --- |
+| [`chia-maco/src/chia_maco/`](chia-maco/src/chia_maco/) | CHIA node, candidate/evaluation contracts, frame model, and agent loop |
+| [`chia-maco/workload/`](chia-maco/workload/) | Native FMCW C reference and mapping views |
+| [`chia-maco/results/`](chia-maco/results/) | Reported runs, raw mapper logs, model trace, and validation records |
+| [`gui/`](gui/) | Local browser demo; optional RTL/layout controls are distinct from paper results |
+| [`paper/`](paper/) | Four-page IEEE-style PDF and LaTeX source |
 
-`chia-maco/results/README.md` indexes the authoritative data. The repository's
-BSD-3-Clause license covers the new integration code; third-party components
-retain their own terms. See `gui/THIRD_PARTY.md` and
-`chia-maco/src/chia_maco/vendor/maco/NOTICE.md` before redistribution.
+The native workload smoke test is not a candidate-hardware correctness test.
+Independent NumPy/native comparison has exact CA-CFAR mask agreement in 2 of 6
+scenes; all failures are retained. See the [implementation status](chia-maco/IMPLEMENTATION_STATUS.md)
+for the RTL and layout boundary. The current candidate schema and evaluator
+name five FMCW kernels, so this release is a **reusable CHIA loop example for
+FMCW**, not a claim of arbitrary-workload support.
+
+New integration code is BSD-3-Clause licensed. Original MACO agent sources
+are fetched from a pinned [upstream MACO](https://github.com/coredac/MACO)
+checkout rather than copied into this release; other dependencies retain their
+own terms. See [third-party notices](gui/THIRD_PARTY.md).
