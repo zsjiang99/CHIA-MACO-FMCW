@@ -55,7 +55,7 @@ function ArraySvg({entry,mapping,cycle,selected,onSelect,routes=false}:{entry:En
    <title>{p?`node ${p.node} · cycle ${p.cycle} · ${p.instruction}`:`Tile ${id} · ${fuName(entry,id)}`}</title>
    <rect x={x(id)-halfW} y={y(id)-halfH} width={tileWidth} height={tileHeight} rx="3"/>
    <text x={x(id)} y={y(id)-2} textAnchor="middle">{p?`Op ${p.node}`:`Tile ${id}`}</text>
-   <text className="tile-sub" x={x(id)} y={y(id)+16} textAnchor="middle">{p?`c${p.cycle}`:fuName(entry,id)}</text>
+   {p&&<text className="tile-sub" x={x(id)} y={y(id)+16} textAnchor="middle">{`c${p.cycle}`}</text>}
   </g>;})}
   {pairs.map(({a,b})=>{const segment=routeSegment(a,b);return <line key={`mesh-${a}-${b}`} className="mesh" {...segment} markerStart={directions.has(`${b}:${a}`)?`url(#${baseArrow})`:undefined} markerEnd={directions.has(`${a}:${b}`)?`url(#${baseArrow})`:undefined}/>;})}
   {memory.map(id=><line key={`memory-${id}`} className="memory-bus" x1={spm.x+spm.w} y1={y(id)} x2={x(id)-halfW} y2={y(id)} markerStart={`url(#${memoryArrow})`} markerEnd={`url(#${memoryArrow})`}/>)}

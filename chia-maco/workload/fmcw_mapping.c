@@ -2,8 +2,7 @@
  * Fixed-shape, source-unrolled views of the FMCW hotspots for CGRA mapping.
  *
  * The end-to-end numerical reference remains in fmcw.c. These functions expose
- * one representative steady-state loop per stage, avoiding ambiguity between
- * an LLVM-generated main loop and its scalar remainder.
+ * one explicit steady-state loop per stage with lane-level tail guards.
  */
 
 #include "fmcw.h"
@@ -12,9 +11,8 @@
 #define FMCW_UNROLL_FACTOR 1
 #endif
 
-#if FMCW_UNROLL_FACTOR != 1 && FMCW_UNROLL_FACTOR != 2 && \
-    FMCW_UNROLL_FACTOR != 4 && FMCW_UNROLL_FACTOR != 8
-#error "FMCW_UNROLL_FACTOR must be 1, 2, 4, or 8"
+#if FMCW_UNROLL_FACTOR < 1 || FMCW_UNROLL_FACTOR > 6
+#error "FMCW_UNROLL_FACTOR must be between 1 and 6"
 #endif
 
 static inline void window_element(
@@ -24,8 +22,10 @@ static inline void window_element(
     float *output_real,
     float *output_imag,
     int index) {
-    output_real[index] = input_real[index] * window[index];
-    output_imag[index] = input_imag[index] * window[index];
+    if (index < FMCW_RANGE_BINS) {
+        output_real[index] = input_real[index] * window[index];
+        output_imag[index] = input_imag[index] * window[index];
+    }
 }
 
 void fmcw_window_map(
@@ -40,15 +40,17 @@ void fmcw_window_map(
 #if FMCW_UNROLL_FACTOR >= 2
         window_element(input_real, input_imag, window, output_real, output_imag, base + 1);
 #endif
-#if FMCW_UNROLL_FACTOR >= 4
+#if FMCW_UNROLL_FACTOR >= 3
         window_element(input_real, input_imag, window, output_real, output_imag, base + 2);
+#endif
+#if FMCW_UNROLL_FACTOR >= 4
         window_element(input_real, input_imag, window, output_real, output_imag, base + 3);
 #endif
-#if FMCW_UNROLL_FACTOR >= 8
+#if FMCW_UNROLL_FACTOR >= 5
         window_element(input_real, input_imag, window, output_real, output_imag, base + 4);
+#endif
+#if FMCW_UNROLL_FACTOR >= 6
         window_element(input_real, input_imag, window, output_real, output_imag, base + 5);
-        window_element(input_real, input_imag, window, output_real, output_imag, base + 6);
-        window_element(input_real, input_imag, window, output_real, output_imag, base + 7);
 #endif
     }
 }
@@ -59,6 +61,8 @@ static inline void fft_butterfly(
     const float *twiddle_real,
     const float *twiddle_imag,
     int offset) {
+    if (offset >= FMCW_RANGE_BINS / 2)
+        return;
     const int odd = offset + FMCW_RANGE_BINS / 2;
     const float odd_real = data_real[odd];
     const float odd_imag = data_imag[odd];
@@ -85,23 +89,26 @@ void fmcw_fft_stage_map(
 #if FMCW_UNROLL_FACTOR >= 2
         fft_butterfly(data_real, data_imag, twiddle_real, twiddle_imag, base + 1);
 #endif
-#if FMCW_UNROLL_FACTOR >= 4
+#if FMCW_UNROLL_FACTOR >= 3
         fft_butterfly(data_real, data_imag, twiddle_real, twiddle_imag, base + 2);
+#endif
+#if FMCW_UNROLL_FACTOR >= 4
         fft_butterfly(data_real, data_imag, twiddle_real, twiddle_imag, base + 3);
 #endif
-#if FMCW_UNROLL_FACTOR >= 8
+#if FMCW_UNROLL_FACTOR >= 5
         fft_butterfly(data_real, data_imag, twiddle_real, twiddle_imag, base + 4);
+#endif
+#if FMCW_UNROLL_FACTOR >= 6
         fft_butterfly(data_real, data_imag, twiddle_real, twiddle_imag, base + 5);
-        fft_butterfly(data_real, data_imag, twiddle_real, twiddle_imag, base + 6);
-        fft_butterfly(data_real, data_imag, twiddle_real, twiddle_imag, base + 7);
 #endif
     }
 }
 
 static inline void transpose_element(
     const float *input, float *output, int row, int column) {
-    output[column * FMCW_DOPPLER_BINS + row] =
-        input[row * FMCW_RANGE_BINS + column];
+    if (column < FMCW_RANGE_BINS)
+        output[column * FMCW_DOPPLER_BINS + row] =
+            input[row * FMCW_RANGE_BINS + column];
 }
 
 void fmcw_transpose_map(const float *input, float *output, int row) {
@@ -111,15 +118,17 @@ void fmcw_transpose_map(const float *input, float *output, int row) {
 #if FMCW_UNROLL_FACTOR >= 2
         transpose_element(input, output, row, base + 1);
 #endif
-#if FMCW_UNROLL_FACTOR >= 4
+#if FMCW_UNROLL_FACTOR >= 3
         transpose_element(input, output, row, base + 2);
+#endif
+#if FMCW_UNROLL_FACTOR >= 4
         transpose_element(input, output, row, base + 3);
 #endif
-#if FMCW_UNROLL_FACTOR >= 8
+#if FMCW_UNROLL_FACTOR >= 5
         transpose_element(input, output, row, base + 4);
+#endif
+#if FMCW_UNROLL_FACTOR >= 6
         transpose_element(input, output, row, base + 5);
-        transpose_element(input, output, row, base + 6);
-        transpose_element(input, output, row, base + 7);
 #endif
     }
 }
@@ -152,15 +161,17 @@ void fmcw_accumulate_power_map(
 #if FMCW_UNROLL_FACTOR >= 2
         power_channel(cube_real, cube_imag, &sum, bins_per_channel, bin, base + 1);
 #endif
-#if FMCW_UNROLL_FACTOR >= 4
+#if FMCW_UNROLL_FACTOR >= 3
         power_channel(cube_real, cube_imag, &sum, bins_per_channel, bin, base + 2);
+#endif
+#if FMCW_UNROLL_FACTOR >= 4
         power_channel(cube_real, cube_imag, &sum, bins_per_channel, bin, base + 3);
 #endif
-#if FMCW_UNROLL_FACTOR >= 8
+#if FMCW_UNROLL_FACTOR >= 5
         power_channel(cube_real, cube_imag, &sum, bins_per_channel, bin, base + 4);
+#endif
+#if FMCW_UNROLL_FACTOR >= 6
         power_channel(cube_real, cube_imag, &sum, bins_per_channel, bin, base + 5);
-        power_channel(cube_real, cube_imag, &sum, bins_per_channel, bin, base + 6);
-        power_channel(cube_real, cube_imag, &sum, bins_per_channel, bin, base + 7);
 #endif
     }
     power[bin] = sum;
@@ -200,21 +211,21 @@ void fmcw_cfar_2d_map(
         cfar_neighbor(
             power, training_sum, training_cells, center, columns, delta_row, base + 1);
 #endif
-#if FMCW_UNROLL_FACTOR >= 4
+#if FMCW_UNROLL_FACTOR >= 3
         cfar_neighbor(
             power, training_sum, training_cells, center, columns, delta_row, base + 2);
+#endif
+#if FMCW_UNROLL_FACTOR >= 4
         cfar_neighbor(
             power, training_sum, training_cells, center, columns, delta_row, base + 3);
 #endif
-#if FMCW_UNROLL_FACTOR >= 8
+#if FMCW_UNROLL_FACTOR >= 5
         cfar_neighbor(
             power, training_sum, training_cells, center, columns, delta_row, base + 4);
+#endif
+#if FMCW_UNROLL_FACTOR >= 6
         cfar_neighbor(
             power, training_sum, training_cells, center, columns, delta_row, base + 5);
-        cfar_neighbor(
-            power, training_sum, training_cells, center, columns, delta_row, base + 6);
-        cfar_neighbor(
-            power, training_sum, training_cells, center, columns, delta_row, base + 7);
 #endif
     }
 }

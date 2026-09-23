@@ -112,6 +112,13 @@ def test_full_maco_space_preserves_per_tile_architecture():
     assert all(candidate.memory_banks == 4 and candidate.bank_kib == 8 for candidate in candidates)
 
 
+@pytest.mark.parametrize("factor", range(1, 7))
+def test_full_maco_accepts_each_unroll_factor(factor):
+    plan = {**FULL, "unroll": {name: factor for name in ("window", "fft", "transpose", "power", "cfar")}}
+    validate_plan(plan)
+    assert {candidate.unroll_factor for candidate in candidates_for(plan, Workload(max_pes=64))} == {factor}
+
+
 def test_live_agent_uses_full_maco_space(monkeypatch, tmp_path):
     import chia_maco.memory as memory
     monkeypatch.setattr(memory, "evaluate_memory", lambda *args: {"read_nj": 1, "write_nj": 1})

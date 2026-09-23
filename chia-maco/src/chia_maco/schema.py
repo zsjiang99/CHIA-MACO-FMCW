@@ -22,7 +22,7 @@ KERNEL_FUNCTIONS = {
 }
 ARRAY_SIZES = {(size, size) for size in range(2, 9)}
 VECTOR_MODES = {"none", "interleaved", "all"}
-UNROLL_FACTORS = set(range(1, 9))
+UNROLL_FACTORS = set(range(1, 7))
 
 
 @dataclass(frozen=True)
