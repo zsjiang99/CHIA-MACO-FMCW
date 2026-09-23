@@ -44,8 +44,7 @@ function Field({label,value}:{label:string;value:string|number}){return <label c
 function PipelinePanel({entry,workload,stage,setStage}:{entry:Entry;workload?:Workload;stage:number;setStage:(n:number)=>void}){
  const notes=['Hann coefficient multiply','Range / Doppler butterflies','Strided matrix exchange','RX magnitude accumulation','Guard / training-cell detection'];
  const shape=workload?`${workload.samples} samples/chirp × ${workload.chirps} chirps/frame × ${workload.rx} RX · ${workload.dtype==='float32'?'FP32 complex':workload.dtype}`:'Recorded FMCW configuration';
- const objective=workload?.objective==='energy'?'Energy':'Performance';
- return <section className="flow-panel pipeline-panel"><header><h2>Workload</h2><span>FMCW Radar</span></header><div className="workload-summary"><h3>FMCW Range–Doppler Detection</h3><p>{shape}</p><dl><dt>Objective</dt><dd>{objective}</dd></dl></div><nav aria-label="FMCW processing pipeline">{kernels.map((name,i)=><button key={name} className={stage===i?'active':''} onClick={()=>setStage(i)}><b>{i+1}</b><span><strong>{kernel(name)}</strong>{stage===i&&<small>{notes[i]}</small>}</span><em>{entry.mappings[i].mapping_ii==null?'—':`II ${entry.mappings[i].mapping_ii}`}</em></button>)}</nav></section>;
+ return <section className="flow-panel pipeline-panel"><header><h2>Workload</h2><span>FMCW Radar</span></header><div className="workload-summary"><h3>FMCW Range–Doppler Detection</h3><p>{shape}</p></div><div className="pipeline-label"><strong>Kernel Pipeline</strong></div><nav aria-label="FMCW processing pipeline">{kernels.map((name,i)=><button key={name} className={stage===i?'active':''} onClick={()=>setStage(i)}><b>{i+1}</b><span><strong>{kernel(name)}</strong>{stage===i&&<small>{notes[i]}</small>}</span><em>{entry.mappings[i].mapping_ii==null?'—':`II ${entry.mappings[i].mapping_ii}`}</em></button>)}</nav></section>;
 }
 
 function KernelPanel({entry,stage,setStage}:{entry:Entry;stage:number;setStage:(n:number)=>void}){
@@ -62,16 +61,18 @@ function KernelPanel({entry,stage,setStage}:{entry:Entry;stage:number;setStage:(
  };
  const kind=(instruction:string)=>{const value=opcode(instruction);return /load|store|addr/.test(value)?'memory':/br|ret|phi|cmp|sel/.test(value)?'control':'compute';};
  return <section className="flow-panel kernel-panel"><header><h2>Kernel</h2></header><div className="kernel-controls">
-  <div className="control-line"><label>Application</label><output>fmcw_mapping.c</output><button>Compiled ✓</button></div>
-  <div className="control-line"><label>Kernel</label><select aria-label="Radar processing stages" value={stage} onChange={e=>setStage(+e.target.value)}>{kernels.map((name,i)=><option key={name} value={i}>{kernel(name)}</option>)}</select><button>DFG loaded</button></div>
-  <div className="compiler-params"><span>Compiler</span><label>Unroll <output>×{m.candidate.unroll_factor}</output></label><label>Vectorization <output>{m.candidate.architecture_vectorization??'none'}</output></label></div>
-  <div className="graph-metrics"><span>Data-Flow Graph</span><label>RecMII <output>{m.recurrence_mii}</output></label><label>ResMII <output>{m.resource_mii}</output></label></div>
+  <div className="kernel-form">
+   <div className="kernel-row"><label>Application</label><output>fmcw_mapping.c</output><span className="kernel-status">Compiled ✓</span></div>
+   <div className="kernel-row"><label>Kernel</label><select aria-label="Radar processing stages" value={stage} onChange={e=>setStage(+e.target.value)}>{kernels.map((name,i)=><option key={name} value={i}>{kernel(name)}</option>)}</select><span className="kernel-status">Mapped ✓</span></div>
+   <div className="kernel-row compiler-row"><label>Compiler</label><div className="compiler-factors"><div><span>Unroll</span><strong>×{m.candidate.unroll_factor}</strong></div><div><abbr title="Vectorization">Vector</abbr><strong>{m.candidate.architecture_vectorization??'none'}</strong></div></div></div>
+  </div>
+  <div className="graph-metrics"><strong>Data-Flow Graph</strong><label><span>RecMII</span><output>{m.recurrence_mii}</output></label><label><span>ResMII</span><output>{m.resource_mii}</output></label><label><span>Achieved II</span><output>{m.mapping_ii??'—'}</output></label></div>
   <div className="dfg-canvas" ref={graph} onPointerDown={e=>{const el=graph.current;if(!el)return;drag.current={active:true,x:e.clientX,y:e.clientY,left:el.scrollLeft,top:el.scrollTop};el.setPointerCapture(e.pointerId);}} onPointerMove={e=>{const el=graph.current,d=drag.current;if(!el||!d.active)return;el.scrollLeft=d.left-(e.clientX-d.x);el.scrollTop=d.top-(e.clientY-d.y);}} onPointerUp={e=>{drag.current.active=false;graph.current?.releasePointerCapture(e.pointerId);}} onPointerCancel={()=>{drag.current.active=false;}}>{nodes.length?<svg style={{width,height}} viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="xMidYMid meet" role="img" aria-label={`${kernel(m.candidate.kernel)} data-flow graph`}>
    <defs><marker id="dfg-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0 7 3.5 0 7Z"/></marker></defs>
    {edges.map((e,i)=>{const a=position.get(e.source),b=position.get(e.target);if(!a||!b)return null;const dx=b.x-a.x,dy=b.y-a.y,length=Math.max(Math.hypot(dx,dy),1),ox=18*dx/length,oy=18*dy/length;return <line key={i} className="dfg-edge" x1={a.x+ox} y1={a.y+oy} x2={b.x-ox} y2={b.y-oy} markerEnd="url(#dfg-arrow)"/>;})}
    {nodes.map(n=>{const p=position.get(n.node)!;return <g className={`dfg-node ${kind(n.instruction)}`} key={n.node}><title>Node {n.node} · cycle {n.cycle}\n{n.instruction}</title><circle cx={p.x} cy={p.y} r="18"/><text x={p.x} y={p.y+3} textAnchor="middle">{opcode(n.instruction).slice(0,5)}</text></g>;})}
   </svg>:<span>DFG unavailable</span>}</div>
-  <footer className="dfg-summary"><span>{nodes.length} operations</span><span>{edges.length} SSA dependencies</span><span>II {m.mapping_ii??'—'}</span><span>{fmt(m.elapsed_seconds,2)} s</span></footer>
+  <footer className="dfg-summary"><span>{nodes.length} operations</span><span>{edges.length} dependencies</span><span>Mapping time {fmt(m.elapsed_seconds,2)} s</span></footer>
  </div></section>;
 }
 
@@ -126,11 +127,10 @@ function ImplementationPanel({entry,implementation,hardware,run}:{entry:Entry;im
 }
 
 function LoadingWorkbench({error}:{error?:string}){return <div className="flow-workspace loading-shell" aria-busy={!error}>
- <section className="flow-panel pipeline-panel"><header><h2>Workload</h2><span>FMCW Radar</span></header></section>
+ <div className="left-stack"><section className="flow-panel pipeline-panel"><header><h2>Workload</h2><span>FMCW Radar</span></header></section><section className="flow-panel kernel-panel"><header><h2>Kernel</h2></header></section></div>
  <section className="flow-panel architecture-panel"><header><h2>CGRA Architecture</h2></header><div className={'compact-loading '+(error?'load-error':'')}>{!error&&<i/>}<span>{error?'Measured design is temporarily unavailable.':'Loading latest measured design…'}</span></div></section>
  <section className="flow-panel architecture-modeling"><header><h2>CGRA Modeling</h2></header></section>
  <section className="flow-panel maco-panel"><header><h2>MACO Design Assistant</h2></header></section>
- <section className="flow-panel kernel-panel"><header><h2>Kernel</h2></header></section>
  <section className="flow-panel mapping-panel"><header><h2>Mapping</h2></header></section>
  <section className="implementation-stack"><section className="flow-panel verification-panel"><header><h2>Verification</h2></header></section><section className="flow-panel report-panel"><header><h2>Report Area/Power</h2></header></section><section className="flow-panel layout-panel"><header><h2>Layout</h2></header></section></section>
  </div>;}
@@ -153,11 +153,10 @@ function App(){
  function exportArch(){if(!entry)return;const content=JSON.stringify({design:entry.design,architecture:entry.architecture,memory:entry.memory},null,2),url=URL.createObjectURL(new Blob([content],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download='maco-selected-architecture.json';a.click();URL.revokeObjectURL(url);}
  return <main className="cgra-web"><header className="app-bar"><div><strong>MACO × CHIA</strong><span>FMCW compiler–CGRA exploration · {demo?'archived paper experiment':'new search / experimental tools'}</span></div><nav aria-label="Experiment mode"><a className={demo?'active':''} href="/?demo=1">Paper result</a><a className={!demo?'active':''} href="/?mode=live">Live exploration</a></nav></header>
   {!entry||!data?<LoadingWorkbench error={error}/>:<div className="flow-workspace">
-   <PipelinePanel entry={entry} workload={data.workload} stage={stage} setStage={setStage}/>
+   <div className="left-stack"><PipelinePanel entry={entry} workload={data.workload} stage={stage} setStage={setStage}/><KernelPanel entry={entry} stage={stage} setStage={setStage}/></div>
    <ArchitectureWorkbench entry={entry} selected={selectedPE} setSelected={setSelectedPE}/>
    <ArchitectureModeling entry={entry} selected={selectedPE}/>
    <MacoPanel entry={entry} workload={data.workload} prompt={prompt} setPrompt={setPrompt} objective={objective} setObjective={value=>{edited.current=true;setObjective(value);}} onRun={()=>void run()} busy={running||interpreting||jobs.starting} error={inputError||jobs.error} progress={progress} implementation={running&&data.run!==jobs.job?.id?null:data.implementation} onExport={exportArch} archived={demo}/>
-   <KernelPanel entry={entry} stage={stage} setStage={setStage}/>
    <MappingWorkbench entry={entry} run={data.run} stage={stage} cycle={cycle} setCycle={setCycle} selected={selectedPE} setSelected={setSelectedPE}/>
    {demo?<ArchivedEvidence data={data} entry={entry}/>:<ImplementationPanel entry={entry} implementation={data.implementation} hardware={hardware} run={data.run}/>}
   </div>}
