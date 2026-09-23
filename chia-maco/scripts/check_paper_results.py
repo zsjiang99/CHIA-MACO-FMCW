@@ -25,6 +25,7 @@ reference_winner = min(
 reference_best = reference_winner["frame_estimate"]["estimated_cycles"]
 agent_plan = agent["best_evaluated_plan"]
 agent_frame = agent_plan["frame_estimate"]
+rounds = agent["rounds"]
 cfar_share = 100 * (
     agent_frame["breakdown"]["fmcw_cfar_2d"]["estimated_cycles"]
     / agent_frame["estimated_cycles"]
@@ -48,6 +49,12 @@ checks = {
     "agent wall time (s)": (round(agent["elapsed_seconds"], 2), 210.43),
     "CFAR share (%)": (round(cfar_share, 1), 89.7),
     "strict CFAR scenes": (f"{passed_scenes}/{len(validation['cases'])}", "2/6"),
+    "agent rounds": (len(rounds), 3),
+    "initial judge choice": (rounds[0]["llm_choice"]["tile_size"], "6x6"),
+    "first measured winner": (rounds[0]["measured_winner"]["design"]["tile_size"], "4x4"),
+    "round one best estimate": (rounds[0]["measured_winner"]["frame_estimate"]["estimated_cycles"], 40_170_152),
+    "round two cached mappings": (rounds[1]["measured_winner"]["evaluations_so_far"], 10),
+    "round three best estimate": (rounds[2]["measured_winner"]["frame_estimate"]["estimated_cycles"], 39_154_344),
 }
 for label, (actual, expected) in checks.items():
     if actual != expected:
