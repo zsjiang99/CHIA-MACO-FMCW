@@ -51,6 +51,11 @@ def design_view(run: Path):
                         "metrics": mapper_metrics(event["frame_estimate"].get("estimated_cycles"), f"{run.name}/agent_trace.json#event-{event['sequence']}")})
     baseline = read_json(ROOT / "chia-maco/configs/baseline.json")
     archive = read_json(ARCHIVES["maco"])
+    reference_best = min((a["frame_estimate"]["estimated_cycles"] for a in archive["architectures"]
+                          if a["all_kernels_feasible"]))
+    result_path = run / "result.json"
+    result = read_json(result_path) if result_path.is_file() else None
+    native_validation = read_json(VALIDATION / "validation.json")
     implementation = read_json(run / "implementation.json") if (run / "implementation.json").is_file() else None
     if implementation and implementation.get("current"):
         phase = implementation["current"]
@@ -60,6 +65,12 @@ def design_view(run: Path):
     baseline["mappings"] = [r for r in archive["raw_results"] if r["candidate"]["rows"] == 4 and r["candidate"]["unroll_factor"] == 1]
     baseline["frame_estimate"] = next(a["scalar_compiler_baseline"] for a in archive["architectures"] if a["rows"] == 4)
     return {"run": run.name, "entries": entries, "baseline": baseline,
+            "reference": {"evaluations": archive["evaluations"], "elapsed_seconds": archive["elapsed_seconds"],
+                          "best_estimated_cycles": reference_best},
+            "run_summary": ({"evaluations": result["evaluations"], "llm_calls": result["llm_calls"],
+                             "elapsed_seconds": result["elapsed_seconds"]} if result else None),
+            "native_validation": {"passed": sum(c["status"] == "passed" for c in native_validation["cases"]),
+                                  "total": len(native_validation["cases"])},
             "implementation": implementation,
             "workload": workload.to_dict() if workload else Workload().to_dict(),
             "baseline_comparable": workload is None or (workload.samples, workload.chirps, workload.rx) == (256, 128, 4),

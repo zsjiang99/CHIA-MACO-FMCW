@@ -8,7 +8,7 @@
 
 ## 🧭 What this artifact explores
 
-MACO explores a bounded hardware/software design space for FMCW range–Doppler detection. Each candidate combines **one CGRA architecture shared by five kernels** with a compiler unroll choice for each kernel. The architecture space covers **2×2, 4×4, or 6×6 arrays** (subject to the PE limit), **uniform, checkerboard, or column multiplier placement**, and **1, 2, 4, or 8 scratchpad banks** of 4–64 KiB each. CHIA maps the kernels and returns tool feedback for the next agent round. The objective can be estimated cycles/frame or modeled scratchpad dynamic energy/frame.
+The **reported paper experiment** explores one CGRA architecture shared by five FMCW kernels: **2×2, 4×4, or 6×6 arrays**, with a legal compiler unroll factor for each kernel. Functional-unit placement and memory parameters remain fixed in that comparison. CHIA maps the kernels and returns tool feedback for the next agent round. Its objective is **estimated cycles/frame**. The GUI also exposes experimental FU-placement, scratchpad-banking and energy-model extensions; those are outside the paper's reported array/unroll results.
 
 The workload has **256 samples/chirp × 128 chirps/frame × 4 RX channels** of FP32 complex data. Its mapping views cover window, FFT (range and Doppler), transpose, power, and CA-CFAR.
 
@@ -131,7 +131,7 @@ Use a new output directory. The [reported seed-37 run](chia-maco/results/agent_q
 
 ## 💻 Browser demo
 
-The GUI can display archived evidence without a model. After evaluator setup, install the GUI requirements and build the frontend (Node 20.19+):
+The GUI opens directly on the frozen paper experiment without starting a model or mapper. After evaluator setup, install the GUI requirements and build the frontend (Node 20.19+):
 
 ```bash
 .venv/bin/python -m pip install -r gui/requirements.txt
@@ -139,7 +139,7 @@ The GUI can display archived evidence without a model. After evaluator setup, in
 bash gui/start.sh
 ```
 
-Open `http://127.0.0.1:8765`, or forward port 8765 over SSH. The server binds to loopback and has no authentication; do not expose it publicly. **Run MACO exploration** starts the agent/mapper loop. RTL, synthesis, and layout are separate experimental paths requiring `cgra/neura-flow:20260114`, not prerequisites for the paper.
+Open `http://127.0.0.1:8765/`, or forward port 8765 over SSH. The default **Paper result** tab shows the seed-37 agent trace, exhaustive reference, per-kernel mapping evidence and scope limits. Follow the [three-minute walkthrough](chia-maco/DEMO.txt). **Live exploration** (`/?mode=live`) can start a new agent/mapper loop with a configured model service. RTL, synthesis, and layout there are separate experimental paths requiring `cgra/neura-flow:20260114`, not prerequisites for the paper. The server binds to loopback and has no authentication; do not expose it publicly.
 
 ## 🔬 What the evidence supports
 

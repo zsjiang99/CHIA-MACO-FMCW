@@ -11,7 +11,7 @@
 \begin{document}
 \maketitle
 \begin{abstract}
-We present a CHIA workflow for compiler--architecture exploration of a frequency-modulated continuous-wave (FMCW) radar pipeline on a coarse-grained reconfigurable array (CGRA). Four original MACO agent roles, driven by Qwen3.8-27B, propose and rank bounded array/unroll configurations and learn from real mapper feedback. In one three-round run, 12 model calls and 18 unique mappings find the same 39.15-million-cycle estimate as a 36-mapping exhaustive reference, but require more wall time. The reference identifies $2\times2$ and $4\times4$ arrays on the cycle/tile frontier; $4\times4$ is 4.86\% below its scalar estimate, while a larger $6\times6$ array is worse. The artifact includes an executable C workload, model traces, mapper logs and a live GUI. Results use an analytical model built from mapper initiation intervals, not cycle-accurate simulation or physical-design measurements.
+We present a CHIA workflow for compiler--architecture exploration of a frequency-modulated continuous-wave (FMCW) radar pipeline on a coarse-grained reconfigurable array (CGRA). Four original MACO agent roles, driven by Qwen3.8-27B, propose and rank bounded array/unroll configurations using real mapper feedback. In one three-round run, 12 model calls and 18 unique mappings find the same 39.15-million-cycle estimate as a 36-mapping exhaustive reference, but require more wall time. Tool feedback reverses the agent's initial preference for a larger array; CA-CFAR accounts for 89.7\% of the final modeled cycles. The artifact includes the C workload, agent/model traces, mapper logs, and a local GUI. Cycle results are analytical estimates from mapper initiation intervals; end-to-end CGRA correctness and physical performance remain unverified.
 \end{abstract}
 
 \section{Introduction}
@@ -55,6 +55,7 @@ A candidate specifies the kernel, array dimensions, source unroll factor, and fi
 \end{figure}
 
 Figure~\ref{fig:loop} summarizes the workflow. CHIA schedules the evaluator through a declared mapper resource. Each invocation has a unique container name and a 60-second timeout. A failed or timed-out evaluation returns a structured failure rather than a favorable cost. These interfaces allow the outer search policy to change without changing the tool or result contract.
+The reusable CHIA node accepts a validated kernel/array/unroll candidate and returns a structured mapping record. A separate frame-cost reducer combines five such records. This boundary lets enumeration and the MACO policy share exactly the same compiler, mapper, failure handling, and aggregation without passing reference-search results to the agents.
 
 \subsection{MACO agent policy}
 The original MACO Co-designer, Fixer, Coarse Judge and Fine Judge classes share a local Qwen3.8-27B raw model, served with NF4 double quantization. An adapter supplies the transport and bounded schema; no HARP-trained policy is used. Each of three rounds proposes two full-frame plans, repairs invalid settings, ranks the shortlist and predicts a winner. Every shortlisted plan that fits the 30-mapping budget is measured through CHIA. Only this run's measurements are cached and fed back; the exhaustive archive is never provided to the model.
@@ -110,9 +111,24 @@ The estimate excludes loop setup, FFT bit reversal, memory stalls, host/CGRA tra
 The archived CHIA run completed all 36 mappings successfully in 38.71 seconds. Table~\ref{tab:results} compares the selected compiler settings with the scalar setting on the same array. Percentages describe reductions in the analytical estimate, not measured application speedups.
 
 \subsection{Agent-guided run}
-The GUI-launched seed-37 run completed three rounds, 12 model calls and 18 successful unique mappings in 210.43 seconds, with 29,657 prompt and 1,700 completion tokens. Its measured best improved from 40,170,152 cycles in round one to 39,154,344 in round three, using $4\times4$ and unroll factors $[4,2,4,4,1]$. This is an actually proposed and evaluated full-frame plan, not a combination assembled after search. Round two repeated existing plans; the within-run cache avoided redundant mappings.
+The GUI-launched seed-37 run completed three rounds, 12 model calls and 18 successful unique mappings in 210.43 seconds, with 29,657 prompt and 1,700 completion tokens. Table~\ref{tab:trajectory} reconstructs the feedback sequence from the archived trace. In round one, the Fine Judge preferred $6\times6$, but measured frame costs selected the other shortlisted plan, $4\times4$. Round two repeated the two plans and reused cached mappings. A new $4\times4$ compiler setting in round three attained 39,154,344 cycles using unroll factors $[4,2,4,4,1]$. This is an actually proposed and evaluated full-frame plan, not a combination assembled after search.
 
-The agent matched the exhaustive reference's best estimate with half as many unique mappings, but was slower overall because of model-call overhead. These are descriptive results from one seed, not a matched-budget efficiency claim. An earlier integration trial stopped on truncated judge JSON at the service's 384-token limit; a stricter rationale-length contract resolved this in the reported run. The failed trace is retained, not converted into a successful result.
+\begin{table}[t]
+\caption{Archived agent/tool feedback; cost is the best measured plan after each round. Mapper count is cumulative.}
+\label{tab:trajectory}
+\centering\small
+\begin{tabular}{lcccc}
+\toprule
+Round & Judge choice & Measured best & Maps & M cycles\\
+\midrule
+1 & $6\times6$ & $4\times4$ & 10 & 40.170\\
+2 & $4\times4$ & $4\times4$ & 10 & 40.170\\
+3 & $4\times4$ & $4\times4$ & 18 & 39.154\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The agent matched the exhaustive reference's best estimate with half as many unique mappings, but was slower overall because of model-call overhead. The trace shows why tool feedback matters for this run, not that the agent policy outperforms a budget-matched random or heuristic search. An earlier integration trial stopped on truncated judge JSON at the service's 384-token limit; a stricter rationale-length contract resolved this in the reported run. The failed trace is retained.
 
 \begin{table}[t]
 \caption{Array comparison: estimated millions of cycles/frame}
@@ -186,7 +202,7 @@ The tested setup uses Python 3.10, CHIA 1.0.1 at commit \texttt{16c35e9}, and LL
 The reference archive contains parsed records; the agent archive additionally includes raw mapper logs and model traces. The artifact is available at \url{https://github.com/zsjiang99/CHIA-MACO-FMCW}. Upstream MACO modules are fetched at pinned commit \texttt{31c02ce} and are not redistributed.
 
 \section{Limitations and Next Steps}
-The original proposal targeted 16-bit inputs, simulation, synthesis-calibrated PPA, and at least 20 frames/s. The current experiment uses floating-point C, six software-validation scenes, heuristic mapping, and a steady-state estimate. It does not establish fixed-point accuracy or those system-level targets.
+The original proposal targeted 16-bit inputs, simulation, synthesis-calibrated PPA, and at least 20 frames/s. The current experiment uses floating-point C, six software-validation scenes, heuristic mapping, and a steady-state estimate. Even under this optimistic model, 20 frames/s would require at least 783 MHz for the 39.15-million-cycle plan; no clock frequency or memory overhead has been measured. Fixed-point accuracy and system-level targets remain unestablished.
 
 An export audit found lost floating-point opcodes, misclassified squares, and a comparison-predicate mismatch. We recover these from LLVM evidence and correct the wrapper's HardFloat format parameters. Translated Verilog tests pass 1,568 bit-exact FP32 results and nine unsigned comparisons at both FU and isolated-tile levels, including control loading and backpressure. These programs do not execute the mapper schedule. Operand translation, constant/address loading, and whole-frame execution remain unfinished. Component tests therefore do not certify candidate hardware correctness.
 
