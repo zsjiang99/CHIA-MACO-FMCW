@@ -1,12 +1,12 @@
-# MACO × CHIA: FMCW CGRA Co-Design
+# <img src="assets/maco-mark.svg" width="38" height="38" alt="MACO radar and CGRA icon"> MACO × CHIA
 
-**A multi-agent design loop that uses compiler feedback to explore a CGRA for FMCW radar.**
+**Agent-guided CGRA co-design for FMCW radar.**
 
 [Paper (PDF)](paper/paper.pdf) · [Reproduce](docs/REPRODUCE.md) · [Results and logs](chia-maco/results/README.md) · [Browser demo](docs/REPRODUCE.md#browser-demo)
 
 ## 🧭 Overview
 
-MACO proposes CGRA designs; CHIA evaluates them with compiler tools and returns evidence for the next round. This release applies that loop to an FMCW range–Doppler pipeline: **256 samples/chirp × 128 chirps/frame × 4 RX channels**, with FP32 complex data. Five C kernel views cover windowing, FFT (used for both range and Doppler), transpose, power, and CA-CFAR.
+The FMCW range–Doppler workload uses **256 samples/chirp × 128 chirps/frame × 4 RX channels** of FP32 complex data. Its five C mapping views are window, FFT (range and Doppler), transpose, power, and CA-CFAR.
 
 ```text
 ┌──────────────┐   ┌──────────────┐   ┌──────────────────┐   ┌──────────────────┐
@@ -17,16 +17,14 @@ MACO proposes CGRA designs; CHIA evaluates them with compiler tools and returns 
        ↑                                                               │ shortlist
        │                                                               ▼
        │                 ┌─────────────────────────────────────────────────────────┐
-       └── feedback ──── │ CHIA → LLVM 12 → CGRA-Mapper → frame-cycle model       │
-          (II, cycles)   │ Evaluate every shortlisted array/unroll plan           │
+       └── II + cycles ──┤ CHIA → LLVM 12 → CGRA-Mapper → frame-cycle model        │
+                         │ Map shortlisted plans within the evaluation budget     │
                          └─────────────────────────────────────────────────────────┘
 ```
 
-Implementation: [MACO agent loop](chia-maco/src/chia_maco/agent_search.py) · [CHIA evaluator](chia-maco/src/chia_maco/nodes.py) · [CGRA-Mapper adapter](chia-maco/src/chia_maco/mapper.py) · [frame model](chia-maco/src/chia_maco/report.py). Original agent sources come from a pinned [upstream MACO](https://github.com/coredac/MACO) checkout.
-
 ## 🚀 Quick start
 
-Check the native FMCW workload and **archived** paper results without Docker or an LLM:
+Check the native workload and archived paper results; no Docker or LLM is needed:
 
 ```bash
 git clone https://github.com/zsjiang99/CHIA-MACO-FMCW.git
@@ -34,7 +32,7 @@ cd CHIA-MACO-FMCW
 make -C chia-maco artifact-check
 ```
 
-For a fresh mapper search, a new agent run, or the browser demo, follow the [reproduction guide](docs/REPRODUCE.md). A new LLM run may propose different candidates; the reported run and raw evidence remain in the repository.
+For fresh mapper/agent runs or the browser demo, follow the [reproduction guide](docs/REPRODUCE.md).
 
 ## 📊 Result
 
@@ -43,20 +41,24 @@ For a fresh mapper search, a new agent run, or the browser demo, follow the [rep
 | Exhaustive reference | 36 | 39,154,344 | 38.71 s |
 | MACO agents (12 model calls) | 18 | 39,154,344 | 210.43 s |
 
-The agents reached the reference's best frame-cycle estimate with **half as many mapper runs**, but took **longer overall**. Frame cycles are calculated from mapper initiation intervals, not measured throughput. The [results index](chia-maco/results/README.md) links the underlying candidates, mapper logs, model trace, and validation records.
+MACO used fewer mapper runs but more wall time. Frame cycles are estimated from mapper initiation intervals, not measured throughput. [Inspect the raw evidence.](chia-maco/results/README.md)
 
 ## 📂 Repository
 
 | Path | Purpose |
 | --- | --- |
-| [`chia-maco/src/chia_maco/`](chia-maco/src/chia_maco/) | Agent loop, CHIA evaluation node, mapper adapter, and frame model |
+| [`chia-maco/src/chia_maco/`](chia-maco/src/chia_maco/) | [Agent loop](chia-maco/src/chia_maco/agent_search.py), [CHIA evaluator](chia-maco/src/chia_maco/nodes.py), [mapper adapter](chia-maco/src/chia_maco/mapper.py), [frame model](chia-maco/src/chia_maco/report.py) |
 | [`chia-maco/workload/`](chia-maco/workload/) | FMCW C reference and compiler-mapping views |
 | [`chia-maco/results/`](chia-maco/results/) | Archived searches, raw tool evidence, and validation |
 | [`gui/`](gui/) | Local browser demo and optional hardware-flow controls |
 | [`paper/`](paper/) | Four-page IEEE-style paper and LaTeX source |
 
-## 🔎 Scope and attribution
+## 🔬 Evidence boundary
 
-The paper's search varies **array size and five unroll factors**. FU placement, memory banking, RTL, and layout are experimental GUI extensions, not part of the reported search. Mapper success does not certify candidate-hardware correctness; the native smoke test is separate, and exact NumPy/native CA-CFAR mask agreement holds in only **2 of 6** scenes. No measured FPS, full-CGRA area, or total energy claim follows from these results. See the [implementation status](chia-maco/IMPLEMENTATION_STATUS.md).
+The paper's search varies **array size and five unroll factors**. FU placement, memory banking, RTL, and layout are experimental GUI extensions, not part of the reported search.
 
-New integration code is BSD-3-Clause licensed. Upstream MACO and other dependencies retain their own terms; see the [third-party notices](gui/THIRD_PARTY.md). This release is an FMCW-specific CHIA loop example, not a claim of arbitrary-workload support.
+Mapper success does not certify candidate-hardware correctness. The native smoke test is separate, and exact NumPy/native CA-CFAR mask agreement holds in only **2 of 6** scenes. These results do not establish measured FPS, full-CGRA area, or total energy. See the [implementation status](chia-maco/IMPLEMENTATION_STATUS.md).
+
+## 📄 License and credit
+
+Zesong Jiang, Cheng Tan, and Jeff Zhang · Arizona State University. New integration code is BSD-3-Clause licensed. Original MACO agents are fetched from a pinned [upstream checkout](https://github.com/coredac/MACO); other dependencies retain their own terms. See the [third-party notices](gui/THIRD_PARTY.md).
