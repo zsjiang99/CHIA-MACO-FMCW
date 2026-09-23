@@ -149,6 +149,7 @@ function App(){
  useEffect(()=>{let active=true;const poll=()=>api<RadarData>(demo?'/radar/demo':'/radar/design').then(async d=>{if(!active)return;setError('');if(!d.entries?.length){if(!localStorage.getItem(cacheKey)){const fallback=await api<RadarData>('/radar/demo');if(active)setData(fallback);}return;}setData(d);localStorage.setItem(cacheKey,JSON.stringify(d));if(!edited.current&&d.workload?.description){setPromptState(displayPrompt(d.workload));setObjective(d.workload.objective);}}).catch(e=>active&&setError(String(e)));poll();const timer=demo?undefined:setInterval(poll,2000);return()=>{active=false;clearInterval(timer);};},[cacheKey,demo]);
  const entries=data?.entries??[],index=entries.length?bestIndex(entries,data?.workload?.objective):0,entry=entries[index];
  const running=jobs.job?.state==='running',progress=running?jobs.job?.progress:data?.progress;
+ const selectedImplementation=running&&data?.run!==jobs.job?.id?null:data?.implementation?.design_id===entry?.id?data.implementation:null;
  const setStage=(value:number)=>{setStageState(value);setCycle(0);setSelectedPE(0);};
  const setPrompt=(value:string)=>{edited.current=true;setPromptState(value);};
  async function run(){if(running||interpreting||!prompt.trim())return;setInterpreting(true);setInputError('');try{const result=await api<Interpretation>('/workload/interpret',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({description:prompt})});if(result.unsupported.length){setInputError(result.unsupported.join(' '));return;}const workload={...result.workload,objective};await jobs.startSpec({workload,interpretation:{...result,workload},rounds:3,method});}catch(e){setInputError(String(e));}finally{setInterpreting(false);}}
@@ -158,9 +159,9 @@ function App(){
    <div className="left-stack"><PipelinePanel entry={entry} workload={data.workload} stage={stage} setStage={setStage}/><KernelPanel entry={entry} stage={stage} setStage={setStage}/></div>
    <ArchitectureWorkbench entry={entry} selected={selectedPE} setSelected={setSelectedPE}/>
    <ArchitectureModeling entry={entry} selected={selectedPE}/>
-   <MacoPanel entry={entry} workload={data.workload} prompt={prompt} setPrompt={setPrompt} method={method} setMethod={setMethod} objective={objective} setObjective={value=>{edited.current=true;setObjective(value);}} onRun={()=>void run()} busy={running||interpreting||jobs.starting} error={inputError||jobs.error} progress={progress} implementation={running&&data.run!==jobs.job?.id?null:data.implementation} onExport={exportArch} archived={demo}/>
+   <MacoPanel entry={entry} workload={data.workload} prompt={prompt} setPrompt={setPrompt} method={method} setMethod={setMethod} objective={objective} setObjective={value=>{edited.current=true;setObjective(value);}} onRun={()=>void run()} busy={running||interpreting||jobs.starting} error={inputError||jobs.error} progress={progress} implementation={selectedImplementation} onExport={exportArch} archived={demo}/>
    <MappingWorkbench entry={entry} run={data.run} stage={stage} cycle={cycle} setCycle={setCycle} selected={selectedPE} setSelected={setSelectedPE}/>
-   {demo?<ArchivedEvidence data={data} entry={entry}/>:<ImplementationPanel entry={entry} implementation={data.implementation} hardware={hardware} run={data.run}/>}
+   {demo?<ArchivedEvidence data={data} entry={entry}/>:<ImplementationPanel entry={entry} implementation={selectedImplementation} hardware={hardware} run={data.run}/>}
   </div>}
  </main>;
 }
