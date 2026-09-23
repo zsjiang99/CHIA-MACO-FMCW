@@ -12,6 +12,19 @@ or model service.
 | CA-CFAR contributes 89.7% of selected frame estimate | `best_evaluated_plan.frame_estimate.breakdown.fmcw_cfar_2d` in the agent result above |
 | Exact NumPy/native CFAR masks agree in 2 of 6 scenes | [`validation_v1/validation.json`](validation_v1/validation.json): `cases[].status` and `detection_mismatches` |
 
+The paper's agent/tool feedback table is reconstructed from
+[`agent_qwen38_27b_seed37_v3/result.json`](agent_qwen38_27b_seed37_v3/result.json):
+
+| Round | Fine Judge choice | Tool-selected round winner | Cumulative unique mappings | Best estimated cycles/frame |
+| --- | --- | --- | ---: | ---: |
+| 1 | 6×6 | 4×4 | 10 | 40,170,152 |
+| 2 | 4×4 | 4×4 | 10 | 40,170,152 |
+| 3 | 4×4 | 4×4 | 18 | 39,154,344 |
+
+The round-one judge ranking was overturned by mapper-derived frame costs.
+Round two reused the same candidates. This single trajectory explains the
+feedback behavior; it does not establish a speedup over a budget-matched search.
+
 The reference archive stores parsed mapping records; the reported agent
 archive also retains raw logs and model messages. [`reference_4x4.json`](reference_4x4.json)
 is a five-kernel mapper smoke, not the 36-point result. The `agent_qwen38_27b_seed37_v1/`
