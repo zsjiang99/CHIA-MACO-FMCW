@@ -1,5 +1,7 @@
 # MACO submission text
 
+Paper authors: Zesong Jiang, Cheng Tan, Jeff Zhang (Arizona State University).
+
 ## Summary of project contributions
 
 - We built a CHIA-managed MACO agent loop that evaluates compiler and CGRA choices for five FMCW radar hotspots using real LLVM/CGRA-Mapper feedback.
