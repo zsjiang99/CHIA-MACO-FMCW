@@ -8,7 +8,7 @@ import {bestIndex,cycles,kernels} from './radar';
 import './radar.css';
 
 type Interpretation={workload:Workload;unsupported:string[]};
-const defaultPrompt='FMCW range–Doppler detection, 256 samples per chirp, 128 chirps per frame, 4 RX channels, FP32 complex. Minimize estimated energy/frame with at most 16 PEs; search memory banks and functional-unit placement.';
+const defaultPrompt='FMCW range–Doppler detection, 256 samples per chirp, 128 chirps per frame, 4 RX channels, FP32 complex. Minimize estimated cycles/frame; compare 2×2, 4×4, and 6×6 CGRAs and legal per-kernel unroll factors.';
 const displayPrompt=(workload:Workload)=>workload.objective==='spm_energy'
  ? workload.description.replace(/Minimize SRAM(?: dynamic)? energy(?: per frame|\/frame)?/i,'Minimize estimated energy/frame')
  : workload.description;
@@ -76,7 +76,7 @@ function KernelPanel({entry,stage,setStage}:{entry:Entry;stage:number;setStage:(
  </div></section>;
 }
 
-function MacoPanel({entry,workload,prompt,setPrompt,onRun,busy,error,progress,implementation,onExport}:{entry:Entry;workload?:Workload;prompt:string;setPrompt:(s:string)=>void;onRun:()=>void;busy:boolean;error:string;progress?:Progress;implementation?:Implementation|null;onExport:()=>void}){
+function MacoPanel({entry,workload,prompt,setPrompt,onRun,busy,error,progress,implementation,onExport,archived}:{entry:Entry;workload?:Workload;prompt:string;setPrompt:(s:string)=>void;onRun:()=>void;busy:boolean;error:string;progress?:Progress;implementation?:Implementation|null;onExport:()=>void;archived:boolean}){
  const mem=entry.memory,events=[...(progress?.events??[])].reverse();
  const energyGoal=workload?.objective==='spm_energy',primaryLabel=energyGoal?'Estimated energy/frame':'Frame estimate',primaryValue=energyGoal?(mem?.dynamic_energy_uj==null?'—':fmt(mem.dynamic_energy_uj,2)):(cycles(entry)==null?'—':fmt(cycles(entry)!/1e6,2)),primaryUnit=energyGoal?'µJ/frame':'M cycles';
  const steps=[['explore','Explore'],['verify','Verify RTL'],['synth','Synthesize'],['layout','Layout']] as const;
@@ -84,11 +84,20 @@ function MacoPanel({entry,workload,prompt,setPrompt,onRun,busy,error,progress,im
  const position=implementation?.state==='passed'?4:implementation?.current==='layout'?3:implementation?.current==='synth'?2:implementation?.current==='verify'?1:0;
  const percentage=implementation?position*25:busy?Math.min(25,25*(progress?.completed??0)/(progress?.total??30)):events.some(e=>e.kind==='run_finished')?25:0;
  const current=implementation?.current?steps.find(([key])=>key===implementation.current)?.[1]:busy?'Explore':implementation?.state==='passed'?'Flow complete':implementation?.state==='failed'?'Flow stopped':'Ready to explore';
- return <section className="flow-panel maco-panel"><header><h2>MACO Design Assistant</h2><i className={busy?'busy':''}/></header>
-  <form className="design-intent" onSubmit={e=>{e.preventDefault();onRun();}}><h3>Design Intent</h3><label htmlFor="workload-description">Describe your workload and design requirements</label><textarea id="workload-description" value={prompt} onChange={e=>setPrompt(e.target.value)}/><button className="run-button" disabled={busy||!prompt.trim()}>{busy?'Exploration running…':'Run MACO exploration'}</button>{error&&<p className="inline-error">{error}</p>}</form>
-  <section className="design-flow"><h3>Design Flow</h3><div className="flow-status" aria-label="Automated design flow">{steps.map(([key,label],i)=><div key={key} className={`flow-step ${flowState(key)}`}><b>{flowState(key)==='passed'?'✓':flowState(key)==='failed'?'×':i+1}</b><span>{label}</span></div>)}</div><div className="flow-progress"><progress aria-label="End-to-end flow progress" value={percentage} max="100"/><span>{current}</span></div>{implementation?.detail&&<p className="flow-detail">{implementation.detail.stage}</p>}{implementation?.state==='failed'&&<p className="flow-error">{implementation.stages[implementation.current as 'verify'|'synth'|'layout']?.error}</p>}</section>
-  <section className="selected-design"><h3>Best Measured Design</h3><div className="primary-result"><span>{primaryLabel}</span><strong>{primaryValue}<small>{primaryUnit}</small></strong></div><dl><div><dt>Array</dt><dd>{entry.design.tile_size}</dd></div><div><dt>Frame estimate</dt><dd>{cycles(entry)==null?'—':`${fmt(cycles(entry)!/1e6,2)} M cycles`}</dd></div><div><dt>FU placement</dt><dd>{entry.architecture?.fu_profile??'generic'}</dd></div><div><dt>Memory</dt><dd>{entry.architecture?`${entry.architecture.memory.banks} × ${entry.architecture.memory.bank_kib} KiB`:'—'}</dd></div></dl><button className="secondary-button" onClick={onExport}>Export architecture</button></section>
-  <section className="agent-trace"><h3>Agent Trace</h3><div className="trace-events">{events.map(e=><div className="trace-event" key={e.sequence}><span>{String(e.sequence).padStart(2,'0')}</span><p>{eventText(e)}</p></div>)}</div></section>
+ return <section className={`flow-panel maco-panel ${archived?'archived':''}`}><header><h2>MACO Agent Decisions</h2><i className={busy?'busy':''}/></header>
+  {archived?<section className="design-intent archive-intent"><h3>Paper experiment · seed 37</h3><p>One CGRA shared across five FMCW kernels. The agents propose array size and compiler unroll; CHIA returns actual mapper feedback.</p><a href="/?mode=live">Configure a new search ↗</a></section>:<form className="design-intent" onSubmit={e=>{e.preventDefault();onRun();}}><h3>Design Intent</h3><label htmlFor="workload-description">Describe your workload and design requirements</label><textarea id="workload-description" value={prompt} onChange={e=>setPrompt(e.target.value)}/><button className="run-button" disabled={busy||!prompt.trim()}>{busy?'Exploration running…':'Run MACO exploration'}</button>{error&&<p className="inline-error">{error}</p>}</form>}
+  {archived?<section className="design-flow round-decisions"><h3>Feedback changed the choice</h3>{progress?.rounds?.map(round=><div className="round-decision" key={round.iteration}><b>R{round.iteration}</b><span>Judge: {round.llm_choice.tile_size}<br/>Tool best: {round.measured_winner?.design.tile_size??'—'}</span><strong>{round.measured_winner?.frame_estimate.estimated_cycles==null?'—':`${fmt(round.measured_winner.frame_estimate.estimated_cycles/1e6,2)}M`}</strong></div>)}</section>:<section className="design-flow"><h3>Design Flow</h3><div className="flow-status" aria-label="Automated design flow">{steps.map(([key,label],i)=><div key={key} className={`flow-step ${flowState(key)}`}><b>{flowState(key)==='passed'?'✓':flowState(key)==='failed'?'×':i+1}</b><span>{label}</span></div>)}</div><div className="flow-progress"><progress aria-label="End-to-end flow progress" value={percentage} max="100"/><span>{current}</span></div>{implementation?.detail&&<p className="flow-detail">{implementation.detail.stage}</p>}{implementation?.state==='failed'&&<p className="flow-error">{implementation.stages[implementation.current as 'verify'|'synth'|'layout']?.error}</p>}</section>}
+  <section className="selected-design"><h3>Best Mapper-Evaluated Plan</h3><div className="primary-result"><span>{primaryLabel}</span><strong>{primaryValue}<small>{primaryUnit}</small></strong></div><dl><div><dt>Array</dt><dd>{entry.design.tile_size}</dd></div><div><dt>Frame estimate</dt><dd>{cycles(entry)==null?'—':`${fmt(cycles(entry)!/1e6,2)} M cycles`}</dd></div>{archived?<><div><dt>Kernel unroll</dt><dd>[{entry.design.unroll_factors.join(', ')}]</dd></div><div><dt>Hardware status</dt><dd>Not validated</dd></div></>:<><div><dt>FU placement</dt><dd>{entry.architecture?.fu_profile??'generic'}</dd></div><div><dt>Memory</dt><dd>{entry.architecture?`${entry.architecture.memory.banks} × ${entry.architecture.memory.bank_kib} KiB`:'—'}</dd></div></>}</dl>{!archived&&<button className="secondary-button" onClick={onExport}>Export architecture</button>}</section>
+  <section className="agent-trace"><h3>Tool and agent audit trail</h3><div className="trace-events">{events.map(e=><div className="trace-event" key={e.sequence}><span>{String(e.sequence).padStart(2,'0')}</span><p>{eventText(e)}</p></div>)}</div></section>
+ </section>;
+}
+
+function ArchivedEvidence({data,entry}:{data:RadarData;entry:Entry}){
+ const selected=entry.frame_estimate.breakdown,cfar=selected.fmcw_cfar_2d,share=cfar&&cycles(entry)?100*cfar.estimated_cycles/cycles(entry)!:null;
+ return <section className="implementation-stack archive-evidence">
+  <section className="flow-panel verification-panel"><header><h2>Agent vs. Reference</h2></header><div className="evidence-content"><div className="evidence-pair"><span>Agent · {data.run_summary?.evaluations??'—'} mappings</span><strong>{fmt((cycles(entry)??0)/1e6,2)}M cycles</strong></div><div className="evidence-pair"><span>Full reference · {data.reference?.evaluations??'—'} mappings</span><strong>{data.reference?`${fmt(data.reference.best_estimated_cycles/1e6,2)}M cycles`:'—'}</strong></div><p>Same best estimate. Agent {fmt(data.run_summary?.elapsed_seconds,1)} s; reference {fmt(data.reference?.elapsed_seconds,1)} s. Single seed; no matched-budget search claim.</p></div></section>
+  <section className="flow-panel report-panel"><header><h2>What the cost counts</h2></header><div className="evidence-content"><div className="evidence-pair"><span>CA-CFAR share</span><strong>{fmt(share,1)}%</strong></div><p>Sum of scheduled loop groups × mapper II. Memory stalls, transfer and clock are unmeasured.</p></div></section>
+  <section className="flow-panel layout-panel"><header><h2>Evidence &amp; limits</h2></header><div className="evidence-content"><div className="evidence-badge">ARCHIVED RUN · MAPPER ESTIMATE</div><p>Native C vs NumPy: exact detection masks agree in {data.native_validation?.passed??'—'}/{data.native_validation?.total??'—'} scenes.</p><p>Candidate RTL and full-frame CGRA execution are not validated. No measured FPS, full-chip area or energy.</p><a href="/api/radar/demo/trace" target="_blank" rel="noreferrer">Download agent trace ↗</a><a href="/api/download/maco" target="_blank" rel="noreferrer">Download exhaustive reference ↗</a></div></section>
  </section>;
 }
 
@@ -124,7 +133,7 @@ function LoadingWorkbench({error}:{error?:string}){return <div className="flow-w
  </div>;}
 
 function App(){
- const demo=new URLSearchParams(location.search).get('demo')==='1';
+ const params=new URLSearchParams(location.search),demo=params.get('mode')!=='live'&&params.get('demo')!=='0';
  const cacheKey=demo?'maco-radar-demo':'maco-radar-design';
  const[data,setData]=useState<RadarData|null>(()=>{try{return JSON.parse(localStorage.getItem(cacheKey)??'null');}catch{return null;}}),[error,setError]=useState('');
  const[stage,setStageState]=useState(0),[cycle,setCycle]=useState(0),[selectedPE,setSelectedPE]=useState(0);
@@ -139,15 +148,15 @@ function App(){
  const setPrompt=(value:string)=>{edited.current=true;setPromptState(value);};
  async function run(){if(running||interpreting||!prompt.trim())return;setInterpreting(true);setInputError('');try{const result=await api<Interpretation>('/workload/interpret',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({description:prompt})});if(result.unsupported.length){setInputError(result.unsupported.join(' '));return;}await jobs.startSpec({workload:result.workload,interpretation:result,rounds:3});}catch(e){setInputError(String(e));}finally{setInterpreting(false);}}
  function exportArch(){if(!entry)return;const content=JSON.stringify({design:entry.design,architecture:entry.architecture,memory:entry.memory},null,2),url=URL.createObjectURL(new Blob([content],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download='maco-selected-architecture.json';a.click();URL.revokeObjectURL(url);}
- return <main className="cgra-web"><header className="app-bar"><strong>MACO: An Agentic End-to-End Framework for FMCW CGRA Exploration, Compilation, Synthesis and Evaluation</strong></header>
+ return <main className="cgra-web"><header className="app-bar"><div><strong>MACO × CHIA</strong><span>FMCW compiler–CGRA exploration · {demo?'archived paper experiment':'new search / experimental tools'}</span></div><nav aria-label="Experiment mode"><a className={demo?'active':''} href="/?demo=1">Paper result</a><a className={!demo?'active':''} href="/?mode=live">Live exploration</a></nav></header>
   {!entry||!data?<LoadingWorkbench error={error}/>:<div className="flow-workspace">
    <PipelinePanel entry={entry} workload={data.workload} stage={stage} setStage={setStage}/>
    <ArchitectureWorkbench entry={entry} selected={selectedPE} setSelected={setSelectedPE}/>
    <ArchitectureModeling entry={entry} selected={selectedPE}/>
-   <MacoPanel entry={entry} workload={data.workload} prompt={prompt} setPrompt={setPrompt} onRun={()=>void run()} busy={running||interpreting||jobs.starting} error={inputError||jobs.error} progress={progress} implementation={running&&data.run!==jobs.job?.id?null:data.implementation} onExport={exportArch}/>
+   <MacoPanel entry={entry} workload={data.workload} prompt={prompt} setPrompt={setPrompt} onRun={()=>void run()} busy={running||interpreting||jobs.starting} error={inputError||jobs.error} progress={progress} implementation={running&&data.run!==jobs.job?.id?null:data.implementation} onExport={exportArch} archived={demo}/>
    <KernelPanel entry={entry} stage={stage} setStage={setStage}/>
    <MappingWorkbench entry={entry} run={data.run} stage={stage} cycle={cycle} setCycle={setCycle} selected={selectedPE} setSelected={setSelectedPE}/>
-   <ImplementationPanel entry={entry} implementation={data.implementation} hardware={hardware} run={data.run}/>
+   {demo?<ArchivedEvidence data={data} entry={entry}/>:<ImplementationPanel entry={entry} implementation={data.implementation} hardware={hardware} run={data.run}/>}
   </div>}
  </main>;
 }

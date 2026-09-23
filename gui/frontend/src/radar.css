@@ -120,3 +120,27 @@ body{margin:0;overflow:hidden;background:#171817;color:#e7e9e7}
 .report-panel>.hardware-progress{margin-top:auto}
 .report-panel>.panel-action{margin-top:auto}
 @keyframes loading-spin{to{transform:rotate(360deg)}}
+
+/* The paper archive is the default entry point; experimental hardware tools live in Live exploration. */
+.cgra-web{--title-h:clamp(51px,3.5vw,64px)}
+.app-bar{justify-content:space-between;gap:12px;padding:0 15px}
+.app-bar>div{display:flex;flex-direction:column;gap:2px;min-width:0}
+.app-bar strong{font-size:var(--fs-md)}
+.app-bar span{overflow:hidden;color:#b6c0b8;font-size:var(--fs-xs);text-overflow:ellipsis;white-space:nowrap}
+.app-bar nav{display:flex;flex-shrink:0;gap:5px}
+.app-bar nav a{padding:6px 9px;border:1px solid #434d46;border-radius:3px;color:#bfcbc2;font-size:var(--fs-xs);white-space:nowrap}
+.app-bar nav a.active{border-color:#4e97c7;background:#204968;color:#fff}
+.maco-panel.archived{grid-template-rows:clamp(35px,2.25vw,45px) auto auto auto minmax(0,1fr)}
+.archive-intent{padding:10px!important;background:#1b2525}
+.archive-intent p{margin:5px 0 8px;color:#b9c9c7;font-size:var(--fs-xs);line-height:1.45}
+.archive-intent a{font-size:var(--fs-xs)}
+.round-decisions{padding:9px!important}
+.round-decision{display:grid;grid-template-columns:25px minmax(0,1fr) auto;gap:5px;align-items:center;margin-top:5px;padding:6px;border:1px solid #3a4942;background:#202a26;font-size:var(--fs-xs)}
+.round-decision b{color:#80c0d2}.round-decision span{line-height:1.4;color:#bec9c3}.round-decision strong{color:#f1f3eb;font-variant-numeric:tabular-nums}
+.archive-evidence .evidence-content{display:flex;flex:1;flex-direction:column;gap:8px;min-height:0;overflow:auto;padding:9px 10px}
+.archive-evidence .evidence-pair{display:flex;align-items:baseline;justify-content:space-between;gap:5px;border-bottom:1px solid #3b433c;padding-bottom:5px;font-size:var(--fs-xs)}
+.archive-evidence .evidence-pair span{color:#aebeb2}.archive-evidence .evidence-pair strong{color:#eef5ee;white-space:nowrap;font-variant-numeric:tabular-nums}
+.archive-evidence p{margin:0;color:#bac9be;font-size:var(--fs-xs);line-height:1.45}
+.archive-evidence a{display:block;font-size:var(--fs-xs)}
+.evidence-badge{align-self:flex-start;padding:5px 6px;border:1px solid #447460;background:#1d3c31;color:#cbeddc;font-size:var(--fs-xs);font-weight:650;letter-spacing:.03em}
+@media(max-width:900px){.app-bar{padding:0 9px}.app-bar span{max-width:48vw}.archive-evidence .flow-panel{min-height:170px}}
