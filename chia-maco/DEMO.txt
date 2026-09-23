@@ -1,0 +1,88 @@
+MACO / FMCW 演示：从 6×6 到 4×4，再优化编译配置
+
+一、最简单的打开方式
+服务器已经运行时：
+  http://127.0.0.1:8765/?demo=1
+或在 MACO 首页点击 Guided demo。
+
+这是固定的真实 Qwen 搜索记录，不是重新运行实验。
+案例固定到 agent_qwen38_27b_seed37_v3，不随新的搜索结果变化。
+无需 LLM、Docker 或 GPU 即可查看已部署服务中的回放。
+
+若服务未运行，在服务器的独立终端执行：
+  cd /path/to/maco-artifact
+  bash chia-maco/gui/start.sh
+
+如果浏览器在自己的电脑，而服务在远程服务器，先在自己的电脑执行：
+  ssh -N -L 8765:127.0.0.1:8765 YOUR_USER@YOUR_SERVER
+把 YOUR_SERVER 替换为实际服务器地址，再打开上述浏览器网址。
+服务仅绑定 loopback，不要直接公开到互联网。
+
+二、建议的 3 分钟演示顺序
+每一步点击 Next step；Back 返回上一步，Exit guide 退出引导。
+桌面布局一屏展示；底部点击 C1–C6 切换候选，左侧播放按钮回放。
+点击 PE 或 Inspect mapping 查看指令、调度过滤器与原始工具日志。
+Details 提供 agent rationale、结果来源和下载链接。
+
+01 Starting design：C1
+   6×6，36 PEs，unroll [4,2,4,4,1]。
+   41,945,836 estimated cycles/frame。
+   查看 CA-CFAR 占比，再点击 PE 查看真正的 LLVM 运算和调度周期。
+   讲解：任务是整帧雷达处理，不能只看某一个 kernel 的 II。
+
+02 Co-design change：C2
+   4×4，16 PEs，unroll [2,1,2,2,1]。
+   40,170,152 estimated cycles/frame。
+   阵列和软件配置同时变化，右侧展示实际差异。
+   注意：这不能单独证明“减小阵列”导致改善，因为编译配置也变了。
+
+03 Compiler refinement：C5
+   保留 4×4，unroll 改为 [4,2,4,4,1]。
+   39,154,344 estimated cycles/frame，比 C2 低约 2.53%。
+   查看 FFT mapping、unroll 差异和原始工具日志。
+   这是该记录中的 best estimated，不是 best hardware-validated feasible。
+
+04 Final comparison
+   将 C5 与 frozen 4×4 scalar baseline 比较。
+   Baseline：41,153,192 estimated cycles/frame。
+   C5：39,154,344 estimated cycles/frame，降低约 4.86%。
+   PE count 不是综合面积；周期估算不是实际 FPS；不声称能耗改善。
+
+Finish guide 后可以自由选择候选。View latest run 切换到最新实验。
+手动改变候选或页面会退出步骤引导，但保留固定案例数据。
+下载按钮分别提供固定案例 trace、enumeration reference 和本操作说明。
+
+三、如何启动一次真实运行
+不是点击 Guided demo，而是：
+  Run MACO agents -> 检查预算 -> Start search
+
+默认使用服务器已配置的 Qwen 3.8 27B 服务：
+  MACO_LLM_BASE_URL=http://127.0.0.1:18161/v1
+  MACO_LLM_MODEL=harp-raw-base
+该服务名是历史命名；已有记录使用的是 raw Qwen，而非 HARP tuned policy。
+需要本地模型服务可用，并安装 cgramapper:v1 Docker 镜像。
+
+预算：3 rounds、最多 12 次 LLM 调用、最多 30 次 fresh mapper evaluations。
+旧的 seed37 案例耗时约 210 秒，新的运行耗时和结果不保证相同。
+开始后查看 job 状态、轮次和 mapping 数；不要连续重复启动。
+已有 GUI job lock 防止重叠运行。不要在 job 运行中重启服务。
+失败时查看页面给出的 worker.log 路径，不用旧结果冒充新结果。
+
+新结果目录：
+  chia-maco/gui/runtime/<job-id>/
+包含 progress.json、agent_trace.json、mapper_logs，以及成功时的 result.json。
+已记录案例不会被覆盖，Guided demo 仍可访问固定的 seed37 记录。
+
+四、演示结论边界
+可以说：真实 agent/tool loop 改变了编译与阵列配置，降低了 mapper 周期估算。
+不能说：完整 FMCW 已在候选 CGRA 硬件上正确执行，或已满足面积/FPS/能耗目标。
+现有 FP32 FU/Tile 测试通过，不等于整帧硬件正确性已经通过。
+页面不再展示 Validation；原始验证记录仍保留，严格软件验证为 2/6 场景通过。
+
+五、维护者检查
+从 artifact 根目录执行：
+  PYTHONPATH=gui .venv/bin/python -m pytest chia-maco/tests gui/tests chia-harp/tests -q
+  cd gui/frontend
+  npm run build
+  node browser-check.mjs
+默认浏览器检查不启动真实实验。需要实跑时显式使用 --run-agent。

@@ -1,0 +1,40 @@
+{
+  "scope": "opcode restoration only; not executable or hardware-validated",
+  "status": "opcodes_restored",
+  "candidate": {
+    "architecture_vectorization": "none",
+    "bypass_constraint": 4,
+    "columns": 4,
+    "compiler_vectorize": false,
+    "control_memory": 200,
+    "heuristic_mapping": true,
+    "kernel": "fmcw_cfar_2d",
+    "register_count": 8,
+    "rows": 4,
+    "unroll_factor": 1
+  },
+  "changes": [
+    {
+      "node": 11,
+      "pe": 1,
+      "slot": 6,
+      "original": "OPT_ADD",
+      "restored": "OPT_FADD",
+      "instruction": "%27 = fadd float %25, %26"
+    }
+  ],
+  "source_sha256": {
+    "config.json": "f2ac68d45afb645fc64331ac24d2ffdc5557b8fec51a56f3391a7eaf93a3babb",
+    "dfg.json": "a5cef0e18a1b45dcb09dcff5e1df60e6bc5ed91058c1bbe2e6580622f6c9d975",
+    "kernel_map.bc": "7e459f7b4c760bcdd27520ea8d54fa5ff1ac9945b53b44e1fc1e48ccc5a6fdac",
+    "log": "eba9e62db0b5a87ab8c4010d8bef3f976c03c4d6f43afaffea9ae8dd17f1b110",
+    "mapping": "1858b941d30a57777cea490e326d26c98be521b55f182083baef11e351a0e831"
+  },
+  "pending": [
+    "operand/register and routing translation",
+    "constants and memory addresses",
+    "configuration/data loader",
+    "whole-kernel RTL execution"
+  ],
+  "candidate_hardware_correctness": "pending"
+}

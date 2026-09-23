@@ -1,0 +1,52 @@
+{
+  "scope": "isolated tile with diagnostic controls",
+  "status": "passed",
+  "original_wrappers": false,
+  "translated_fu": true,
+  "mapper_schedule_executed": false,
+  "seed": 37,
+  "numpy": "1.26.4",
+  "cases": [
+    {
+      "name": "add",
+      "status": "passed",
+      "samples": 264,
+      "comparison": "bit-exact float32 including sign of zero"
+    },
+    {
+      "name": "sub",
+      "status": "passed",
+      "samples": 264,
+      "comparison": "bit-exact float32 including sign of zero"
+    },
+    {
+      "name": "mul",
+      "status": "passed",
+      "samples": 264,
+      "comparison": "bit-exact float32 including sign of zero"
+    },
+    {
+      "name": "square_shared_port",
+      "status": "passed",
+      "samples": 264,
+      "comparison": "bit-exact float32 including sign of zero"
+    },
+    {
+      "name": "window_256_complex_samples",
+      "status": "passed",
+      "samples": 512,
+      "comparison": "bit-exact float32 including sign of zero"
+    },
+    {
+      "name": "cfar_unsigned_guard",
+      "status": "passed",
+      "samples": 9,
+      "comparison": "exact uint32"
+    }
+  ],
+  "candidate_hardware_correctness": "pending",
+  "source_sha256": {
+    "scripts/check_fp32_rtl.py": "70fc7729685b3ba552d2013c3805afabb5bf98b819ecf2bdb1f13d18cb16efb8",
+    "rtl/fp32.py": "05f5e101c8d59e4b011f9ded223ea784dbfbbca859e622290f19fdea79c31249"
+  }
+}

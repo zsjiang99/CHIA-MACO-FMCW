@@ -1,0 +1,44 @@
+{
+  "status": "blocked_before_candidate_execution",
+  "checks": [
+    {
+      "name": "mapper_export",
+      "status": "passed",
+      "evidence": ["window_result.json", "window/param.json", "window/config.json", "window/dfg.json", "window.log"],
+      "finding": "A fresh scalar 4x4 FMCW window mapping succeeds and exports configuration, DFG and bitcode. This is not execution."
+    },
+    {
+      "name": "floating_point_opcode_compatibility",
+      "status": "failed",
+      "finding": "The pinned cgramapper:v1 DFGNode.cpp translates fmul to OPT_MUL, fadd to OPT_ADD and fsub to OPT_SUB. Window config contains OPT_MUL, not OPT_FMUL. The Neura VectorCGRA MulRTL implements integer bit-vector multiplication.",
+      "probe": {
+        "scope": "MulRTL functional unit; pure PyMTL simulation, not translated Verilog or full CGRA",
+        "inputs_float32": [1.5, 2.0],
+        "observed_payload": 0,
+        "expected_float32_payload": 1077936128,
+        "matches_float32": false,
+        "script": "scripts/probe_rtl_opcode.py",
+        "rtl_commit": "40006affef482349ec9418021d23141f876259ed"
+      }
+    },
+    {
+      "name": "whole_frame_execution",
+      "status": "pending",
+      "finding": "No end-to-end FMCW harness found in inspected CGRA-Flow/VectorCGRA paths. The universal template test manually builds load/inc/store control packets; it is not a mapper-config importer or FMCW executor. Its FP units are commented out."
+    },
+    {
+      "name": "synthesis",
+      "status": "pending",
+      "finding": "Local Neura image has Yosys and Verilator; dc_shell was not found on the host PATH or in that image. No matching candidate RTL has been validated, so no candidate area/clock is reported. MACO arch2dc.bash execution_time measures synthesis wall time, NOT application latency."
+    }
+  ],
+  "candidate_hardware_correctness": "pending",
+  "full_frame_cycles": null,
+  "area_um2": null,
+  "clock_period_ns": null,
+  "next_required_work": [
+    "Preserve floating-point semantics in a separate compiler-to-RTL adapter and verify opcode/port/register/constant encodings.",
+    "Bind an explicit FP-capable architecture, memory map and latency model.",
+    "Build configuration/data loading, output checking and full-frame cycle accounting before synthesizing the compared candidates."
+  ]
+}

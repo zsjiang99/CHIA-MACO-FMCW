@@ -1,0 +1,276 @@
+{
+  "scope": "native_float32_pipeline_vs_numpy_float64",
+  "spec": {
+    "version": 1,
+    "scope": "native_float32_pipeline_vs_numpy_float64",
+    "shape_rx_chirps_samples": [
+      4,
+      128,
+      256
+    ],
+    "seed": 37,
+    "normalized_max_error_limit": 2e-05,
+    "zero_reference_absolute_limit": 1e-07,
+    "cfar": {
+      "training_radius": 4,
+      "guard_radius": 1,
+      "threshold_scale": 6.0
+    },
+    "detection_pass_rule": "Exact equality of the entire detection mask; threshold-adjacent mismatches are diagnostic only and do not count as a pass.",
+    "scenes": [
+      "single_target",
+      "multiple_targets",
+      "noisy_targets",
+      "zero",
+      "edge_target",
+      "large_amplitude"
+    ],
+    "numeric_format": "float32 complex input and C arithmetic; NumPy FFT and CFAR use float64. No fixed-point or RTL correctness claim."
+  },
+  "spec_sha256": "06e63ea90978d1697a0724fc36ea7ed2b28c4f632503ed5b922ac3de87058e07",
+  "source_sha256": {
+    "validation.py": "cd5bf13d07893e427f640231e0e7001aa185fcfe0137991cff76780e5615a5ac",
+    "fmcw.c": "e55fbee37081fdc5c2549bdee0c166783b34bdd872023e85f71a16990e9178ae",
+    "fmcw.h": "2869d2b65817d727a4aeaa804f94d77f73dbeba76eb5d8be34345ff6e4353938"
+  },
+  "compiler": "cc (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0",
+  "compile_command": [
+    "cc",
+    "-shared",
+    "-fPIC",
+    "-O3",
+    "-std=c11",
+    "-fno-fast-math",
+    "-ffp-contract=off",
+    "/home/zjian137/A3Hackathon2026/chia-maco/workload/fmcw.c",
+    "-o",
+    "results/validation_v1/fmcw_native.so"
+  ],
+  "numpy_version": "2.2.6",
+  "cases": [
+    {
+      "scene": "single_target",
+      "status": "failed",
+      "stages": {
+        "range_fft": {
+          "max_absolute_error": 1.4507147849051226e-05,
+          "normalized_max_error": 1.1378155128982675e-07,
+          "absolute_limit": 0.0025500000104759194,
+          "passed": true
+        },
+        "doppler_fft": {
+          "max_absolute_error": 0.001236639500868663,
+          "normalized_max_error": 7.577447890869766e-08,
+          "absolute_limit": 0.3264000013404823,
+          "passed": true
+        },
+        "power": {
+          "max_absolute_error": 128.0958310365677,
+          "normalized_max_error": 1.2023604862110327e-07,
+          "absolute_limit": 21307.39200191662,
+          "passed": true
+        }
+      },
+      "detection_mismatches": 1343,
+      "golden_detections": 604,
+      "native_detections": 1471,
+      "golden_peak": [
+        17,
+        9
+      ],
+      "native_peak": [
+        17,
+        9
+      ],
+      "arrays": "single_target.npz",
+      "sha256": "15efb8329e3b383fabfabad5252d631b7946c17293d17b3769b9ef3f85823017"
+    },
+    {
+      "scene": "multiple_targets",
+      "status": "failed",
+      "stages": {
+        "range_fft": {
+          "max_absolute_error": 1.868487867029839e-05,
+          "normalized_max_error": 1.4654791316710782e-07,
+          "absolute_limit": 0.0025500026942031065,
+          "passed": true
+        },
+        "doppler_fft": {
+          "max_absolute_error": 0.0020092320322493405,
+          "normalized_max_error": 1.2311470755012429e-07,
+          "absolute_limit": 0.32640000081733733,
+          "passed": true
+        },
+        "power": {
+          "max_absolute_error": 131.54130041599274,
+          "normalized_max_error": 1.234701083818686e-07,
+          "absolute_limit": 21307.39207082601,
+          "passed": true
+        }
+      },
+      "detection_mismatches": 693,
+      "golden_detections": 687,
+      "native_detections": 900,
+      "golden_peak": [
+        17,
+        9
+      ],
+      "native_peak": [
+        17,
+        9
+      ],
+      "arrays": "multiple_targets.npz",
+      "sha256": "73e87c4d21a901dffa9927ee808a05f5d0c07551a327716b242a99e3bc5f6389"
+    },
+    {
+      "scene": "noisy_targets",
+      "status": "passed",
+      "stages": {
+        "range_fft": {
+          "max_absolute_error": 1.9274763511794026e-05,
+          "normalized_max_error": 1.4779898590398594e-07,
+          "absolute_limit": 0.0026082402925708048,
+          "passed": true
+        },
+        "doppler_fft": {
+          "max_absolute_error": 0.00156471296678171,
+          "normalized_max_error": 9.576458605220814e-08,
+          "absolute_limit": 0.3267832152333793,
+          "passed": true
+        },
+        "power": {
+          "max_absolute_error": 90.85675513744354,
+          "normalized_max_error": 8.517223522317993e-08,
+          "absolute_limit": 21334.829337135103,
+          "passed": true
+        }
+      },
+      "detection_mismatches": 0,
+      "golden_detections": 6,
+      "native_detections": 6,
+      "golden_peak": [
+        17,
+        9
+      ],
+      "native_peak": [
+        17,
+        9
+      ],
+      "arrays": "noisy_targets.npz",
+      "sha256": "d7f9d65efae9351300c066352a3b04a608a5fc74e954f79e312439325f5bf042"
+    },
+    {
+      "scene": "zero",
+      "status": "passed",
+      "stages": {
+        "range_fft": {
+          "max_absolute_error": 0.0,
+          "normalized_max_error": null,
+          "absolute_limit": 1e-07,
+          "passed": true
+        },
+        "doppler_fft": {
+          "max_absolute_error": 0.0,
+          "normalized_max_error": null,
+          "absolute_limit": 1e-07,
+          "passed": true
+        },
+        "power": {
+          "max_absolute_error": 0.0,
+          "normalized_max_error": null,
+          "absolute_limit": 1e-07,
+          "passed": true
+        }
+      },
+      "detection_mismatches": 0,
+      "golden_detections": 0,
+      "native_detections": 0,
+      "golden_peak": [
+        0,
+        0
+      ],
+      "native_peak": [
+        0,
+        0
+      ],
+      "arrays": "zero.npz",
+      "sha256": "c35aa2ad3af2cd08197ef56e21b06d2badeb90e8262bf2c333e311869b49c49e"
+    },
+    {
+      "scene": "edge_target",
+      "status": "failed",
+      "stages": {
+        "range_fft": {
+          "max_absolute_error": 9.90249890411477e-06,
+          "normalized_max_error": 7.766665577865197e-08,
+          "absolute_limit": 0.002550000075279833,
+          "passed": true
+        },
+        "doppler_fft": {
+          "max_absolute_error": 0.0009785054566097977,
+          "normalized_max_error": 5.995744193883614e-08,
+          "absolute_limit": 0.32640000139031683,
+          "passed": true
+        },
+        "power": {
+          "max_absolute_error": 48.54389953613281,
+          "normalized_max_error": 4.5565313337099216e-08,
+          "absolute_limit": 21307.3919527328,
+          "passed": true
+        }
+      },
+      "detection_mismatches": 1813,
+      "golden_detections": 335,
+      "native_detections": 1616,
+      "golden_peak": [
+        0,
+        127
+      ],
+      "native_peak": [
+        0,
+        127
+      ],
+      "arrays": "edge_target.npz",
+      "sha256": "da5638a116e51794a7d04b8ad0230f365c607ce8e7f09c9eeeed07c4624e863e"
+    },
+    {
+      "scene": "large_amplitude",
+      "status": "failed",
+      "stages": {
+        "range_fft": {
+          "max_absolute_error": 0.48560871926110155,
+          "normalized_max_error": 1.2695652746730257e-07,
+          "absolute_limit": 76.50000026759857,
+          "passed": true
+        },
+        "doppler_fft": {
+          "max_absolute_error": 35.777086800332405,
+          "normalized_max_error": 7.307411494120643e-08,
+          "absolute_limit": 9792.000034244065,
+          "passed": true
+        },
+        "power": {
+          "max_absolute_error": 87770847488.0,
+          "normalized_max_error": 9.153927801490159e-08,
+          "absolute_limit": 19176652774934.902,
+          "passed": true
+        }
+      },
+      "detection_mismatches": 1275,
+      "golden_detections": 600,
+      "native_detections": 1435,
+      "golden_peak": [
+        17,
+        9
+      ],
+      "native_peak": [
+        17,
+        9
+      ],
+      "arrays": "large_amplitude.npz",
+      "sha256": "04222e4ee00be65a34012d7e7921543a904992a3af11d31ff6b11483eeb06b6d"
+    }
+  ],
+  "status": "failed",
+  "candidate_hardware_correctness": "pending; no CGRA execution in this test"
+}

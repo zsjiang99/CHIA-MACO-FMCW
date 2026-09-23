@@ -1,0 +1,1045 @@
+Initialize opt latency for DFG nodes: 
+Deciding fusion strategy for DFG nodes: 
+Initialize additional functionality on CGRA nodes: 
+Finding fusion pattern for DFG: 
+[function 'fmcw_window_map' is not in our target list]
+Initialize opt latency for DFG nodes: 
+Deciding fusion strategy for DFG nodes: 
+Initialize additional functionality on CGRA nodes: 
+Finding fusion pattern for DFG: 
+[function 'fmcw_fft_stage_map' is not in our target list]
+Initialize opt latency for DFG nodes: 
+Deciding fusion strategy for DFG nodes: 
+Initialize additional functionality on CGRA nodes: 
+Finding fusion pattern for DFG: 
+[function 'fmcw_transpose_map' is not in our target list]
+Initialize opt latency for DFG nodes: 
+Deciding fusion strategy for DFG nodes: 
+Initialize additional functionality on CGRA nodes: 
+Finding fusion pattern for DFG: 
+[function 'fmcw_accumulate_power_map' is not in our target list]
+Initialize opt latency for DFG nodes: 
+Deciding fusion strategy for DFG nodes: 
+Initialize additional functionality on CGRA nodes: 
+Finding fusion pattern for DFG: 
+==================================
+[function 'fmcw_cfar_2d_map' is one of our targets]
+*** current function: fmcw_cfar_2d_map
+==================================
+==================================
+[reorder DFG along with the longest path]
+==================================
+==================================
+disabling multiple ops
+disabling multiple ops
+disabling multiple ops
+disabling multiple ops
+Without customization in param.json, we enable store functionality on the left most column.
+Without customization in param.json, we enable load functionality on the left most column.
+No vectorization is enabled on the CGRA nodes.
+==================================
+[show opcode count]
+add : 5
+br : 3
+cmp : 2
+getelementptr : 1
+load : 3
+phi : 1
+sext : 1
+store : 2
+trunc : 2
+DFG node count: 20; DFG edge count: 25; SIMD node count: 0
+==================================
+[generate dot for DFG]
+==================================
+[generate JSON for DFG]
+==================================
+[ResMII: 5]
+==================================
+[RecMII: 6]
+==================================
+[heuristic]
+----------------------------------------
+[DEBUG] start heuristic algorithm with II=6
+[DEBUG] schedule dfg node[1] onto fu[1] at cycle 0 within II: 6
+[DEBUG] setDFGNode 1 onto CGRANode 1 at cycle: 0
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[2] onto fu[3] at cycle 1 within II: 6
+[DEBUG] setDFGNode 2 onto CGRANode 3 at cycle: 1
+[DEBUG] in allocateReg() t_cycle: 0; i: 0 CGRA node: 3; link: 1 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[1]-->[3] (bypass:0) dfgNode: 1 at cycle 0
+[DEBUG] skip predecessor routing -- dfgNode: 1
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[3] onto fu[1] at cycle 2 within II: 6
+[DEBUG] setDFGNode 3 onto CGRANode 1 at cycle: 2
+[DEBUG] in allocateReg() t_cycle: 1; i: 0 CGRA node: 1; link: 0 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[3]-->[1] (bypass:0) dfgNode: 2 at cycle 1
+[DEBUG] skip predecessor routing -- dfgNode: 2
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[4] onto fu[3] at cycle 3 within II: 6
+[DEBUG] setDFGNode 4 onto CGRANode 3 at cycle: 3
+[DEBUG] in allocateReg() t_cycle: 2; i: 0 CGRA node: 3; link: 1 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[1]-->[3] (bypass:0) dfgNode: 3 at cycle 2
+[DEBUG] skip predecessor routing -- dfgNode: 3
+[DEBUG] success in schedule()
+[DEBUG] no available path for DFG node 10 on CGRA node 1 within II 6; path size: 1.
+[DEBUG] no available path for DFG node 10 on CGRA node 3 within II 6; path size: 2.
+[DEBUG] schedule dfg node[10] onto fu[2] at cycle 4 within II: 6
+[DEBUG] setDFGNode 10 onto CGRANode 2 at cycle: 4
+[DEBUG] in allocateReg() t_cycle: 3; i: 0 CGRA node: 2; link: 3 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[3]-->[2] (bypass:0) dfgNode: 4 at cycle 3
+[DEBUG] skip predecessor routing -- dfgNode: 4
+[DEBUG] success in schedule()
+[DEBUG] no available path for DFG node 13 on CGRA node 1 within II 6; path size: 1.
+[DEBUG] no available path for DFG node 13 on CGRA node 3 within II 6; path size: 2.
+[DEBUG] schedule dfg node[13] onto fu[0] at cycle 5 within II: 6
+[DEBUG] setDFGNode 13 onto CGRANode 0 at cycle: 5
+[DEBUG] occupy link[3]-->[1] (bypass:1) dfgNode: 4 at cycle 3
+[DEBUG] in allocateReg() t_cycle: 4; i: 0 CGRA node: 0; link: 3 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[1]-->[0] (bypass:0) dfgNode: 4 at cycle 4
+[DEBUG] skip predecessor routing -- dfgNode: 4
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[16] onto fu[1] at cycle 4 within II: 6
+[DEBUG] setDFGNode 16 onto CGRANode 1 at cycle: 4
+[DEBUG] in allocateReg() t_cycle: 3; i: 0 CGRA node: 1; link: 0 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[3]-->[1] (bypass:0) dfgNode: 4 at cycle 3
+[DEBUG] skip predecessor routing -- dfgNode: 4
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[14] onto fu[2] at cycle 6 within II: 6
+[DEBUG] setDFGNode 14 onto CGRANode 2 at cycle: 6
+[DEBUG] in allocateReg() t_cycle: 5; i: 0 CGRA node: 2; link: 1 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[0]-->[2] (bypass:0) dfgNode: 13 at cycle 5
+[DEBUG] skip predecessor routing -- dfgNode: 13
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[17] onto fu[3] at cycle 5 within II: 6
+[DEBUG] setDFGNode 17 onto CGRANode 3 at cycle: 5
+[DEBUG] in allocateReg() t_cycle: 4; i: 0 CGRA node: 3; link: 1 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[1]-->[3] (bypass:0) dfgNode: 16 at cycle 4
+[DEBUG] tryToRoute -- srcDFGNode: 4, srcCGRANode: 3; dstDFGNode: 17, dstCGRANode: 3; backEdge: 0
+[DEBUG] in shareSameCycle is true: node 17
+[DEBUG] check route size: 1
+[DEBUG] allocate for local reg maintain... duration=2 last cycle: 3
+[DEBUG] in allocateReg() t_cycle: 3; i: 1 CGRA node: 3; link: 4 duration 2
+[DEBUG] done reg allocation
+[DEBUG] skip predecessor routing -- dfgNode: 16
+[DEBUG] success in schedule()
+[DEBUG] no available path for DFG node 15 on CGRA node 1 within II 6; path size: 1.
+[DEBUG] no available path for DFG node 15 on CGRA node 3 within II 6; path size: 2.
+[DEBUG] schedule dfg node[15] onto fu[0] at cycle 7 within II: 6
+[DEBUG] setDFGNode 15 onto CGRANode 0 at cycle: 7
+[DEBUG] in allocateReg() t_cycle: 6; i: 0 CGRA node: 0; link: 0 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[2]-->[0] (bypass:0) dfgNode: 14 at cycle 6
+[DEBUG] skip predecessor routing -- dfgNode: 14
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[18] onto fu[3] at cycle 6 within II: 6
+[DEBUG] setDFGNode 18 onto CGRANode 3 at cycle: 6
+[DEBUG] tryToRoute -- srcDFGNode: 17, srcCGRANode: 3; dstDFGNode: 18, dstCGRANode: 3; backEdge: 0
+[DEBUG] in shareSameCycle is true: node 18
+[DEBUG] check route size: 1
+[DEBUG] allocate for local reg maintain... duration=1 last cycle: 5
+[DEBUG] in allocateReg() t_cycle: 5; i: 0 CGRA node: 3; link: 4 duration 1
+[DEBUG] done reg allocation
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[19] onto fu[1] at cycle 7 within II: 6
+[DEBUG] setDFGNode 19 onto CGRANode 1 at cycle: 7
+[DEBUG] in allocateReg() t_cycle: 6; i: 0 CGRA node: 1; link: 0 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[3]-->[1] (bypass:0) dfgNode: 18 at cycle 6
+[DEBUG] skip predecessor routing -- dfgNode: 18
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[0] onto fu[3] at cycle 8 within II: 6
+[DEBUG] setDFGNode 0 onto CGRANode 3 at cycle: 8
+[DEBUG] tryToRoute -- srcDFGNode: 17, srcCGRANode: 3; dstDFGNode: 0, dstCGRANode: 3; backEdge: 0
+[DEBUG] in shareSameCycle is true: node 0
+[DEBUG] cannot route due to II is violated for backward cycle
+DEBUG target DFG node: 0 on fu: 3 failed, mapped pred DFG node: 17; return false
+[DEBUG] fail1 in schedule() II: 6
+[DEBUG] the failed path -- cycle: 8 CGRANode: 3
+----------------------------------------
+[DEBUG] start heuristic algorithm with II=7
+[DEBUG] schedule dfg node[1] onto fu[1] at cycle 0 within II: 7
+[DEBUG] setDFGNode 1 onto CGRANode 1 at cycle: 0
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[2] onto fu[3] at cycle 1 within II: 7
+[DEBUG] setDFGNode 2 onto CGRANode 3 at cycle: 1
+[DEBUG] in allocateReg() t_cycle: 0; i: 0 CGRA node: 3; link: 1 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[1]-->[3] (bypass:0) dfgNode: 1 at cycle 0
+[DEBUG] skip predecessor routing -- dfgNode: 1
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[3] onto fu[1] at cycle 2 within II: 7
+[DEBUG] setDFGNode 3 onto CGRANode 1 at cycle: 2
+[DEBUG] in allocateReg() t_cycle: 1; i: 0 CGRA node: 1; link: 0 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[3]-->[1] (bypass:0) dfgNode: 2 at cycle 1
+[DEBUG] skip predecessor routing -- dfgNode: 2
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[4] onto fu[3] at cycle 3 within II: 7
+[DEBUG] setDFGNode 4 onto CGRANode 3 at cycle: 3
+[DEBUG] in allocateReg() t_cycle: 2; i: 0 CGRA node: 3; link: 1 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[1]-->[3] (bypass:0) dfgNode: 3 at cycle 2
+[DEBUG] skip predecessor routing -- dfgNode: 3
+[DEBUG] success in schedule()
+[DEBUG] no available path for DFG node 10 on CGRA node 1 within II 7; path size: 1.
+[DEBUG] no available path for DFG node 10 on CGRA node 3 within II 7; path size: 2.
+[DEBUG] schedule dfg node[10] onto fu[2] at cycle 4 within II: 7
+[DEBUG] setDFGNode 10 onto CGRANode 2 at cycle: 4
+[DEBUG] in allocateReg() t_cycle: 3; i: 0 CGRA node: 2; link: 3 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[3]-->[2] (bypass:0) dfgNode: 4 at cycle 3
+[DEBUG] skip predecessor routing -- dfgNode: 4
+[DEBUG] success in schedule()
+[DEBUG] no available path for DFG node 13 on CGRA node 1 within II 7; path size: 1.
+[DEBUG] no available path for DFG node 13 on CGRA node 3 within II 7; path size: 2.
+[DEBUG] schedule dfg node[13] onto fu[0] at cycle 5 within II: 7
+[DEBUG] setDFGNode 13 onto CGRANode 0 at cycle: 5
+[DEBUG] occupy link[3]-->[1] (bypass:1) dfgNode: 4 at cycle 3
+[DEBUG] in allocateReg() t_cycle: 4; i: 0 CGRA node: 0; link: 3 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[1]-->[0] (bypass:0) dfgNode: 4 at cycle 4
+[DEBUG] skip predecessor routing -- dfgNode: 4
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[16] onto fu[1] at cycle 4 within II: 7
+[DEBUG] setDFGNode 16 onto CGRANode 1 at cycle: 4
+[DEBUG] in allocateReg() t_cycle: 3; i: 0 CGRA node: 1; link: 0 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[3]-->[1] (bypass:0) dfgNode: 4 at cycle 3
+[DEBUG] skip predecessor routing -- dfgNode: 4
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[14] onto fu[3] at cycle 7 within II: 7
+[DEBUG] setDFGNode 14 onto CGRANode 3 at cycle: 7
+[DEBUG] occupy link[0]-->[1] (bypass:1) dfgNode: 13 at cycle 5
+[DEBUG] in allocateReg() t_cycle: 6; i: 0 CGRA node: 3; link: 1 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[1]-->[3] (bypass:0) dfgNode: 13 at cycle 6
+[DEBUG] skip predecessor routing -- dfgNode: 13
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[17] onto fu[3] at cycle 5 within II: 7
+[DEBUG] setDFGNode 17 onto CGRANode 3 at cycle: 5
+[DEBUG] in allocateReg() t_cycle: 4; i: 0 CGRA node: 3; link: 1 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[1]-->[3] (bypass:0) dfgNode: 16 at cycle 4
+[DEBUG] tryToRoute -- srcDFGNode: 4, srcCGRANode: 3; dstDFGNode: 17, dstCGRANode: 3; backEdge: 0
+[DEBUG] in shareSameCycle is true: node 17
+[DEBUG] check route size: 1
+[DEBUG] allocate for local reg maintain... duration=2 last cycle: 3
+[DEBUG] in allocateReg() t_cycle: 3; i: 1 CGRA node: 3; link: 4 duration 2
+[DEBUG] done reg allocation
+[DEBUG] skip predecessor routing -- dfgNode: 16
+[DEBUG] success in schedule()
+[DEBUG] no available path for DFG node 15 on CGRA node 1 within II 7; path size: 1.
+[DEBUG] no available path for DFG node 15 on CGRA node 3 within II 7; path size: 2.
+[DEBUG] schedule dfg node[15] onto fu[2] at cycle 8 within II: 7
+[DEBUG] setDFGNode 15 onto CGRANode 2 at cycle: 8
+[DEBUG] in allocateReg() t_cycle: 7; i: 0 CGRA node: 2; link: 3 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[3]-->[2] (bypass:0) dfgNode: 14 at cycle 7
+[DEBUG] skip predecessor routing -- dfgNode: 14
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[18] onto fu[1] at cycle 6 within II: 7
+[DEBUG] setDFGNode 18 onto CGRANode 1 at cycle: 6
+[DEBUG] in allocateReg() t_cycle: 5; i: 0 CGRA node: 1; link: 0 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[3]-->[1] (bypass:0) dfgNode: 17 at cycle 5
+[DEBUG] skip predecessor routing -- dfgNode: 17
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[19] onto fu[0] at cycle 7 within II: 7
+[DEBUG] setDFGNode 19 onto CGRANode 0 at cycle: 7
+[DEBUG] in allocateReg() t_cycle: 6; i: 0 CGRA node: 0; link: 3 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[1]-->[0] (bypass:0) dfgNode: 18 at cycle 6
+[DEBUG] skip predecessor routing -- dfgNode: 18
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[0] onto fu[3] at cycle 9 within II: 7
+[DEBUG] setDFGNode 0 onto CGRANode 3 at cycle: 9
+[DEBUG] occupy link[0]-->[2] (bypass:1) dfgNode: 19 at cycle 7
+[DEBUG] in allocateReg() t_cycle: 8; i: 0 CGRA node: 3; link: 2 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[2]-->[3] (bypass:0) dfgNode: 19 at cycle 8
+[DEBUG] tryToRoute -- srcDFGNode: 17, srcCGRANode: 3; dstDFGNode: 0, dstCGRANode: 3; backEdge: 0
+[DEBUG] in shareSameCycle is true: node 0
+[DEBUG] cannot route due to II is violated for backward cycle
+DEBUG target DFG node: 0 on fu: 3 failed, mapped pred DFG node: 17; return false
+[DEBUG] fail1 in schedule() II: 7
+[DEBUG] the failed path -- cycle: 7 CGRANode: 0
+[DEBUG] the failed path -- cycle: 8 CGRANode: 2
+[DEBUG] the failed path -- cycle: 9 CGRANode: 3
+----------------------------------------
+[DEBUG] start heuristic algorithm with II=8
+[DEBUG] schedule dfg node[1] onto fu[3] at cycle 0 within II: 8
+[DEBUG] setDFGNode 1 onto CGRANode 3 at cycle: 0
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[2] onto fu[1] at cycle 1 within II: 8
+[DEBUG] setDFGNode 2 onto CGRANode 1 at cycle: 1
+[DEBUG] in allocateReg() t_cycle: 0; i: 0 CGRA node: 1; link: 0 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[3]-->[1] (bypass:0) dfgNode: 1 at cycle 0
+[DEBUG] skip predecessor routing -- dfgNode: 1
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[3] onto fu[3] at cycle 2 within II: 8
+[DEBUG] setDFGNode 3 onto CGRANode 3 at cycle: 2
+[DEBUG] in allocateReg() t_cycle: 1; i: 0 CGRA node: 3; link: 1 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[1]-->[3] (bypass:0) dfgNode: 2 at cycle 1
+[DEBUG] skip predecessor routing -- dfgNode: 2
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[4] onto fu[1] at cycle 3 within II: 8
+[DEBUG] setDFGNode 4 onto CGRANode 1 at cycle: 3
+[DEBUG] in allocateReg() t_cycle: 2; i: 0 CGRA node: 1; link: 0 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[3]-->[1] (bypass:0) dfgNode: 3 at cycle 2
+[DEBUG] skip predecessor routing -- dfgNode: 3
+[DEBUG] success in schedule()
+[DEBUG] no available path for DFG node 10 on CGRA node 1 within II 8; path size: 1.
+[DEBUG] no available path for DFG node 10 on CGRA node 3 within II 8; path size: 2.
+[DEBUG] schedule dfg node[10] onto fu[0] at cycle 4 within II: 8
+[DEBUG] setDFGNode 10 onto CGRANode 0 at cycle: 4
+[DEBUG] in allocateReg() t_cycle: 3; i: 0 CGRA node: 0; link: 3 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[1]-->[0] (bypass:0) dfgNode: 4 at cycle 3
+[DEBUG] skip predecessor routing -- dfgNode: 4
+[DEBUG] success in schedule()
+[DEBUG] no available path for DFG node 13 on CGRA node 1 within II 8; path size: 1.
+[DEBUG] no available path for DFG node 13 on CGRA node 3 within II 8; path size: 2.
+[DEBUG] schedule dfg node[13] onto fu[2] at cycle 5 within II: 8
+[DEBUG] setDFGNode 13 onto CGRANode 2 at cycle: 5
+[DEBUG] occupy link[1]-->[0] (bypass:1) dfgNode: 4 at cycle 3
+[DEBUG] in allocateReg() t_cycle: 4; i: 0 CGRA node: 2; link: 1 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[0]-->[2] (bypass:0) dfgNode: 4 at cycle 4
+[DEBUG] skip predecessor routing -- dfgNode: 4
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[16] onto fu[3] at cycle 4 within II: 8
+[DEBUG] setDFGNode 16 onto CGRANode 3 at cycle: 4
+[DEBUG] in allocateReg() t_cycle: 3; i: 0 CGRA node: 3; link: 1 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[1]-->[3] (bypass:0) dfgNode: 4 at cycle 3
+[DEBUG] skip predecessor routing -- dfgNode: 4
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[14] onto fu[1] at cycle 7 within II: 8
+[DEBUG] setDFGNode 14 onto CGRANode 1 at cycle: 7
+[DEBUG] occupy link[2]-->[0] (bypass:1) dfgNode: 13 at cycle 5
+[DEBUG] in allocateReg() t_cycle: 6; i: 0 CGRA node: 1; link: 2 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[0]-->[1] (bypass:0) dfgNode: 13 at cycle 6
+[DEBUG] skip predecessor routing -- dfgNode: 13
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[17] onto fu[1] at cycle 5 within II: 8
+[DEBUG] setDFGNode 17 onto CGRANode 1 at cycle: 5
+[DEBUG] in allocateReg() t_cycle: 4; i: 0 CGRA node: 1; link: 0 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[3]-->[1] (bypass:0) dfgNode: 16 at cycle 4
+[DEBUG] tryToRoute -- srcDFGNode: 4, srcCGRANode: 1; dstDFGNode: 17, dstCGRANode: 1; backEdge: 0
+[DEBUG] in shareSameCycle is true: node 17
+[DEBUG] check route size: 1
+[DEBUG] allocate for local reg maintain... duration=2 last cycle: 3
+[DEBUG] in allocateReg() t_cycle: 3; i: 1 CGRA node: 1; link: 4 duration 2
+[DEBUG] done reg allocation
+[DEBUG] skip predecessor routing -- dfgNode: 16
+[DEBUG] success in schedule()
+[DEBUG] no available path for DFG node 15 on CGRA node 1 within II 8; path size: 1.
+[DEBUG] no available path for DFG node 15 on CGRA node 3 within II 8; path size: 2.
+[DEBUG] schedule dfg node[15] onto fu[0] at cycle 8 within II: 8
+[DEBUG] setDFGNode 15 onto CGRANode 0 at cycle: 8
+[DEBUG] in allocateReg() t_cycle: 7; i: 0 CGRA node: 0; link: 3 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[1]-->[0] (bypass:0) dfgNode: 14 at cycle 7
+[DEBUG] skip predecessor routing -- dfgNode: 14
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[18] onto fu[3] at cycle 6 within II: 8
+[DEBUG] setDFGNode 18 onto CGRANode 3 at cycle: 6
+[DEBUG] in allocateReg() t_cycle: 5; i: 0 CGRA node: 3; link: 1 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[1]-->[3] (bypass:0) dfgNode: 17 at cycle 5
+[DEBUG] skip predecessor routing -- dfgNode: 17
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[19] onto fu[2] at cycle 7 within II: 8
+[DEBUG] setDFGNode 19 onto CGRANode 2 at cycle: 7
+[DEBUG] in allocateReg() t_cycle: 6; i: 0 CGRA node: 2; link: 3 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[3]-->[2] (bypass:0) dfgNode: 18 at cycle 6
+[DEBUG] skip predecessor routing -- dfgNode: 18
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[0] onto fu[2] at cycle 8 within II: 8
+[DEBUG] setDFGNode 0 onto CGRANode 2 at cycle: 8
+[DEBUG] occupy link[1]-->[0] (bypass:1) dfgNode: 17 at cycle 5
+[DEBUG] in allocateReg() t_cycle: 6; i: 1 CGRA node: 2; link: 1 duration 2
+[DEBUG] done reg allocation
+[DEBUG] occupy link[0]-->[2] (bypass:0) dfgNode: 17 at cycle 6
+[DEBUG] skip predecessor routing -- dfgNode: 17
+[DEBUG] tryToRoute -- srcDFGNode: 19, srcCGRANode: 2; dstDFGNode: 0, dstCGRANode: 2; backEdge: 0
+[DEBUG] in shareSameCycle is true: node 0
+[DEBUG] check route size: 1
+[DEBUG] allocate for local reg maintain... duration=1 last cycle: 7
+[DEBUG] in allocateReg() t_cycle: 7; i: 0 CGRA node: 2; link: 4 duration 1
+[DEBUG] done reg allocation
+[DEBUG] in shareSameCycle is true: node 0
+[DEBUG] tryToRoute -- srcDFGNode: 0, srcCGRANode: 2; dstDFGNode: 1, dstCGRANode: 3; backEdge: 1
+[DEBUG] in shareSameCycle is true: node 1
+[DEBUG] cannot route due to II is violated for backward cycle
+DEBUG target DFG node: 0 on fu: 2 failed, mapped succ DFG node: 1; return false
+[DEBUG] fail1 in schedule() II: 8
+[DEBUG] the failed path -- cycle: 6 CGRANode: 0
+[DEBUG] the failed path -- cycle: 5 CGRANode: 1
+[DEBUG] the failed path -- cycle: 8 CGRANode: 2
+----------------------------------------
+[DEBUG] start heuristic algorithm with II=9
+[DEBUG] schedule dfg node[1] onto fu[1] at cycle 0 within II: 9
+[DEBUG] setDFGNode 1 onto CGRANode 1 at cycle: 0
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[2] onto fu[3] at cycle 1 within II: 9
+[DEBUG] setDFGNode 2 onto CGRANode 3 at cycle: 1
+[DEBUG] in allocateReg() t_cycle: 0; i: 0 CGRA node: 3; link: 1 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[1]-->[3] (bypass:0) dfgNode: 1 at cycle 0
+[DEBUG] skip predecessor routing -- dfgNode: 1
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[3] onto fu[1] at cycle 2 within II: 9
+[DEBUG] setDFGNode 3 onto CGRANode 1 at cycle: 2
+[DEBUG] in allocateReg() t_cycle: 1; i: 0 CGRA node: 1; link: 0 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[3]-->[1] (bypass:0) dfgNode: 2 at cycle 1
+[DEBUG] skip predecessor routing -- dfgNode: 2
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[4] onto fu[3] at cycle 3 within II: 9
+[DEBUG] setDFGNode 4 onto CGRANode 3 at cycle: 3
+[DEBUG] in allocateReg() t_cycle: 2; i: 0 CGRA node: 3; link: 1 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[1]-->[3] (bypass:0) dfgNode: 3 at cycle 2
+[DEBUG] skip predecessor routing -- dfgNode: 3
+[DEBUG] success in schedule()
+[DEBUG] no available path for DFG node 10 on CGRA node 1 within II 9; path size: 1.
+[DEBUG] no available path for DFG node 10 on CGRA node 3 within II 9; path size: 2.
+[DEBUG] schedule dfg node[10] onto fu[2] at cycle 4 within II: 9
+[DEBUG] setDFGNode 10 onto CGRANode 2 at cycle: 4
+[DEBUG] in allocateReg() t_cycle: 3; i: 0 CGRA node: 2; link: 3 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[3]-->[2] (bypass:0) dfgNode: 4 at cycle 3
+[DEBUG] skip predecessor routing -- dfgNode: 4
+[DEBUG] success in schedule()
+[DEBUG] no available path for DFG node 13 on CGRA node 1 within II 9; path size: 1.
+[DEBUG] no available path for DFG node 13 on CGRA node 3 within II 9; path size: 2.
+[DEBUG] schedule dfg node[13] onto fu[0] at cycle 5 within II: 9
+[DEBUG] setDFGNode 13 onto CGRANode 0 at cycle: 5
+[DEBUG] occupy link[3]-->[1] (bypass:1) dfgNode: 4 at cycle 3
+[DEBUG] in allocateReg() t_cycle: 4; i: 0 CGRA node: 0; link: 3 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[1]-->[0] (bypass:0) dfgNode: 4 at cycle 4
+[DEBUG] skip predecessor routing -- dfgNode: 4
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[16] onto fu[1] at cycle 4 within II: 9
+[DEBUG] setDFGNode 16 onto CGRANode 1 at cycle: 4
+[DEBUG] in allocateReg() t_cycle: 3; i: 0 CGRA node: 1; link: 0 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[3]-->[1] (bypass:0) dfgNode: 4 at cycle 3
+[DEBUG] skip predecessor routing -- dfgNode: 4
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[14] onto fu[3] at cycle 7 within II: 9
+[DEBUG] setDFGNode 14 onto CGRANode 3 at cycle: 7
+[DEBUG] occupy link[0]-->[1] (bypass:1) dfgNode: 13 at cycle 5
+[DEBUG] in allocateReg() t_cycle: 6; i: 0 CGRA node: 3; link: 1 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[1]-->[3] (bypass:0) dfgNode: 13 at cycle 6
+[DEBUG] skip predecessor routing -- dfgNode: 13
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[17] onto fu[3] at cycle 5 within II: 9
+[DEBUG] setDFGNode 17 onto CGRANode 3 at cycle: 5
+[DEBUG] in allocateReg() t_cycle: 4; i: 0 CGRA node: 3; link: 1 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[1]-->[3] (bypass:0) dfgNode: 16 at cycle 4
+[DEBUG] tryToRoute -- srcDFGNode: 4, srcCGRANode: 3; dstDFGNode: 17, dstCGRANode: 3; backEdge: 0
+[DEBUG] in shareSameCycle is true: node 17
+[DEBUG] check route size: 1
+[DEBUG] allocate for local reg maintain... duration=2 last cycle: 3
+[DEBUG] in allocateReg() t_cycle: 3; i: 1 CGRA node: 3; link: 4 duration 2
+[DEBUG] done reg allocation
+[DEBUG] skip predecessor routing -- dfgNode: 16
+[DEBUG] success in schedule()
+[DEBUG] no available path for DFG node 15 on CGRA node 1 within II 9; path size: 1.
+[DEBUG] no available path for DFG node 15 on CGRA node 3 within II 9; path size: 2.
+[DEBUG] schedule dfg node[15] onto fu[2] at cycle 8 within II: 9
+[DEBUG] setDFGNode 15 onto CGRANode 2 at cycle: 8
+[DEBUG] in allocateReg() t_cycle: 7; i: 0 CGRA node: 2; link: 3 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[3]-->[2] (bypass:0) dfgNode: 14 at cycle 7
+[DEBUG] skip predecessor routing -- dfgNode: 14
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[18] onto fu[1] at cycle 6 within II: 9
+[DEBUG] setDFGNode 18 onto CGRANode 1 at cycle: 6
+[DEBUG] in allocateReg() t_cycle: 5; i: 0 CGRA node: 1; link: 0 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[3]-->[1] (bypass:0) dfgNode: 17 at cycle 5
+[DEBUG] skip predecessor routing -- dfgNode: 17
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[19] onto fu[0] at cycle 7 within II: 9
+[DEBUG] setDFGNode 19 onto CGRANode 0 at cycle: 7
+[DEBUG] in allocateReg() t_cycle: 6; i: 0 CGRA node: 0; link: 3 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[1]-->[0] (bypass:0) dfgNode: 18 at cycle 6
+[DEBUG] skip predecessor routing -- dfgNode: 18
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[0] onto fu[3] at cycle 9 within II: 9
+[DEBUG] setDFGNode 0 onto CGRANode 3 at cycle: 9
+[DEBUG] occupy link[0]-->[1] (bypass:1) dfgNode: 19 at cycle 7
+[DEBUG] in allocateReg() t_cycle: 8; i: 0 CGRA node: 3; link: 1 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[1]-->[3] (bypass:0) dfgNode: 19 at cycle 8
+[DEBUG] tryToRoute -- srcDFGNode: 17, srcCGRANode: 3; dstDFGNode: 0, dstCGRANode: 3; backEdge: 0
+[DEBUG] in shareSameCycle is true: node 0
+[DEBUG] cannot route due to II is violated for backward cycle
+DEBUG target DFG node: 0 on fu: 3 failed, mapped pred DFG node: 17; return false
+[DEBUG] fail1 in schedule() II: 9
+[DEBUG] the failed path -- cycle: 7 CGRANode: 0
+[DEBUG] the failed path -- cycle: 8 CGRANode: 1
+[DEBUG] the failed path -- cycle: 9 CGRANode: 3
+----------------------------------------
+[DEBUG] start heuristic algorithm with II=10
+[DEBUG] schedule dfg node[1] onto fu[3] at cycle 0 within II: 10
+[DEBUG] setDFGNode 1 onto CGRANode 3 at cycle: 0
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[2] onto fu[1] at cycle 1 within II: 10
+[DEBUG] setDFGNode 2 onto CGRANode 1 at cycle: 1
+[DEBUG] in allocateReg() t_cycle: 0; i: 0 CGRA node: 1; link: 0 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[3]-->[1] (bypass:0) dfgNode: 1 at cycle 0
+[DEBUG] skip predecessor routing -- dfgNode: 1
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[3] onto fu[3] at cycle 2 within II: 10
+[DEBUG] setDFGNode 3 onto CGRANode 3 at cycle: 2
+[DEBUG] in allocateReg() t_cycle: 1; i: 0 CGRA node: 3; link: 1 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[1]-->[3] (bypass:0) dfgNode: 2 at cycle 1
+[DEBUG] skip predecessor routing -- dfgNode: 2
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[4] onto fu[1] at cycle 3 within II: 10
+[DEBUG] setDFGNode 4 onto CGRANode 1 at cycle: 3
+[DEBUG] in allocateReg() t_cycle: 2; i: 0 CGRA node: 1; link: 0 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[3]-->[1] (bypass:0) dfgNode: 3 at cycle 2
+[DEBUG] skip predecessor routing -- dfgNode: 3
+[DEBUG] success in schedule()
+[DEBUG] no available path for DFG node 10 on CGRA node 1 within II 10; path size: 1.
+[DEBUG] no available path for DFG node 10 on CGRA node 3 within II 10; path size: 2.
+[DEBUG] schedule dfg node[10] onto fu[0] at cycle 4 within II: 10
+[DEBUG] setDFGNode 10 onto CGRANode 0 at cycle: 4
+[DEBUG] in allocateReg() t_cycle: 3; i: 0 CGRA node: 0; link: 3 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[1]-->[0] (bypass:0) dfgNode: 4 at cycle 3
+[DEBUG] skip predecessor routing -- dfgNode: 4
+[DEBUG] success in schedule()
+[DEBUG] no available path for DFG node 13 on CGRA node 1 within II 10; path size: 1.
+[DEBUG] no available path for DFG node 13 on CGRA node 3 within II 10; path size: 2.
+[DEBUG] schedule dfg node[13] onto fu[2] at cycle 5 within II: 10
+[DEBUG] setDFGNode 13 onto CGRANode 2 at cycle: 5
+[DEBUG] occupy link[1]-->[0] (bypass:1) dfgNode: 4 at cycle 3
+[DEBUG] in allocateReg() t_cycle: 4; i: 0 CGRA node: 2; link: 1 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[0]-->[2] (bypass:0) dfgNode: 4 at cycle 4
+[DEBUG] skip predecessor routing -- dfgNode: 4
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[16] onto fu[3] at cycle 4 within II: 10
+[DEBUG] setDFGNode 16 onto CGRANode 3 at cycle: 4
+[DEBUG] in allocateReg() t_cycle: 3; i: 0 CGRA node: 3; link: 1 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[1]-->[3] (bypass:0) dfgNode: 4 at cycle 3
+[DEBUG] skip predecessor routing -- dfgNode: 4
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[14] onto fu[1] at cycle 7 within II: 10
+[DEBUG] setDFGNode 14 onto CGRANode 1 at cycle: 7
+[DEBUG] occupy link[2]-->[0] (bypass:1) dfgNode: 13 at cycle 5
+[DEBUG] in allocateReg() t_cycle: 6; i: 0 CGRA node: 1; link: 2 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[0]-->[1] (bypass:0) dfgNode: 13 at cycle 6
+[DEBUG] skip predecessor routing -- dfgNode: 13
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[17] onto fu[1] at cycle 5 within II: 10
+[DEBUG] setDFGNode 17 onto CGRANode 1 at cycle: 5
+[DEBUG] in allocateReg() t_cycle: 4; i: 0 CGRA node: 1; link: 0 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[3]-->[1] (bypass:0) dfgNode: 16 at cycle 4
+[DEBUG] tryToRoute -- srcDFGNode: 4, srcCGRANode: 1; dstDFGNode: 17, dstCGRANode: 1; backEdge: 0
+[DEBUG] in shareSameCycle is true: node 17
+[DEBUG] check route size: 1
+[DEBUG] allocate for local reg maintain... duration=2 last cycle: 3
+[DEBUG] in allocateReg() t_cycle: 3; i: 1 CGRA node: 1; link: 4 duration 2
+[DEBUG] done reg allocation
+[DEBUG] skip predecessor routing -- dfgNode: 16
+[DEBUG] success in schedule()
+[DEBUG] no available path for DFG node 15 on CGRA node 1 within II 10; path size: 1.
+[DEBUG] no available path for DFG node 15 on CGRA node 3 within II 10; path size: 2.
+[DEBUG] schedule dfg node[15] onto fu[0] at cycle 8 within II: 10
+[DEBUG] setDFGNode 15 onto CGRANode 0 at cycle: 8
+[DEBUG] in allocateReg() t_cycle: 7; i: 0 CGRA node: 0; link: 3 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[1]-->[0] (bypass:0) dfgNode: 14 at cycle 7
+[DEBUG] skip predecessor routing -- dfgNode: 14
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[18] onto fu[3] at cycle 6 within II: 10
+[DEBUG] setDFGNode 18 onto CGRANode 3 at cycle: 6
+[DEBUG] in allocateReg() t_cycle: 5; i: 0 CGRA node: 3; link: 1 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[1]-->[3] (bypass:0) dfgNode: 17 at cycle 5
+[DEBUG] skip predecessor routing -- dfgNode: 17
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[19] onto fu[2] at cycle 7 within II: 10
+[DEBUG] setDFGNode 19 onto CGRANode 2 at cycle: 7
+[DEBUG] in allocateReg() t_cycle: 6; i: 0 CGRA node: 2; link: 3 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[3]-->[2] (bypass:0) dfgNode: 18 at cycle 6
+[DEBUG] skip predecessor routing -- dfgNode: 18
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[0] onto fu[3] at cycle 8 within II: 10
+[DEBUG] setDFGNode 0 onto CGRANode 3 at cycle: 8
+[DEBUG] in allocateReg() t_cycle: 7; i: 0 CGRA node: 3; link: 2 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[2]-->[3] (bypass:0) dfgNode: 19 at cycle 7
+[DEBUG] tryToRoute -- srcDFGNode: 17, srcCGRANode: 1; dstDFGNode: 0, dstCGRANode: 3; backEdge: 0
+[DEBUG] in shareSameCycle is true: node 0
+[DEBUG] check route size: 2
+[DEBUG] reset duration: 3 t_dstCycle: 8 previous: 5 II: 10
+[DEBUG] in allocateReg() t_cycle: 5; i: 1 CGRA node: 3; link: 1 duration 3
+[DEBUG] done reg allocation
+[DEBUG] occupy link[1]-->[3] (bypass:0) dfgNode: 17 at cycle 5
+[DEBUG] skip predecessor routing -- dfgNode: 19
+[DEBUG] in shareSameCycle is true: node 0
+[DEBUG] tryToRoute -- srcDFGNode: 0, srcCGRANode: 3; dstDFGNode: 1, dstCGRANode: 3; backEdge: 1
+[DEBUG] in shareSameCycle is true: node 1
+[DEBUG] check route size: 1
+[DEBUG] allocate for local reg maintain... duration=2 last cycle: 8
+[DEBUG] in allocateReg() t_cycle: 8; i: 0 CGRA node: 3; link: 4 duration 2
+[DEBUG] done reg allocation
+[DEBUG] in shareSameCycle is true: node 0
+[DEBUG] tryToRoute -- srcDFGNode: 0, srcCGRANode: 3; dstDFGNode: 17, dstCGRANode: 1; backEdge: 1
+[DEBUG] in shareSameCycle is true: node 17
+[DEBUG] check route size: 2
+[DEBUG] reset duration: 7 t_dstCycle: 5 previous: 8 II: 10
+[DEBUG] in allocateReg() t_cycle: 8; i: 2 CGRA node: 1; link: 0 duration 7
+[DEBUG] done reg allocation
+[DEBUG] occupy link[3]-->[1] (bypass:0) dfgNode: 0 at cycle 8
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[5] onto fu[1] at cycle 9 within II: 10
+[DEBUG] setDFGNode 5 onto CGRANode 1 at cycle: 9
+[DEBUG] in allocateReg() t_cycle: 8; i: 0 CGRA node: 1; link: 0 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[3]-->[1] (bypass:0) dfgNode: 0 at cycle 8
+[DEBUG] skip predecessor routing -- dfgNode: 0
+[DEBUG] tryToRoute -- srcDFGNode: 4, srcCGRANode: 1; dstDFGNode: 5, dstCGRANode: 1; backEdge: 0
+[DEBUG] check route size: 1
+[DEBUG] allocate for local reg maintain... duration=6 last cycle: 3
+[DEBUG] in allocateReg() t_cycle: 3; i: 3 CGRA node: 1; link: 4 duration 6
+[DEBUG] done reg allocation
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[6] onto fu[0] at cycle 10 within II: 10
+[DEBUG] setDFGNode 6 onto CGRANode 0 at cycle: 10
+[DEBUG] in allocateReg() t_cycle: 9; i: 0 CGRA node: 0; link: 3 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[1]-->[0] (bypass:0) dfgNode: 5 at cycle 9
+[DEBUG] skip predecessor routing -- dfgNode: 5
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[7] onto fu[2] at cycle 11 within II: 10
+[DEBUG] setDFGNode 7 onto CGRANode 2 at cycle: 11
+[DEBUG] in allocateReg() t_cycle: 10; i: 0 CGRA node: 2; link: 1 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[0]-->[2] (bypass:0) dfgNode: 6 at cycle 10
+[DEBUG] skip predecessor routing -- dfgNode: 6
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[8] onto fu[0] at cycle 12 within II: 10
+[DEBUG] setDFGNode 8 onto CGRANode 0 at cycle: 12
+[DEBUG] in allocateReg() t_cycle: 11; i: 0 CGRA node: 0; link: 0 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[2]-->[0] (bypass:0) dfgNode: 7 at cycle 11
+[DEBUG] skip predecessor routing -- dfgNode: 7
+[DEBUG] success in schedule()
+[DEBUG] no available path for DFG node 9 on CGRA node 1 within II 10; path size: 1.
+[DEBUG] no available path for DFG node 9 on CGRA node 3 within II 10; path size: 2.
+[DEBUG] schedule dfg node[9] onto fu[2] at cycle 13 within II: 10
+[DEBUG] setDFGNode 9 onto CGRANode 2 at cycle: 13
+[DEBUG] in allocateReg() t_cycle: 12; i: 0 CGRA node: 2; link: 1 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[0]-->[2] (bypass:0) dfgNode: 8 at cycle 12
+[DEBUG] skip predecessor routing -- dfgNode: 8
+[DEBUG] success in schedule()
+[DEBUG] schedule dfg node[11] onto fu[3] at cycle 15 within II: 10
+[DEBUG] setDFGNode 11 onto CGRANode 3 at cycle: 15
+[DEBUG] in allocateReg() t_cycle: 13; i: 1 CGRA node: 3; link: 2 duration 2
+[DEBUG] done reg allocation
+[DEBUG] occupy link[2]-->[3] (bypass:0) dfgNode: 9 at cycle 13
+[DEBUG] skip predecessor routing -- dfgNode: 9
+[DEBUG] tryToRoute -- srcDFGNode: 10, srcCGRANode: 0; dstDFGNode: 11, dstCGRANode: 3; backEdge: 0
+[DEBUG] check route size: 3
+[DEBUG] reset duration: 1 t_dstCycle: 15 previous: 4 II: 10
+[DEBUG] in allocateReg() t_cycle: 4; i: 1 CGRA node: 2; link: 1 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[0]-->[2] (bypass:0) dfgNode: 10 at cycle 4
+[DEBUG] reset duration: 9 t_dstCycle: 15 previous: 6 II: 10
+[DEBUG] in allocateReg() t_cycle: 6; i: 2 CGRA node: 3; link: 2 duration 9
+[DEBUG] done reg allocation
+[DEBUG] occupy link[2]-->[3] (bypass:0) dfgNode: 10 at cycle 6
+[DEBUG] success in schedule()
+[DEBUG] no available path for DFG node 12 on CGRA node 1 within II 10; path size: 1.
+[DEBUG] no available path for DFG node 12 on CGRA node 3 within II 10; path size: 2.
+[DEBUG] schedule dfg node[12] onto fu[2] at cycle 16 within II: 10
+[DEBUG] setDFGNode 12 onto CGRANode 2 at cycle: 16
+[DEBUG] in allocateReg() t_cycle: 15; i: 0 CGRA node: 2; link: 3 duration 1
+[DEBUG] done reg allocation
+[DEBUG] occupy link[3]-->[2] (bypass:0) dfgNode: 11 at cycle 15
+[DEBUG] skip predecessor routing -- dfgNode: 11
+[DEBUG] success in schedule()
+Mapping algorithm elapsed time=11ms
+--------------------------- cycle:0 ---------------------------
+[     ]   [  1  ]
+   ↑         ↓ 
+[     ]   [     ]
+--------------------------- cycle:1 ---------------------------
+[     ]   [     ]
+   ↓         ↑ 
+[     ]   [  2  ]
+--------------------------- cycle:2 ---------------------------
+[     ]   [  3  ]
+   ↑         ↓ 
+[     ]   [     ]
+--------------------------- cycle:3 ---------------------------
+[     ] → [     ]
+             ↑ 
+[     ] ← [  4  ]
+--------------------------- cycle:4 ---------------------------
+[     ]   [ 16  ]
+   ↑         ↓ 
+[ 10  ]   [     ]
+--------------------------- cycle:5 ---------------------------
+[ 13  ] ← [     ]
+   ↓         ↑ 
+[     ]   [ 17  ]
+--------------------------- cycle:6 ---------------------------
+[     ] ⇄ [ 18  ]
+               
+[     ] → [     ]
+--------------------------- cycle:7 ---------------------------
+[ 19  ] → [     ]
+               
+[     ] ← [ 14  ]
+--------------------------- cycle:8 ---------------------------
+[     ]   [  0  ]
+             ↓ 
+[ 15  ]   [     ]
+--------------------------- cycle:9 ---------------------------
+[     ]   [     ]
+               
+[     ] ← [  5  ]
+--------------------------- cycle:10 ---------------------------
+[     ]   [  1  ]
+   ↑         ↓ 
+[  6  ]   [     ]
+--------------------------- cycle:11 ---------------------------
+[  7  ]   [     ]
+   ↓         ↑ 
+[     ]   [  2  ]
+--------------------------- cycle:12 ---------------------------
+[     ]   [  3  ]
+   ↑         ↓ 
+[  8  ]   [     ]
+--------------------------- cycle:13 ---------------------------
+[  9  ] → [     ]
+             ↑ 
+[     ] ← [  4  ]
+--------------------------- cycle:14 ---------------------------
+[     ]   [ 16  ]
+   ↑         ↓ 
+[ 10  ]   [     ]
+--------------------------- cycle:15 ---------------------------
+[ 13  ] ← [ 11  ]
+   ↓         ↑ 
+[     ]   [ 17  ]
+--------------------------- cycle:16 ---------------------------
+[ 12  ] ⇄ [ 18  ]
+               
+[     ] → [     ]
+--------------------------- cycle:17 ---------------------------
+[ 19  ] → [     ]
+               
+[     ] ← [ 14  ]
+--------------------------- cycle:18 ---------------------------
+[     ]   [  0  ]
+             ↓ 
+[ 15  ]   [     ]
+--------------------------- cycle:19 ---------------------------
+[     ]   [     ]
+               
+[     ] ← [  5  ]
+--------------------------- cycle:20 ---------------------------
+[     ]   [  1  ]
+   ↑         ↓ 
+[  6  ]   [     ]
+--------------------------- cycle:21 ---------------------------
+[  7  ]   [     ]
+   ↓         ↑ 
+[     ]   [  2  ]
+--------------------------- cycle:22 ---------------------------
+[     ]   [  3  ]
+   ↑         ↓ 
+[  8  ]   [     ]
+--------------------------- cycle:23 ---------------------------
+[  9  ] → [     ]
+             ↑ 
+[     ] ← [  4  ]
+--------------------------- cycle:24 ---------------------------
+[     ]   [ 16  ]
+   ↑         ↓ 
+[ 10  ]   [     ]
+--------------------------- cycle:25 ---------------------------
+[ 13  ] ← [ 11  ]
+   ↓         ↑ 
+[     ]   [ 17  ]
+--------------------------- cycle:26 ---------------------------
+[ 12  ] ⇄ [ 18  ]
+               
+[     ] → [     ]
+--------------------------- cycle:27 ---------------------------
+[ 19  ] → [     ]
+               
+[     ] ← [ 14  ]
+--------------------------- cycle:28 ---------------------------
+[     ]   [  0  ]
+             ↓ 
+[ 15  ]   [     ]
+--------------------------- cycle:29 ---------------------------
+[     ]   [     ]
+               
+[     ] ← [  5  ]
+--------------------------- cycle:30 ---------------------------
+[     ]   [  1  ]
+   ↑         ↓ 
+[  6  ]   [     ]
+--------------------------- cycle:31 ---------------------------
+[  7  ]   [     ]
+   ↓         ↑ 
+[     ]   [  2  ]
+--------------------------- cycle:32 ---------------------------
+[     ]   [  3  ]
+   ↑         ↓ 
+[  8  ]   [     ]
+--------------------------- cycle:33 ---------------------------
+[  9  ] → [     ]
+             ↑ 
+[     ] ← [  4  ]
+--------------------------- cycle:34 ---------------------------
+[     ]   [ 16  ]
+   ↑         ↓ 
+[ 10  ]   [     ]
+--------------------------- cycle:35 ---------------------------
+[ 13  ] ← [ 11  ]
+   ↓         ↑ 
+[     ]   [ 17  ]
+--------------------------- cycle:36 ---------------------------
+[ 12  ] ⇄ [ 18  ]
+               
+[     ] → [     ]
+--------------------------- cycle:37 ---------------------------
+[ 19  ] → [     ]
+               
+[     ] ← [ 14  ]
+--------------------------- cycle:38 ---------------------------
+[     ]   [  0  ]
+             ↓ 
+[ 15  ]   [     ]
+--------------------------- cycle:39 ---------------------------
+[     ]   [     ]
+               
+[     ] ← [  5  ]
+--------------------------- cycle:40 ---------------------------
+[     ]   [  1  ]
+   ↑         ↓ 
+[  6  ]   [     ]
+[Mapping II: 10]
+[show opcode count]
+add : 5
+br : 3
+cmp : 2
+getelementptr : 1
+load : 3
+phi : 1
+sext : 1
+store : 2
+trunc : 2
+DFG node count: 20; DFG edge count: 25; SIMD node count: 0
+[Mapping Success]
+==================================
+[Utilization & DVFS stats]
+tile avg fu utilization: 50%; avg xbar utilization: 90%; avg overall utilization: 90%
+histogram 0% tile utilization: 0
+histogram (0%, 25%] tile utilization: 0
+histogram (25%, 50%] tile utilization: 0
+histogram (50%, 100%] tile utilization: 4
+tile average DVFS frequency level: 100%
+histogram 0% tile DVFS frequency ratio: 0
+histogram 25% tile DVFS frequency ratio: 0
+histogram 50% tile DVFS frequency ratio: 0
+histogram 100% tile DVFS frequency ratio: 4
+==================================
+[DEBUG] inside roi for CGRA node 0...
+[Output Json]
+[Output Json for Incremental Mapping]
+==================================
+*** reach target loop ID: 0
+... done detected loops.size(): 1
+└── *** current basic block: ; First Inst:   %7 = add i32 %5, 1
+│   └── *** ignored by pass because instruction "  %7 = add i32 %5, 1" is out of the scope (target loop).
+│   └── *** ignored by pass because instruction "  %8 = icmp ult i32 %7, 3" is out of the scope (target loop).
+│   └── *** ignored by pass because instruction "  %9 = mul nsw i32 %5, %4" is out of the scope (target loop).
+│   └── *** ignored by pass because instruction "  %10 = add i32 %3, -5" is out of the scope (target loop).
+│   └── *** ignored by pass because instruction "  %11 = add i32 %10, %9" is out of the scope (target loop).
+│   └── *** ignored by pass because instruction "  br i1 %8, label %15, label %12" is out of the scope (target loop).
+└── *** ignored by pass because basic block "" is out of the scope (target loop).
+│
+└── *** current basic block: ; First Inst:   %13 = load float, float* %1, align 4, !tbaa !2
+│   └── *** ignored by pass because instruction "  %13 = load float, float* %1, align 4, !tbaa !2" is out of the scope (target loop).
+│   └── *** ignored by pass because instruction "  %14 = load i32, i32* %2, align 4, !tbaa !6" is out of the scope (target loop).
+│   └── *** ignored by pass because instruction "  br label %35" is out of the scope (target loop).
+└── *** ignored by pass because basic block "" is out of the scope (target loop).
+│
+└── *** current basic block: ; First Inst:   %16 = phi i64 [ %31, %30 ], [ 0, %6 ]
+│   └── +++ "  %16 = phi i64 [ %31, %30 ], [ 0, %6 ]" (ID: 0)
+│   └── +++ "  %17 = trunc i64 %16 to i32" (ID: 1)
+│   └── +++ "  %18 = add i32 %17, -4" (ID: 2)
+│   └── +++ "  %19 = icmp ult i32 %18, 3" (ID: 3)
+│   └── +++ "  br i1 %19, label %30, label %20" (ID: 4)
+└── +++ basic block "" got ID: 0
+│
+└── *** current basic block: ; First Inst:   %21 = trunc i64 %16 to i32
+│   └── +++ "  %21 = trunc i64 %16 to i32" (ID: 5)
+│   └── +++ "  %22 = add i32 %11, %21" (ID: 6)
+│   └── +++ "  %23 = sext i32 %22 to i64" (ID: 7)
+│   └── +++ "  %24 = getelementptr inbounds float, float* %0, i64 %23" (ID: 8)
+│   └── +++ "  %25 = load float, float* %24, align 4, !tbaa !2" (ID: 9)
+│   └── +++ "  %26 = load float, float* %1, align 4, !tbaa !2" (ID: 10)
+│   └── +++ "  %27 = fadd float %25, %26" (ID: 11)
+│   └── +++ "  store float %27, float* %1, align 4, !tbaa !2" (ID: 12)
+│   └── +++ "  %28 = load i32, i32* %2, align 4, !tbaa !6" (ID: 13)
+│   └── +++ "  %29 = add nsw i32 %28, 1" (ID: 14)
+│   └── +++ "  store i32 %29, i32* %2, align 4, !tbaa !6" (ID: 15)
+│   └── +++ "  br label %30" (ID: 16)
+└── +++ basic block "" got ID: 1
+│
+└── *** current basic block: ; First Inst:   %31 = add nuw nsw i64 %16, 1
+│   └── +++ "  %31 = add nuw nsw i64 %16, 1" (ID: 17)
+│   └── +++ "  %32 = icmp eq i64 %31, 11" (ID: 18)
+│   └── +++ "  br i1 %32, label %34, label %15, !llvm.loop !8" (ID: 19)
+└── +++ basic block "" got ID: 2
+│
+└── *** current basic block: ; First Inst:   store i32 %45, i32* %2, align 4, !tbaa !6
+│   └── *** ignored by pass because instruction "  store i32 %45, i32* %2, align 4, !tbaa !6" is out of the scope (target loop).
+│   └── *** ignored by pass because instruction "  br label %34" is out of the scope (target loop).
+└── *** ignored by pass because basic block "" is out of the scope (target loop).
+│
+└── *** current basic block: ; First Inst:   ret void
+│   └── *** ignored by pass because instruction "  ret void" is out of the scope (target loop).
+└── *** ignored by pass because basic block "" is out of the scope (target loop).
+│
+└── *** current basic block: ; First Inst:   %36 = phi i32 [ %14, %12 ], [ %45, %35 ]
+│   └── *** ignored by pass because instruction "  %36 = phi i32 [ %14, %12 ], [ %45, %35 ]" is out of the scope (target loop).
+│   └── *** ignored by pass because instruction "  %37 = phi float [ %13, %12 ], [ %44, %35 ]" is out of the scope (target loop).
+│   └── *** ignored by pass because instruction "  %38 = phi i64 [ 0, %12 ], [ %46, %35 ]" is out of the scope (target loop).
+│   └── *** ignored by pass because instruction "  %39 = trunc i64 %38 to i32" is out of the scope (target loop).
+│   └── *** ignored by pass because instruction "  %40 = add i32 %11, %39" is out of the scope (target loop).
+│   └── *** ignored by pass because instruction "  %41 = sext i32 %40 to i64" is out of the scope (target loop).
+│   └── *** ignored by pass because instruction "  %42 = getelementptr inbounds float, float* %0, i64 %41" is out of the scope (target loop).
+│   └── *** ignored by pass because instruction "  %43 = load float, float* %42, align 4, !tbaa !2" is out of the scope (target loop).
+│   └── *** ignored by pass because instruction "  %44 = fadd float %43, %37" is out of the scope (target loop).
+│   └── *** ignored by pass because instruction "  store float %44, float* %1, align 4, !tbaa !2" is out of the scope (target loop).
+│   └── *** ignored by pass because instruction "  %45 = add nsw i32 %36, 1" is out of the scope (target loop).
+│   └── *** ignored by pass because instruction "  %46 = add nuw nsw i64 %38, 1" is out of the scope (target loop).
+│   └── *** ignored by pass because instruction "  %47 = icmp eq i64 %46, 11" is out of the scope (target loop).
+│   └── *** ignored by pass because instruction "  br i1 %47, label %33, label %35, !llvm.loop !8" is out of the scope (target loop).
+└── *** ignored by pass because basic block "" is out of the scope (target loop).
+│
+│
+└── *** curBB: ; First Inst:   %16 = phi i64 [ %31, %30 ], [ 0, %6 ]
+│   ├── *** find terminator instruction of curBB:   br i1 %19, label %30, label %20
+│   ├── *** into sucBB ""
+│   │   ├── Type: first inst of a BB.
+│   │   ├── ctrl flow point to:   %31 = add nuw nsw i64 %16, 1; In BB: 
+│   │   └── +++ construct ctrl flow:   br i1 %19, label %30, label %20->  %31 = add nuw nsw i64 %16, 1
+│   ├── *** into sucBB ""
+│   │   ├── Type: first inst of a BB.
+│   │   ├── ctrl flow point to:   %21 = trunc i64 %16 to i32; In BB: 
+│   │   └── +++ construct ctrl flow:   br i1 %19, label %30, label %20->  %21 = trunc i64 %16 to i32
+│   │   ├── Type: lonely inst.
+│   │   ├── ctrl flow point to:   %26 = load float, float* %1, align 4, !tbaa !2; In BB: 
+│   │   └── +++ construct ctrl flow:   br i1 %19, label %30, label %20->  %26 = load float, float* %1, align 4, !tbaa !2
+│   │   ├── Type: lonely inst.
+│   │   ├── ctrl flow point to:   %28 = load i32, i32* %2, align 4, !tbaa !6; In BB: 
+│   │   └── +++ construct ctrl flow:   br i1 %19, label %30, label %20->  %28 = load i32, i32* %2, align 4, !tbaa !6
+│   │   ├── Type: lonely inst.
+│   │   ├── ctrl flow point to:   br label %30; In BB: 
+│   │   └── +++ construct ctrl flow:   br i1 %19, label %30, label %20->  br label %30
+│
+└── *** curBB: ; First Inst:   %21 = trunc i64 %16 to i32
+│   ├── *** find terminator instruction of curBB:   br label %30
+│   ├── *** into sucBB ""
+│   │   ├── Type: first inst of a BB.
+│   │   ├── ctrl flow point to:   %31 = add nuw nsw i64 %16, 1; In BB: 
+│   │   └── +++ construct ctrl flow:   br label %30->  %31 = add nuw nsw i64 %16, 1
+│
+└── *** curBB: ; First Inst:   %31 = add nuw nsw i64 %16, 1
+│   ├── *** find terminator instruction of curBB:   br i1 %32, label %34, label %15, !llvm.loop !8
+│   └── *** ignore sucBB ""
+│   ├── *** into sucBB ""
+│   │   ├── Type: first inst of a BB.
+│   │   ├── ctrl flow point to:   %16 = phi i64 [ %31, %30 ], [ 0, %6 ]; In BB: 
+│   │   └── +++ construct ctrl flow:   br i1 %32, label %34, label %15, !llvm.loop !8->  %16 = phi i64 [ %31, %30 ], [ 0, %6 ]
+[detected one cycle] head:   %16 = phi i64 [ %31, %30 ], [ 0, %6 ]
+cycle edge: {  %16 = phi i64 [ %31, %30 ], [ 0, %6 ]  } -> {  %17 = trunc i64 %16 to i32  } (0 -> 1)
+cycle edge: {  %17 = trunc i64 %16 to i32  } -> {  %18 = add i32 %17, -4  } (1 -> 2)
+cycle edge: {  %18 = add i32 %17, -4  } -> {  %19 = icmp ult i32 %18, 3  } (2 -> 3)
+cycle edge: {  %19 = icmp ult i32 %18, 3  } -> {  br i1 %19, label %30, label %20  } (3 -> 4)
+cycle edge: {  br i1 %19, label %30, label %20  } -> {  %31 = add nuw nsw i64 %16, 1  } (4 -> 17)
+cycle edge: {  %31 = add nuw nsw i64 %16, 1  } -> {  %16 = phi i64 [ %31, %30 ], [ 0, %6 ]  } (17 -> 0)
+[detected one cycle] head:   %16 = phi i64 [ %31, %30 ], [ 0, %6 ]
+cycle edge: {  %16 = phi i64 [ %31, %30 ], [ 0, %6 ]  } -> {  %17 = trunc i64 %16 to i32  } (0 -> 1)
+cycle edge: {  %17 = trunc i64 %16 to i32  } -> {  %18 = add i32 %17, -4  } (1 -> 2)
+cycle edge: {  %18 = add i32 %17, -4  } -> {  %19 = icmp ult i32 %18, 3  } (2 -> 3)
+cycle edge: {  %19 = icmp ult i32 %18, 3  } -> {  br i1 %19, label %30, label %20  } (3 -> 4)
+cycle edge: {  br i1 %19, label %30, label %20  } -> {  %31 = add nuw nsw i64 %16, 1  } (4 -> 17)
+cycle edge: {  %31 = add nuw nsw i64 %16, 1  } -> {  %32 = icmp eq i64 %31, 11  } (17 -> 18)
+cycle edge: {  %32 = icmp eq i64 %31, 11  } -> {  br i1 %32, label %34, label %15, !llvm.loop !8  } (18 -> 19)
+cycle edge: {  br i1 %32, label %34, label %15, !llvm.loop !8  } -> {  %16 = phi i64 [ %31, %30 ], [ 0, %6 ]  } (19 -> 0)
+(1)   %17 = trunc i64 %16 to i32, level: 0
+(2)   %18 = add i32 %17, -4, level: 1
+(3)   %19 = icmp ult i32 %18, 3, level: 2
+(4)   br i1 %19, label %30, label %20, level: 3
+(10)   %26 = load float, float* %1, align 4, !tbaa !2, level: 4
+(13)   %28 = load i32, i32* %2, align 4, !tbaa !6, level: 4
+(16)   br label %30, level: 4
+(14)   %29 = add nsw i32 %28, 1, level: 5
+(17)   %31 = add nuw nsw i64 %16, 1, level: 5
+(15)   store i32 %29, i32* %2, align 4, !tbaa !6, level: 6
+(18)   %32 = icmp eq i64 %31, 11, level: 6
+(19)   br i1 %32, label %34, label %15, !llvm.loop !8, level: 7
+(0)   %16 = phi i64 [ %31, %30 ], [ 0, %6 ], level: 8
+(5)   %21 = trunc i64 %16 to i32, level: 9
+(6)   %22 = add i32 %11, %21, level: 10
+(7)   %23 = sext i32 %22 to i64, level: 11
+(8)   %24 = getelementptr inbounds float, float* %0, i64 %23, level: 12
+(9)   %25 = load float, float* %24, align 4, !tbaa !2, level: 13
+(11)   %27 = fadd float %25, %26, level: 14
+(12)   store float %27, float* %1, align 4, !tbaa !2, level: 15
+[detected one cycle] head:   %17 = trunc i64 %16 to i32
+cycle edge: {  %17 = trunc i64 %16 to i32  } -> {  %18 = add i32 %17, -4  } (1 -> 2)
+cycle edge: {  %18 = add i32 %17, -4  } -> {  %19 = icmp ult i32 %18, 3  } (2 -> 3)
+cycle edge: {  %19 = icmp ult i32 %18, 3  } -> {  br i1 %19, label %30, label %20  } (3 -> 4)
+cycle edge: {  br i1 %19, label %30, label %20  } -> {  %31 = add nuw nsw i64 %16, 1  } (4 -> 17)
+cycle edge: {  %31 = add nuw nsw i64 %16, 1  } -> {  %16 = phi i64 [ %31, %30 ], [ 0, %6 ]  } (17 -> 0)
+cycle edge: {  %16 = phi i64 [ %31, %30 ], [ 0, %6 ]  } -> {  %17 = trunc i64 %16 to i32  } (0 -> 1)
+[detected one cycle] head:   %31 = add nuw nsw i64 %16, 1
+cycle edge: {  %31 = add nuw nsw i64 %16, 1  } -> {  %16 = phi i64 [ %31, %30 ], [ 0, %6 ]  } (17 -> 0)
+cycle edge: {  %16 = phi i64 [ %31, %30 ], [ 0, %6 ]  } -> {  %31 = add nuw nsw i64 %16, 1  } (0 -> 17)

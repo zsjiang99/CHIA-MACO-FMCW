@@ -1,0 +1,48 @@
+{
+  "scope": "opcode restoration only; not executable or hardware-validated",
+  "status": "opcodes_restored",
+  "candidate": {
+    "architecture_vectorization": "none",
+    "bypass_constraint": 4,
+    "columns": 4,
+    "compiler_vectorize": false,
+    "control_memory": 200,
+    "heuristic_mapping": true,
+    "kernel": "fmcw_window",
+    "register_count": 8,
+    "rows": 4,
+    "unroll_factor": 1
+  },
+  "changes": [
+    {
+      "node": 5,
+      "pe": 9,
+      "slot": 1,
+      "original": "OPT_MUL",
+      "restored": "OPT_FMUL",
+      "instruction": "%13 = fmul float %10, %12"
+    },
+    {
+      "node": 11,
+      "pe": 6,
+      "slot": 0,
+      "original": "OPT_MUL",
+      "restored": "OPT_FMUL",
+      "instruction": "%18 = fmul float %16, %17"
+    }
+  ],
+  "source_sha256": {
+    "config.json": "94583993ac8d60bb14b39e904ab525d2bc9d1ef4bc4a1359237b6bf2d8683bdf",
+    "dfg.json": "45a48f047b03a42daf0bc7436e2da4625e08b4d965eb787c37c6a9a725880e55",
+    "kernel_map.bc": "7e459f7b4c760bcdd27520ea8d54fa5ff1ac9945b53b44e1fc1e48ccc5a6fdac",
+    "log": "a2d4cb9f746552213bd253973e1c751c1a9cb32a0bcfa3fbede047338bb997e8",
+    "mapping": "691f04fb3ea36bb25b6849bd4228f354dc89e6ca516024efd2d70fdcdcfd7940"
+  },
+  "pending": [
+    "operand/register and routing translation",
+    "constants and memory addresses",
+    "configuration/data loader",
+    "whole-kernel RTL execution"
+  ],
+  "candidate_hardware_correctness": "pending"
+}

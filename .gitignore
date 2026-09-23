@@ -1,0 +1,15 @@
+.venv/
+external/
+__pycache__/
+.pytest_cache/
+*.pyc
+*.so
+*.egg-info/
+chia-maco/build/
+chia-maco/gui/runtime/
+chia-maco/gui/dist/
+gui/frontend/node_modules/
+gui/frontend/dist/
+gui/frontend/*.tsbuildinfo
+gui/runtime/
+chia-maco/results/my_run/

@@ -1,0 +1,24 @@
+{
+  "candidate": {
+    "architecture_vectorization": "none",
+    "bypass_constraint": 4,
+    "columns": 4,
+    "compiler_vectorize": false,
+    "control_memory": 200,
+    "heuristic_mapping": true,
+    "kernel": "fmcw_cfar_2d",
+    "register_count": 8,
+    "rows": 4,
+    "unroll_factor": 1
+  },
+  "dfg_edges": 25,
+  "dfg_nodes": 20,
+  "elapsed_seconds": 0.779518682975322,
+  "error": null,
+  "fu_utilization_percent": 12.5,
+  "mapping_ii": 10,
+  "recurrence_mii": 6,
+  "resource_mii": 2,
+  "success": true,
+  "xbar_utilization_percent": 30.0
+}

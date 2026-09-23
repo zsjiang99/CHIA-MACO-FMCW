@@ -1,0 +1,1603 @@
+{
+  "architectures": [
+    {
+      "all_kernels_feasible": true,
+      "columns": 2,
+      "compiler_speedup_percent": 1.5603990557119884,
+      "frame_estimate": {
+        "breakdown": {
+          "fmcw_accumulate_power": {
+            "compiler_unroll_factor": 4,
+            "dynamic_iterations": 131072,
+            "estimated_cycles": 360448,
+            "measured_mapping_ii": 11,
+            "scheduled_loop_groups": 32768
+          },
+          "fmcw_cfar_2d": {
+            "compiler_unroll_factor": 1,
+            "dynamic_iterations": 3512388,
+            "estimated_cycles": 35123880,
+            "measured_mapping_ii": 10,
+            "scheduled_loop_groups": 3512388
+          },
+          "fmcw_fft_stage": {
+            "compiler_unroll_factor": 1,
+            "dynamic_iterations": 983040,
+            "estimated_cycles": 8847360,
+            "measured_mapping_ii": 9,
+            "scheduled_loop_groups": 983040
+          },
+          "fmcw_transpose": {
+            "compiler_unroll_factor": 4,
+            "dynamic_iterations": 262144,
+            "estimated_cycles": 589824,
+            "measured_mapping_ii": 9,
+            "scheduled_loop_groups": 65536
+          },
+          "fmcw_window": {
+            "compiler_unroll_factor": 4,
+            "dynamic_iterations": 131072,
+            "estimated_cycles": 557056,
+            "measured_mapping_ii": 17,
+            "scheduled_loop_groups": 32768
+          }
+        },
+        "estimated_cycles": 45478568,
+        "excluded_costs": [
+          "loop_setup",
+          "memory_stalls",
+          "fft_bit_reversal",
+          "host_cgra_transfers"
+        ],
+        "model": "steady_state_scheduled_groups_x_mapping_ii",
+        "valid": true
+      },
+      "pareto_optimal": true,
+      "rows": 2,
+      "scalar_compiler_baseline": {
+        "breakdown": {
+          "fmcw_accumulate_power": {
+            "compiler_unroll_factor": 1,
+            "dynamic_iterations": 131072,
+            "estimated_cycles": 524288,
+            "measured_mapping_ii": 4,
+            "scheduled_loop_groups": 131072
+          },
+          "fmcw_cfar_2d": {
+            "compiler_unroll_factor": 1,
+            "dynamic_iterations": 3512388,
+            "estimated_cycles": 35123880,
+            "measured_mapping_ii": 10,
+            "scheduled_loop_groups": 3512388
+          },
+          "fmcw_fft_stage": {
+            "compiler_unroll_factor": 1,
+            "dynamic_iterations": 983040,
+            "estimated_cycles": 8847360,
+            "measured_mapping_ii": 9,
+            "scheduled_loop_groups": 983040
+          },
+          "fmcw_transpose": {
+            "compiler_unroll_factor": 1,
+            "dynamic_iterations": 262144,
+            "estimated_cycles": 1048576,
+            "measured_mapping_ii": 4,
+            "scheduled_loop_groups": 262144
+          },
+          "fmcw_window": {
+            "compiler_unroll_factor": 1,
+            "dynamic_iterations": 131072,
+            "estimated_cycles": 655360,
+            "measured_mapping_ii": 5,
+            "scheduled_loop_groups": 131072
+          }
+        },
+        "estimated_cycles": 46199464,
+        "excluded_costs": [
+          "loop_setup",
+          "memory_stalls",
+          "fft_bit_reversal",
+          "host_cgra_transfers"
+        ],
+        "model": "steady_state_scheduled_groups_x_mapping_ii",
+        "valid": true
+      },
+      "selected_compiler_configs": [
+        {
+          "candidate": {
+            "architecture_vectorization": "none",
+            "bypass_constraint": 4,
+            "columns": 2,
+            "compiler_vectorize": false,
+            "control_memory": 200,
+            "heuristic_mapping": true,
+            "kernel": "fmcw_window",
+            "register_count": 8,
+            "rows": 2,
+            "unroll_factor": 4
+          },
+          "dfg_edges": 76,
+          "dfg_nodes": 59,
+          "elapsed_seconds": 0.5311731188558042,
+          "error": null,
+          "fu_utilization_percent": 86.7647,
+          "mapping_ii": 17,
+          "recurrence_mii": 3,
+          "resource_mii": 15,
+          "success": true,
+          "xbar_utilization_percent": 98.5294
+        },
+        {
+          "candidate": {
+            "architecture_vectorization": "none",
+            "bypass_constraint": 4,
+            "columns": 2,
+            "compiler_vectorize": false,
+            "control_memory": 200,
+            "heuristic_mapping": true,
+            "kernel": "fmcw_fft_stage",
+            "register_count": 8,
+            "rows": 2,
+            "unroll_factor": 1
+          },
+          "dfg_edges": 46,
+          "dfg_nodes": 31,
+          "elapsed_seconds": 0.5748719039838761,
+          "error": null,
+          "fu_utilization_percent": 86.1111,
+          "mapping_ii": 9,
+          "recurrence_mii": 2,
+          "resource_mii": 8,
+          "success": true,
+          "xbar_utilization_percent": 100.0
+        },
+        {
+          "candidate": {
+            "architecture_vectorization": "none",
+            "bypass_constraint": 4,
+            "columns": 2,
+            "compiler_vectorize": false,
+            "control_memory": 200,
+            "heuristic_mapping": true,
+            "kernel": "fmcw_transpose",
+            "register_count": 8,
+            "rows": 2,
+            "unroll_factor": 4
+          },
+          "dfg_edges": 40,
+          "dfg_nodes": 35,
+          "elapsed_seconds": 0.5623620599508286,
+          "error": null,
+          "fu_utilization_percent": 97.2222,
+          "mapping_ii": 9,
+          "recurrence_mii": 3,
+          "resource_mii": 9,
+          "success": true,
+          "xbar_utilization_percent": 100.0
+        },
+        {
+          "candidate": {
+            "architecture_vectorization": "none",
+            "bypass_constraint": 4,
+            "columns": 2,
+            "compiler_vectorize": false,
+            "control_memory": 200,
+            "heuristic_mapping": true,
+            "kernel": "fmcw_accumulate_power",
+            "register_count": 8,
+            "rows": 2,
+            "unroll_factor": 4
+          },
+          "dfg_edges": 47,
+          "dfg_nodes": 44,
+          "elapsed_seconds": 0.5213520010001957,
+          "error": null,
+          "fu_utilization_percent": 100.0,
+          "mapping_ii": 11,
+          "recurrence_mii": 0,
+          "resource_mii": 11,
+          "success": true,
+          "xbar_utilization_percent": 100.0
+        },
+        {
+          "candidate": {
+            "architecture_vectorization": "none",
+            "bypass_constraint": 4,
+            "columns": 2,
+            "compiler_vectorize": false,
+            "control_memory": 200,
+            "heuristic_mapping": true,
+            "kernel": "fmcw_cfar_2d",
+            "register_count": 8,
+            "rows": 2,
+            "unroll_factor": 1
+          },
+          "dfg_edges": 25,
+          "dfg_nodes": 20,
+          "elapsed_seconds": 0.4803442240227014,
+          "error": null,
+          "fu_utilization_percent": 50.0,
+          "mapping_ii": 10,
+          "recurrence_mii": 6,
+          "resource_mii": 5,
+          "success": true,
+          "xbar_utilization_percent": 90.0
+        }
+      ],
+      "tiles": 4
+    },
+    {
+      "all_kernels_feasible": true,
+      "columns": 4,
+      "compiler_speedup_percent": 4.8570910368265,
+      "frame_estimate": {
+        "breakdown": {
+          "fmcw_accumulate_power": {
+            "compiler_unroll_factor": 4,
+            "dynamic_iterations": 131072,
+            "estimated_cycles": 131072,
+            "measured_mapping_ii": 4,
+            "scheduled_loop_groups": 32768
+          },
+          "fmcw_cfar_2d": {
+            "compiler_unroll_factor": 1,
+            "dynamic_iterations": 3512388,
+            "estimated_cycles": 35123880,
+            "measured_mapping_ii": 10,
+            "scheduled_loop_groups": 3512388
+          },
+          "fmcw_fft_stage": {
+            "compiler_unroll_factor": 2,
+            "dynamic_iterations": 983040,
+            "estimated_cycles": 3342336,
+            "measured_mapping_ii": 6,
+            "scheduled_loop_groups": 557056
+          },
+          "fmcw_transpose": {
+            "compiler_unroll_factor": 4,
+            "dynamic_iterations": 262144,
+            "estimated_cycles": 327680,
+            "measured_mapping_ii": 5,
+            "scheduled_loop_groups": 65536
+          },
+          "fmcw_window": {
+            "compiler_unroll_factor": 4,
+            "dynamic_iterations": 131072,
+            "estimated_cycles": 229376,
+            "measured_mapping_ii": 7,
+            "scheduled_loop_groups": 32768
+          }
+        },
+        "estimated_cycles": 39154344,
+        "excluded_costs": [
+          "loop_setup",
+          "memory_stalls",
+          "fft_bit_reversal",
+          "host_cgra_transfers"
+        ],
+        "model": "steady_state_scheduled_groups_x_mapping_ii",
+        "valid": true
+      },
+      "pareto_optimal": true,
+      "rows": 4,
+      "scalar_compiler_baseline": {
+        "breakdown": {
+          "fmcw_accumulate_power": {
+            "compiler_unroll_factor": 1,
+            "dynamic_iterations": 131072,
+            "estimated_cycles": 524288,
+            "measured_mapping_ii": 4,
+            "scheduled_loop_groups": 131072
+          },
+          "fmcw_cfar_2d": {
+            "compiler_unroll_factor": 1,
+            "dynamic_iterations": 3512388,
+            "estimated_cycles": 35123880,
+            "measured_mapping_ii": 10,
+            "scheduled_loop_groups": 3512388
+          },
+          "fmcw_fft_stage": {
+            "compiler_unroll_factor": 1,
+            "dynamic_iterations": 983040,
+            "estimated_cycles": 3932160,
+            "measured_mapping_ii": 4,
+            "scheduled_loop_groups": 983040
+          },
+          "fmcw_transpose": {
+            "compiler_unroll_factor": 1,
+            "dynamic_iterations": 262144,
+            "estimated_cycles": 1048576,
+            "measured_mapping_ii": 4,
+            "scheduled_loop_groups": 262144
+          },
+          "fmcw_window": {
+            "compiler_unroll_factor": 1,
+            "dynamic_iterations": 131072,
+            "estimated_cycles": 524288,
+            "measured_mapping_ii": 4,
+            "scheduled_loop_groups": 131072
+          }
+        },
+        "estimated_cycles": 41153192,
+        "excluded_costs": [
+          "loop_setup",
+          "memory_stalls",
+          "fft_bit_reversal",
+          "host_cgra_transfers"
+        ],
+        "model": "steady_state_scheduled_groups_x_mapping_ii",
+        "valid": true
+      },
+      "selected_compiler_configs": [
+        {
+          "candidate": {
+            "architecture_vectorization": "none",
+            "bypass_constraint": 4,
+            "columns": 4,
+            "compiler_vectorize": false,
+            "control_memory": 200,
+            "heuristic_mapping": true,
+            "kernel": "fmcw_window",
+            "register_count": 8,
+            "rows": 4,
+            "unroll_factor": 4
+          },
+          "dfg_edges": 76,
+          "dfg_nodes": 59,
+          "elapsed_seconds": 1.0890831982251257,
+          "error": null,
+          "fu_utilization_percent": 52.6786,
+          "mapping_ii": 7,
+          "recurrence_mii": 3,
+          "resource_mii": 4,
+          "success": true,
+          "xbar_utilization_percent": 83.9286
+        },
+        {
+          "candidate": {
+            "architecture_vectorization": "none",
+            "bypass_constraint": 4,
+            "columns": 4,
+            "compiler_vectorize": false,
+            "control_memory": 200,
+            "heuristic_mapping": true,
+            "kernel": "fmcw_fft_stage",
+            "register_count": 8,
+            "rows": 4,
+            "unroll_factor": 2
+          },
+          "dfg_edges": 88,
+          "dfg_nodes": 59,
+          "elapsed_seconds": 0.9766973659861833,
+          "error": null,
+          "fu_utilization_percent": 61.4583,
+          "mapping_ii": 6,
+          "recurrence_mii": 3,
+          "resource_mii": 4,
+          "success": true,
+          "xbar_utilization_percent": 97.9167
+        },
+        {
+          "candidate": {
+            "architecture_vectorization": "none",
+            "bypass_constraint": 4,
+            "columns": 4,
+            "compiler_vectorize": false,
+            "control_memory": 200,
+            "heuristic_mapping": true,
+            "kernel": "fmcw_transpose",
+            "register_count": 8,
+            "rows": 4,
+            "unroll_factor": 4
+          },
+          "dfg_edges": 40,
+          "dfg_nodes": 35,
+          "elapsed_seconds": 0.6022214679978788,
+          "error": null,
+          "fu_utilization_percent": 43.75,
+          "mapping_ii": 5,
+          "recurrence_mii": 3,
+          "resource_mii": 3,
+          "success": true,
+          "xbar_utilization_percent": 76.25
+        },
+        {
+          "candidate": {
+            "architecture_vectorization": "none",
+            "bypass_constraint": 4,
+            "columns": 4,
+            "compiler_vectorize": false,
+            "control_memory": 200,
+            "heuristic_mapping": true,
+            "kernel": "fmcw_accumulate_power",
+            "register_count": 8,
+            "rows": 4,
+            "unroll_factor": 4
+          },
+          "dfg_edges": 47,
+          "dfg_nodes": 44,
+          "elapsed_seconds": 0.801959770033136,
+          "error": null,
+          "fu_utilization_percent": 68.75,
+          "mapping_ii": 4,
+          "recurrence_mii": 0,
+          "resource_mii": 3,
+          "success": true,
+          "xbar_utilization_percent": 95.3125
+        },
+        {
+          "candidate": {
+            "architecture_vectorization": "none",
+            "bypass_constraint": 4,
+            "columns": 4,
+            "compiler_vectorize": false,
+            "control_memory": 200,
+            "heuristic_mapping": true,
+            "kernel": "fmcw_cfar_2d",
+            "register_count": 8,
+            "rows": 4,
+            "unroll_factor": 1
+          },
+          "dfg_edges": 25,
+          "dfg_nodes": 20,
+          "elapsed_seconds": 0.7626492239069194,
+          "error": null,
+          "fu_utilization_percent": 12.5,
+          "mapping_ii": 10,
+          "recurrence_mii": 6,
+          "resource_mii": 2,
+          "success": true,
+          "xbar_utilization_percent": 30.0
+        }
+      ],
+      "tiles": 16
+    },
+    {
+      "all_kernels_feasible": true,
+      "columns": 6,
+      "compiler_speedup_percent": 6.0891272429463585,
+      "frame_estimate": {
+        "breakdown": {
+          "fmcw_accumulate_power": {
+            "compiler_unroll_factor": 4,
+            "dynamic_iterations": 131072,
+            "estimated_cycles": 98304,
+            "measured_mapping_ii": 3,
+            "scheduled_loop_groups": 32768
+          },
+          "fmcw_cfar_2d": {
+            "compiler_unroll_factor": 1,
+            "dynamic_iterations": 3512388,
+            "estimated_cycles": 38636268,
+            "measured_mapping_ii": 11,
+            "scheduled_loop_groups": 3512388
+          },
+          "fmcw_fft_stage": {
+            "compiler_unroll_factor": 2,
+            "dynamic_iterations": 983040,
+            "estimated_cycles": 2785280,
+            "measured_mapping_ii": 5,
+            "scheduled_loop_groups": 557056
+          },
+          "fmcw_transpose": {
+            "compiler_unroll_factor": 4,
+            "dynamic_iterations": 262144,
+            "estimated_cycles": 262144,
+            "measured_mapping_ii": 4,
+            "scheduled_loop_groups": 65536
+          },
+          "fmcw_window": {
+            "compiler_unroll_factor": 4,
+            "dynamic_iterations": 131072,
+            "estimated_cycles": 163840,
+            "measured_mapping_ii": 5,
+            "scheduled_loop_groups": 32768
+          }
+        },
+        "estimated_cycles": 41945836,
+        "excluded_costs": [
+          "loop_setup",
+          "memory_stalls",
+          "fft_bit_reversal",
+          "host_cgra_transfers"
+        ],
+        "model": "steady_state_scheduled_groups_x_mapping_ii",
+        "valid": true
+      },
+      "pareto_optimal": false,
+      "rows": 6,
+      "scalar_compiler_baseline": {
+        "breakdown": {
+          "fmcw_accumulate_power": {
+            "compiler_unroll_factor": 1,
+            "dynamic_iterations": 131072,
+            "estimated_cycles": 524288,
+            "measured_mapping_ii": 4,
+            "scheduled_loop_groups": 131072
+          },
+          "fmcw_cfar_2d": {
+            "compiler_unroll_factor": 1,
+            "dynamic_iterations": 3512388,
+            "estimated_cycles": 38636268,
+            "measured_mapping_ii": 11,
+            "scheduled_loop_groups": 3512388
+          },
+          "fmcw_fft_stage": {
+            "compiler_unroll_factor": 1,
+            "dynamic_iterations": 983040,
+            "estimated_cycles": 3932160,
+            "measured_mapping_ii": 4,
+            "scheduled_loop_groups": 983040
+          },
+          "fmcw_transpose": {
+            "compiler_unroll_factor": 1,
+            "dynamic_iterations": 262144,
+            "estimated_cycles": 1048576,
+            "measured_mapping_ii": 4,
+            "scheduled_loop_groups": 262144
+          },
+          "fmcw_window": {
+            "compiler_unroll_factor": 1,
+            "dynamic_iterations": 131072,
+            "estimated_cycles": 524288,
+            "measured_mapping_ii": 4,
+            "scheduled_loop_groups": 131072
+          }
+        },
+        "estimated_cycles": 44665580,
+        "excluded_costs": [
+          "loop_setup",
+          "memory_stalls",
+          "fft_bit_reversal",
+          "host_cgra_transfers"
+        ],
+        "model": "steady_state_scheduled_groups_x_mapping_ii",
+        "valid": true
+      },
+      "selected_compiler_configs": [
+        {
+          "candidate": {
+            "architecture_vectorization": "none",
+            "bypass_constraint": 4,
+            "columns": 6,
+            "compiler_vectorize": false,
+            "control_memory": 200,
+            "heuristic_mapping": true,
+            "kernel": "fmcw_window",
+            "register_count": 8,
+            "rows": 6,
+            "unroll_factor": 4
+          },
+          "dfg_edges": 76,
+          "dfg_nodes": 59,
+          "elapsed_seconds": 2.144772296072915,
+          "error": null,
+          "fu_utilization_percent": 32.7778,
+          "mapping_ii": 5,
+          "recurrence_mii": 3,
+          "resource_mii": 2,
+          "success": true,
+          "xbar_utilization_percent": 71.6667
+        },
+        {
+          "candidate": {
+            "architecture_vectorization": "none",
+            "bypass_constraint": 4,
+            "columns": 6,
+            "compiler_vectorize": false,
+            "control_memory": 200,
+            "heuristic_mapping": true,
+            "kernel": "fmcw_fft_stage",
+            "register_count": 8,
+            "rows": 6,
+            "unroll_factor": 2
+          },
+          "dfg_edges": 88,
+          "dfg_nodes": 59,
+          "elapsed_seconds": 4.671018751105294,
+          "error": null,
+          "fu_utilization_percent": 32.7778,
+          "mapping_ii": 5,
+          "recurrence_mii": 3,
+          "resource_mii": 2,
+          "success": true,
+          "xbar_utilization_percent": 71.1111
+        },
+        {
+          "candidate": {
+            "architecture_vectorization": "none",
+            "bypass_constraint": 4,
+            "columns": 6,
+            "compiler_vectorize": false,
+            "control_memory": 200,
+            "heuristic_mapping": true,
+            "kernel": "fmcw_transpose",
+            "register_count": 8,
+            "rows": 6,
+            "unroll_factor": 4
+          },
+          "dfg_edges": 40,
+          "dfg_nodes": 35,
+          "elapsed_seconds": 1.1080361020285636,
+          "error": null,
+          "fu_utilization_percent": 24.3056,
+          "mapping_ii": 4,
+          "recurrence_mii": 3,
+          "resource_mii": 1,
+          "success": true,
+          "xbar_utilization_percent": 61.1111
+        },
+        {
+          "candidate": {
+            "architecture_vectorization": "none",
+            "bypass_constraint": 4,
+            "columns": 6,
+            "compiler_vectorize": false,
+            "control_memory": 200,
+            "heuristic_mapping": true,
+            "kernel": "fmcw_accumulate_power",
+            "register_count": 8,
+            "rows": 6,
+            "unroll_factor": 4
+          },
+          "dfg_edges": 47,
+          "dfg_nodes": 44,
+          "elapsed_seconds": 1.8970151501707733,
+          "error": null,
+          "fu_utilization_percent": 40.7407,
+          "mapping_ii": 3,
+          "recurrence_mii": 0,
+          "resource_mii": 2,
+          "success": true,
+          "xbar_utilization_percent": 71.2963
+        },
+        {
+          "candidate": {
+            "architecture_vectorization": "none",
+            "bypass_constraint": 4,
+            "columns": 6,
+            "compiler_vectorize": false,
+            "control_memory": 200,
+            "heuristic_mapping": true,
+            "kernel": "fmcw_cfar_2d",
+            "register_count": 8,
+            "rows": 6,
+            "unroll_factor": 1
+          },
+          "dfg_edges": 25,
+          "dfg_nodes": 20,
+          "elapsed_seconds": 2.386025429936126,
+          "error": null,
+          "fu_utilization_percent": 5.05051,
+          "mapping_ii": 11,
+          "recurrence_mii": 6,
+          "resource_mii": 1,
+          "success": true,
+          "xbar_utilization_percent": 13.6364
+        }
+      ],
+      "tiles": 36
+    }
+  ],
+  "elapsed_seconds": 38.71065649809316,
+  "evaluations": 36,
+  "execution": "chia",
+  "raw_results": [
+    {
+      "candidate": {
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "columns": 2,
+        "compiler_vectorize": false,
+        "control_memory": 200,
+        "heuristic_mapping": true,
+        "kernel": "fmcw_window",
+        "register_count": 8,
+        "rows": 2,
+        "unroll_factor": 1
+      },
+      "dfg_edges": 22,
+      "dfg_nodes": 17,
+      "elapsed_seconds": 0.5205061009619385,
+      "error": null,
+      "fu_utilization_percent": 85.0,
+      "mapping_ii": 5,
+      "recurrence_mii": 2,
+      "resource_mii": 5,
+      "success": true,
+      "xbar_utilization_percent": 100.0
+    },
+    {
+      "candidate": {
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "columns": 2,
+        "compiler_vectorize": false,
+        "control_memory": 200,
+        "heuristic_mapping": true,
+        "kernel": "fmcw_window",
+        "register_count": 8,
+        "rows": 2,
+        "unroll_factor": 2
+      },
+      "dfg_edges": 40,
+      "dfg_nodes": 31,
+      "elapsed_seconds": 0.5306461628060788,
+      "error": null,
+      "fu_utilization_percent": 86.1111,
+      "mapping_ii": 9,
+      "recurrence_mii": 3,
+      "resource_mii": 8,
+      "success": true,
+      "xbar_utilization_percent": 100.0
+    },
+    {
+      "candidate": {
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "columns": 2,
+        "compiler_vectorize": false,
+        "control_memory": 200,
+        "heuristic_mapping": true,
+        "kernel": "fmcw_window",
+        "register_count": 8,
+        "rows": 2,
+        "unroll_factor": 4
+      },
+      "dfg_edges": 76,
+      "dfg_nodes": 59,
+      "elapsed_seconds": 0.5311731188558042,
+      "error": null,
+      "fu_utilization_percent": 86.7647,
+      "mapping_ii": 17,
+      "recurrence_mii": 3,
+      "resource_mii": 15,
+      "success": true,
+      "xbar_utilization_percent": 98.5294
+    },
+    {
+      "candidate": {
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "columns": 2,
+        "compiler_vectorize": false,
+        "control_memory": 200,
+        "heuristic_mapping": true,
+        "kernel": "fmcw_fft_stage",
+        "register_count": 8,
+        "rows": 2,
+        "unroll_factor": 1
+      },
+      "dfg_edges": 46,
+      "dfg_nodes": 31,
+      "elapsed_seconds": 0.5748719039838761,
+      "error": null,
+      "fu_utilization_percent": 86.1111,
+      "mapping_ii": 9,
+      "recurrence_mii": 2,
+      "resource_mii": 8,
+      "success": true,
+      "xbar_utilization_percent": 100.0
+    },
+    {
+      "candidate": {
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "columns": 2,
+        "compiler_vectorize": false,
+        "control_memory": 200,
+        "heuristic_mapping": true,
+        "kernel": "fmcw_fft_stage",
+        "register_count": 8,
+        "rows": 2,
+        "unroll_factor": 2
+      },
+      "dfg_edges": 88,
+      "dfg_nodes": 59,
+      "elapsed_seconds": 0.5593298089224845,
+      "error": null,
+      "fu_utilization_percent": 92.1875,
+      "mapping_ii": 16,
+      "recurrence_mii": 3,
+      "resource_mii": 15,
+      "success": true,
+      "xbar_utilization_percent": 98.4375
+    },
+    {
+      "candidate": {
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "columns": 2,
+        "compiler_vectorize": false,
+        "control_memory": 200,
+        "heuristic_mapping": true,
+        "kernel": "fmcw_transpose",
+        "register_count": 8,
+        "rows": 2,
+        "unroll_factor": 1
+      },
+      "dfg_edges": 13,
+      "dfg_nodes": 11,
+      "elapsed_seconds": 0.5032003379892558,
+      "error": null,
+      "fu_utilization_percent": 68.75,
+      "mapping_ii": 4,
+      "recurrence_mii": 2,
+      "resource_mii": 3,
+      "success": true,
+      "xbar_utilization_percent": 93.75
+    },
+    {
+      "candidate": {
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "columns": 2,
+        "compiler_vectorize": false,
+        "control_memory": 200,
+        "heuristic_mapping": true,
+        "kernel": "fmcw_transpose",
+        "register_count": 8,
+        "rows": 2,
+        "unroll_factor": 2
+      },
+      "dfg_edges": 22,
+      "dfg_nodes": 19,
+      "elapsed_seconds": 0.5223150190431625,
+      "error": null,
+      "fu_utilization_percent": 95.0,
+      "mapping_ii": 5,
+      "recurrence_mii": 3,
+      "resource_mii": 5,
+      "success": true,
+      "xbar_utilization_percent": 100.0
+    },
+    {
+      "candidate": {
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "columns": 2,
+        "compiler_vectorize": false,
+        "control_memory": 200,
+        "heuristic_mapping": true,
+        "kernel": "fmcw_transpose",
+        "register_count": 8,
+        "rows": 2,
+        "unroll_factor": 4
+      },
+      "dfg_edges": 40,
+      "dfg_nodes": 35,
+      "elapsed_seconds": 0.5623620599508286,
+      "error": null,
+      "fu_utilization_percent": 97.2222,
+      "mapping_ii": 9,
+      "recurrence_mii": 3,
+      "resource_mii": 9,
+      "success": true,
+      "xbar_utilization_percent": 100.0
+    },
+    {
+      "candidate": {
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "columns": 2,
+        "compiler_vectorize": false,
+        "control_memory": 200,
+        "heuristic_mapping": true,
+        "kernel": "fmcw_accumulate_power",
+        "register_count": 8,
+        "rows": 2,
+        "unroll_factor": 1
+      },
+      "dfg_edges": 19,
+      "dfg_nodes": 15,
+      "elapsed_seconds": 0.4959681599866599,
+      "error": null,
+      "fu_utilization_percent": 93.75,
+      "mapping_ii": 4,
+      "recurrence_mii": 2,
+      "resource_mii": 4,
+      "success": true,
+      "xbar_utilization_percent": 100.0
+    },
+    {
+      "candidate": {
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "columns": 2,
+        "compiler_vectorize": false,
+        "control_memory": 200,
+        "heuristic_mapping": true,
+        "kernel": "fmcw_accumulate_power",
+        "register_count": 8,
+        "rows": 2,
+        "unroll_factor": 2
+      },
+      "dfg_edges": 30,
+      "dfg_nodes": 25,
+      "elapsed_seconds": 0.47661028197035193,
+      "error": null,
+      "fu_utilization_percent": 89.2857,
+      "mapping_ii": 7,
+      "recurrence_mii": 3,
+      "resource_mii": 7,
+      "success": true,
+      "xbar_utilization_percent": 100.0
+    },
+    {
+      "candidate": {
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "columns": 2,
+        "compiler_vectorize": false,
+        "control_memory": 200,
+        "heuristic_mapping": true,
+        "kernel": "fmcw_accumulate_power",
+        "register_count": 8,
+        "rows": 2,
+        "unroll_factor": 4
+      },
+      "dfg_edges": 47,
+      "dfg_nodes": 44,
+      "elapsed_seconds": 0.5213520010001957,
+      "error": null,
+      "fu_utilization_percent": 100.0,
+      "mapping_ii": 11,
+      "recurrence_mii": 0,
+      "resource_mii": 11,
+      "success": true,
+      "xbar_utilization_percent": 100.0
+    },
+    {
+      "candidate": {
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "columns": 2,
+        "compiler_vectorize": false,
+        "control_memory": 200,
+        "heuristic_mapping": true,
+        "kernel": "fmcw_cfar_2d",
+        "register_count": 8,
+        "rows": 2,
+        "unroll_factor": 1
+      },
+      "dfg_edges": 25,
+      "dfg_nodes": 20,
+      "elapsed_seconds": 0.4803442240227014,
+      "error": null,
+      "fu_utilization_percent": 50.0,
+      "mapping_ii": 10,
+      "recurrence_mii": 6,
+      "resource_mii": 5,
+      "success": true,
+      "xbar_utilization_percent": 90.0
+    },
+    {
+      "candidate": {
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "columns": 4,
+        "compiler_vectorize": false,
+        "control_memory": 200,
+        "heuristic_mapping": true,
+        "kernel": "fmcw_window",
+        "register_count": 8,
+        "rows": 4,
+        "unroll_factor": 1
+      },
+      "dfg_edges": 22,
+      "dfg_nodes": 17,
+      "elapsed_seconds": 0.5248861671425402,
+      "error": null,
+      "fu_utilization_percent": 26.5625,
+      "mapping_ii": 4,
+      "recurrence_mii": 2,
+      "resource_mii": 2,
+      "success": true,
+      "xbar_utilization_percent": 60.9375
+    },
+    {
+      "candidate": {
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "columns": 4,
+        "compiler_vectorize": false,
+        "control_memory": 200,
+        "heuristic_mapping": true,
+        "kernel": "fmcw_window",
+        "register_count": 8,
+        "rows": 4,
+        "unroll_factor": 2
+      },
+      "dfg_edges": 40,
+      "dfg_nodes": 31,
+      "elapsed_seconds": 0.6079964209347963,
+      "error": null,
+      "fu_utilization_percent": 38.75,
+      "mapping_ii": 5,
+      "recurrence_mii": 3,
+      "resource_mii": 2,
+      "success": true,
+      "xbar_utilization_percent": 78.75
+    },
+    {
+      "candidate": {
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "columns": 4,
+        "compiler_vectorize": false,
+        "control_memory": 200,
+        "heuristic_mapping": true,
+        "kernel": "fmcw_window",
+        "register_count": 8,
+        "rows": 4,
+        "unroll_factor": 4
+      },
+      "dfg_edges": 76,
+      "dfg_nodes": 59,
+      "elapsed_seconds": 1.0890831982251257,
+      "error": null,
+      "fu_utilization_percent": 52.6786,
+      "mapping_ii": 7,
+      "recurrence_mii": 3,
+      "resource_mii": 4,
+      "success": true,
+      "xbar_utilization_percent": 83.9286
+    },
+    {
+      "candidate": {
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "columns": 4,
+        "compiler_vectorize": false,
+        "control_memory": 200,
+        "heuristic_mapping": true,
+        "kernel": "fmcw_fft_stage",
+        "register_count": 8,
+        "rows": 4,
+        "unroll_factor": 1
+      },
+      "dfg_edges": 46,
+      "dfg_nodes": 31,
+      "elapsed_seconds": 0.6770408600568771,
+      "error": null,
+      "fu_utilization_percent": 48.4375,
+      "mapping_ii": 4,
+      "recurrence_mii": 2,
+      "resource_mii": 2,
+      "success": true,
+      "xbar_utilization_percent": 92.1875
+    },
+    {
+      "candidate": {
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "columns": 4,
+        "compiler_vectorize": false,
+        "control_memory": 200,
+        "heuristic_mapping": true,
+        "kernel": "fmcw_fft_stage",
+        "register_count": 8,
+        "rows": 4,
+        "unroll_factor": 2
+      },
+      "dfg_edges": 88,
+      "dfg_nodes": 59,
+      "elapsed_seconds": 0.9766973659861833,
+      "error": null,
+      "fu_utilization_percent": 61.4583,
+      "mapping_ii": 6,
+      "recurrence_mii": 3,
+      "resource_mii": 4,
+      "success": true,
+      "xbar_utilization_percent": 97.9167
+    },
+    {
+      "candidate": {
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "columns": 4,
+        "compiler_vectorize": false,
+        "control_memory": 200,
+        "heuristic_mapping": true,
+        "kernel": "fmcw_transpose",
+        "register_count": 8,
+        "rows": 4,
+        "unroll_factor": 1
+      },
+      "dfg_edges": 13,
+      "dfg_nodes": 11,
+      "elapsed_seconds": 0.5296513768844306,
+      "error": null,
+      "fu_utilization_percent": 17.1875,
+      "mapping_ii": 4,
+      "recurrence_mii": 2,
+      "resource_mii": 1,
+      "success": true,
+      "xbar_utilization_percent": 40.625
+    },
+    {
+      "candidate": {
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "columns": 4,
+        "compiler_vectorize": false,
+        "control_memory": 200,
+        "heuristic_mapping": true,
+        "kernel": "fmcw_transpose",
+        "register_count": 8,
+        "rows": 4,
+        "unroll_factor": 2
+      },
+      "dfg_edges": 22,
+      "dfg_nodes": 19,
+      "elapsed_seconds": 0.4659594278782606,
+      "error": null,
+      "fu_utilization_percent": 29.6875,
+      "mapping_ii": 4,
+      "recurrence_mii": 3,
+      "resource_mii": 2,
+      "success": true,
+      "xbar_utilization_percent": 65.625
+    },
+    {
+      "candidate": {
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "columns": 4,
+        "compiler_vectorize": false,
+        "control_memory": 200,
+        "heuristic_mapping": true,
+        "kernel": "fmcw_transpose",
+        "register_count": 8,
+        "rows": 4,
+        "unroll_factor": 4
+      },
+      "dfg_edges": 40,
+      "dfg_nodes": 35,
+      "elapsed_seconds": 0.6022214679978788,
+      "error": null,
+      "fu_utilization_percent": 43.75,
+      "mapping_ii": 5,
+      "recurrence_mii": 3,
+      "resource_mii": 3,
+      "success": true,
+      "xbar_utilization_percent": 76.25
+    },
+    {
+      "candidate": {
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "columns": 4,
+        "compiler_vectorize": false,
+        "control_memory": 200,
+        "heuristic_mapping": true,
+        "kernel": "fmcw_accumulate_power",
+        "register_count": 8,
+        "rows": 4,
+        "unroll_factor": 1
+      },
+      "dfg_edges": 19,
+      "dfg_nodes": 15,
+      "elapsed_seconds": 0.5259194020181894,
+      "error": null,
+      "fu_utilization_percent": 23.4375,
+      "mapping_ii": 4,
+      "recurrence_mii": 2,
+      "resource_mii": 1,
+      "success": true,
+      "xbar_utilization_percent": 53.125
+    },
+    {
+      "candidate": {
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "columns": 4,
+        "compiler_vectorize": false,
+        "control_memory": 200,
+        "heuristic_mapping": true,
+        "kernel": "fmcw_accumulate_power",
+        "register_count": 8,
+        "rows": 4,
+        "unroll_factor": 2
+      },
+      "dfg_edges": 30,
+      "dfg_nodes": 25,
+      "elapsed_seconds": 0.6590502939652652,
+      "error": null,
+      "fu_utilization_percent": 39.0625,
+      "mapping_ii": 4,
+      "recurrence_mii": 3,
+      "resource_mii": 2,
+      "success": true,
+      "xbar_utilization_percent": 82.8125
+    },
+    {
+      "candidate": {
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "columns": 4,
+        "compiler_vectorize": false,
+        "control_memory": 200,
+        "heuristic_mapping": true,
+        "kernel": "fmcw_accumulate_power",
+        "register_count": 8,
+        "rows": 4,
+        "unroll_factor": 4
+      },
+      "dfg_edges": 47,
+      "dfg_nodes": 44,
+      "elapsed_seconds": 0.801959770033136,
+      "error": null,
+      "fu_utilization_percent": 68.75,
+      "mapping_ii": 4,
+      "recurrence_mii": 0,
+      "resource_mii": 3,
+      "success": true,
+      "xbar_utilization_percent": 95.3125
+    },
+    {
+      "candidate": {
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "columns": 4,
+        "compiler_vectorize": false,
+        "control_memory": 200,
+        "heuristic_mapping": true,
+        "kernel": "fmcw_cfar_2d",
+        "register_count": 8,
+        "rows": 4,
+        "unroll_factor": 1
+      },
+      "dfg_edges": 25,
+      "dfg_nodes": 20,
+      "elapsed_seconds": 0.7626492239069194,
+      "error": null,
+      "fu_utilization_percent": 12.5,
+      "mapping_ii": 10,
+      "recurrence_mii": 6,
+      "resource_mii": 2,
+      "success": true,
+      "xbar_utilization_percent": 30.0
+    },
+    {
+      "candidate": {
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "columns": 6,
+        "compiler_vectorize": false,
+        "control_memory": 200,
+        "heuristic_mapping": true,
+        "kernel": "fmcw_window",
+        "register_count": 8,
+        "rows": 6,
+        "unroll_factor": 1
+      },
+      "dfg_edges": 22,
+      "dfg_nodes": 17,
+      "elapsed_seconds": 0.8092799540609121,
+      "error": null,
+      "fu_utilization_percent": 11.8056,
+      "mapping_ii": 4,
+      "recurrence_mii": 2,
+      "resource_mii": 1,
+      "success": true,
+      "xbar_utilization_percent": 35.4167
+    },
+    {
+      "candidate": {
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "columns": 6,
+        "compiler_vectorize": false,
+        "control_memory": 200,
+        "heuristic_mapping": true,
+        "kernel": "fmcw_window",
+        "register_count": 8,
+        "rows": 6,
+        "unroll_factor": 2
+      },
+      "dfg_edges": 40,
+      "dfg_nodes": 31,
+      "elapsed_seconds": 0.9902052769903094,
+      "error": null,
+      "fu_utilization_percent": 21.5278,
+      "mapping_ii": 4,
+      "recurrence_mii": 3,
+      "resource_mii": 1,
+      "success": true,
+      "xbar_utilization_percent": 48.6111
+    },
+    {
+      "candidate": {
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "columns": 6,
+        "compiler_vectorize": false,
+        "control_memory": 200,
+        "heuristic_mapping": true,
+        "kernel": "fmcw_window",
+        "register_count": 8,
+        "rows": 6,
+        "unroll_factor": 4
+      },
+      "dfg_edges": 76,
+      "dfg_nodes": 59,
+      "elapsed_seconds": 2.144772296072915,
+      "error": null,
+      "fu_utilization_percent": 32.7778,
+      "mapping_ii": 5,
+      "recurrence_mii": 3,
+      "resource_mii": 2,
+      "success": true,
+      "xbar_utilization_percent": 71.6667
+    },
+    {
+      "candidate": {
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "columns": 6,
+        "compiler_vectorize": false,
+        "control_memory": 200,
+        "heuristic_mapping": true,
+        "kernel": "fmcw_fft_stage",
+        "register_count": 8,
+        "rows": 6,
+        "unroll_factor": 1
+      },
+      "dfg_edges": 46,
+      "dfg_nodes": 31,
+      "elapsed_seconds": 1.2727439710870385,
+      "error": null,
+      "fu_utilization_percent": 21.5278,
+      "mapping_ii": 4,
+      "recurrence_mii": 2,
+      "resource_mii": 1,
+      "success": true,
+      "xbar_utilization_percent": 50.6944
+    },
+    {
+      "candidate": {
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "columns": 6,
+        "compiler_vectorize": false,
+        "control_memory": 200,
+        "heuristic_mapping": true,
+        "kernel": "fmcw_fft_stage",
+        "register_count": 8,
+        "rows": 6,
+        "unroll_factor": 2
+      },
+      "dfg_edges": 88,
+      "dfg_nodes": 59,
+      "elapsed_seconds": 4.671018751105294,
+      "error": null,
+      "fu_utilization_percent": 32.7778,
+      "mapping_ii": 5,
+      "recurrence_mii": 3,
+      "resource_mii": 2,
+      "success": true,
+      "xbar_utilization_percent": 71.1111
+    },
+    {
+      "candidate": {
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "columns": 6,
+        "compiler_vectorize": false,
+        "control_memory": 200,
+        "heuristic_mapping": true,
+        "kernel": "fmcw_transpose",
+        "register_count": 8,
+        "rows": 6,
+        "unroll_factor": 1
+      },
+      "dfg_edges": 13,
+      "dfg_nodes": 11,
+      "elapsed_seconds": 0.8698537349700928,
+      "error": null,
+      "fu_utilization_percent": 7.63889,
+      "mapping_ii": 4,
+      "recurrence_mii": 2,
+      "resource_mii": 1,
+      "success": true,
+      "xbar_utilization_percent": 18.75
+    },
+    {
+      "candidate": {
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "columns": 6,
+        "compiler_vectorize": false,
+        "control_memory": 200,
+        "heuristic_mapping": true,
+        "kernel": "fmcw_transpose",
+        "register_count": 8,
+        "rows": 6,
+        "unroll_factor": 2
+      },
+      "dfg_edges": 22,
+      "dfg_nodes": 19,
+      "elapsed_seconds": 0.878140812041238,
+      "error": null,
+      "fu_utilization_percent": 13.1944,
+      "mapping_ii": 4,
+      "recurrence_mii": 3,
+      "resource_mii": 1,
+      "success": true,
+      "xbar_utilization_percent": 32.6389
+    },
+    {
+      "candidate": {
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "columns": 6,
+        "compiler_vectorize": false,
+        "control_memory": 200,
+        "heuristic_mapping": true,
+        "kernel": "fmcw_transpose",
+        "register_count": 8,
+        "rows": 6,
+        "unroll_factor": 4
+      },
+      "dfg_edges": 40,
+      "dfg_nodes": 35,
+      "elapsed_seconds": 1.1080361020285636,
+      "error": null,
+      "fu_utilization_percent": 24.3056,
+      "mapping_ii": 4,
+      "recurrence_mii": 3,
+      "resource_mii": 1,
+      "success": true,
+      "xbar_utilization_percent": 61.1111
+    },
+    {
+      "candidate": {
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "columns": 6,
+        "compiler_vectorize": false,
+        "control_memory": 200,
+        "heuristic_mapping": true,
+        "kernel": "fmcw_accumulate_power",
+        "register_count": 8,
+        "rows": 6,
+        "unroll_factor": 1
+      },
+      "dfg_edges": 19,
+      "dfg_nodes": 15,
+      "elapsed_seconds": 1.1014597190078348,
+      "error": null,
+      "fu_utilization_percent": 10.4167,
+      "mapping_ii": 4,
+      "recurrence_mii": 2,
+      "resource_mii": 1,
+      "success": true,
+      "xbar_utilization_percent": 25.6944
+    },
+    {
+      "candidate": {
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "columns": 6,
+        "compiler_vectorize": false,
+        "control_memory": 200,
+        "heuristic_mapping": true,
+        "kernel": "fmcw_accumulate_power",
+        "register_count": 8,
+        "rows": 6,
+        "unroll_factor": 2
+      },
+      "dfg_edges": 30,
+      "dfg_nodes": 25,
+      "elapsed_seconds": 1.4175445300061256,
+      "error": null,
+      "fu_utilization_percent": 17.3611,
+      "mapping_ii": 4,
+      "recurrence_mii": 3,
+      "resource_mii": 1,
+      "success": true,
+      "xbar_utilization_percent": 42.3611
+    },
+    {
+      "candidate": {
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "columns": 6,
+        "compiler_vectorize": false,
+        "control_memory": 200,
+        "heuristic_mapping": true,
+        "kernel": "fmcw_accumulate_power",
+        "register_count": 8,
+        "rows": 6,
+        "unroll_factor": 4
+      },
+      "dfg_edges": 47,
+      "dfg_nodes": 44,
+      "elapsed_seconds": 1.8970151501707733,
+      "error": null,
+      "fu_utilization_percent": 40.7407,
+      "mapping_ii": 3,
+      "recurrence_mii": 0,
+      "resource_mii": 2,
+      "success": true,
+      "xbar_utilization_percent": 71.2963
+    },
+    {
+      "candidate": {
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "columns": 6,
+        "compiler_vectorize": false,
+        "control_memory": 200,
+        "heuristic_mapping": true,
+        "kernel": "fmcw_cfar_2d",
+        "register_count": 8,
+        "rows": 6,
+        "unroll_factor": 1
+      },
+      "dfg_edges": 25,
+      "dfg_nodes": 20,
+      "elapsed_seconds": 2.386025429936126,
+      "error": null,
+      "fu_utilization_percent": 5.05051,
+      "mapping_ii": 11,
+      "recurrence_mii": 6,
+      "resource_mii": 1,
+      "success": true,
+      "xbar_utilization_percent": 13.6364
+    }
+  ],
+  "recommended_by_cycle_tile_product": {
+    "columns": 2,
+    "rows": 2
+  },
+  "search_space": {
+    "architectures": [
+      [
+        2,
+        2
+      ],
+      [
+        4,
+        4
+      ],
+      [
+        6,
+        6
+      ]
+    ],
+    "kernels": [
+      "fmcw_window",
+      "fmcw_fft_stage",
+      "fmcw_transpose",
+      "fmcw_accumulate_power",
+      "fmcw_cfar_2d"
+    ],
+    "unroll_factors_by_kernel": {
+      "fmcw_accumulate_power": [
+        1,
+        2,
+        4
+      ],
+      "fmcw_cfar_2d": [
+        1
+      ],
+      "fmcw_fft_stage": [
+        1,
+        2
+      ],
+      "fmcw_transpose": [
+        1,
+        2,
+        4
+      ],
+      "fmcw_window": [
+        1,
+        2,
+        4
+      ]
+    }
+  },
+  "successful_mappings": 36
+}

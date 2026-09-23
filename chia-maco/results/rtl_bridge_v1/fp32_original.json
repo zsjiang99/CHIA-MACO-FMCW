@@ -1,0 +1,39 @@
+{
+  "scope": "FP32 functional units only; window vectors are host-fed, not mapped CGRA execution",
+  "status": "failed",
+  "original_wrappers": true,
+  "translated_fu": false,
+  "seed": 37,
+  "numpy": "1.26.4",
+  "cases": [
+    {
+      "name": "add",
+      "status": "failed",
+      "samples": 264,
+      "error": "Test sink s.sink received WRONG message!\nExpected : 40600000.1.0.0\nReceived : 40200000.1.0.0"
+    },
+    {
+      "name": "sub",
+      "status": "failed",
+      "samples": 264,
+      "error": "Test sink s.sink received WRONG message!\nExpected : bf000000.1.0.0\nReceived : bfc00000.1.0.0"
+    },
+    {
+      "name": "mul",
+      "status": "failed",
+      "samples": 264,
+      "error": "Test sink s.sink received WRONG message!\nExpected : 40400000.1.0.0\nReceived : 40000000.1.0.0"
+    },
+    {
+      "name": "window_256_complex_samples",
+      "status": "failed",
+      "samples": 512,
+      "error": "Test sink s.sink received WRONG message!\nExpected : b6a231fe.1.0.0\nReceived : b662cabc.1.0.0"
+    }
+  ],
+  "candidate_hardware_correctness": "pending",
+  "source_sha256": {
+    "scripts/check_fp32_rtl.py": "ad1abdb6b8235995de91f800982bb7e2fc93071fc90e12744921e086254e8862",
+    "rtl/fp32.py": "05f5e101c8d59e4b011f9ded223ea784dbfbbca859e622290f19fdea79c31249"
+  }
+}

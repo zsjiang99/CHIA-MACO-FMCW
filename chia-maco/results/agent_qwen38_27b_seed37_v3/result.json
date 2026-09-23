@@ -1,0 +1,1853 @@
+{
+  "execution": "chia",
+  "evaluations": 18,
+  "successful_mappings": 18,
+  "elapsed_seconds": 210.42876361310482,
+  "search_space": {
+    "architectures": [
+      [
+        2,
+        2
+      ],
+      [
+        4,
+        4
+      ],
+      [
+        6,
+        6
+      ]
+    ],
+    "unroll_factors_by_kernel": {
+      "fmcw_window": [
+        1,
+        2,
+        4
+      ],
+      "fmcw_fft_stage": [
+        1,
+        2
+      ],
+      "fmcw_transpose": [
+        1,
+        2,
+        4
+      ],
+      "fmcw_accumulate_power": [
+        1,
+        2,
+        4
+      ],
+      "fmcw_cfar_2d": [
+        1
+      ]
+    },
+    "kernels": [
+      "fmcw_window",
+      "fmcw_fft_stage",
+      "fmcw_transpose",
+      "fmcw_accumulate_power",
+      "fmcw_cfar_2d"
+    ]
+  },
+  "architectures": [
+    {
+      "rows": 2,
+      "columns": 2,
+      "tiles": 4,
+      "all_kernels_feasible": false,
+      "selected_compiler_configs": [],
+      "scalar_compiler_baseline": {
+        "valid": false,
+        "missing_kernels": [
+          "fmcw_accumulate_power",
+          "fmcw_cfar_2d",
+          "fmcw_fft_stage",
+          "fmcw_transpose",
+          "fmcw_window"
+        ],
+        "failed_kernels": [],
+        "estimated_cycles": null
+      },
+      "frame_estimate": {
+        "valid": false,
+        "missing_kernels": [
+          "fmcw_accumulate_power",
+          "fmcw_cfar_2d",
+          "fmcw_fft_stage",
+          "fmcw_transpose",
+          "fmcw_window"
+        ],
+        "failed_kernels": [],
+        "estimated_cycles": null
+      },
+      "compiler_speedup_percent": null,
+      "pareto_optimal": false
+    },
+    {
+      "rows": 4,
+      "columns": 4,
+      "tiles": 16,
+      "all_kernels_feasible": true,
+      "selected_compiler_configs": [
+        {
+          "candidate": {
+            "kernel": "fmcw_window",
+            "rows": 4,
+            "columns": 4,
+            "unroll_factor": 4,
+            "compiler_vectorize": false,
+            "architecture_vectorization": "none",
+            "bypass_constraint": 4,
+            "control_memory": 200,
+            "register_count": 8,
+            "heuristic_mapping": true
+          },
+          "success": true,
+          "mapping_ii": 7,
+          "resource_mii": 4,
+          "recurrence_mii": 3,
+          "dfg_nodes": 59,
+          "dfg_edges": 76,
+          "fu_utilization_percent": 52.6786,
+          "xbar_utilization_percent": 83.9286,
+          "elapsed_seconds": 0.9599964660592377,
+          "error": null
+        },
+        {
+          "candidate": {
+            "kernel": "fmcw_fft_stage",
+            "rows": 4,
+            "columns": 4,
+            "unroll_factor": 2,
+            "compiler_vectorize": false,
+            "architecture_vectorization": "none",
+            "bypass_constraint": 4,
+            "control_memory": 200,
+            "register_count": 8,
+            "heuristic_mapping": true
+          },
+          "success": true,
+          "mapping_ii": 6,
+          "resource_mii": 4,
+          "recurrence_mii": 3,
+          "dfg_nodes": 59,
+          "dfg_edges": 88,
+          "fu_utilization_percent": 61.4583,
+          "xbar_utilization_percent": 97.9167,
+          "elapsed_seconds": 1.0184286788571626,
+          "error": null
+        },
+        {
+          "candidate": {
+            "kernel": "fmcw_transpose",
+            "rows": 4,
+            "columns": 4,
+            "unroll_factor": 4,
+            "compiler_vectorize": false,
+            "architecture_vectorization": "none",
+            "bypass_constraint": 4,
+            "control_memory": 200,
+            "register_count": 8,
+            "heuristic_mapping": true
+          },
+          "success": true,
+          "mapping_ii": 5,
+          "resource_mii": 3,
+          "recurrence_mii": 3,
+          "dfg_nodes": 35,
+          "dfg_edges": 40,
+          "fu_utilization_percent": 43.75,
+          "xbar_utilization_percent": 76.25,
+          "elapsed_seconds": 0.5841599139384925,
+          "error": null
+        },
+        {
+          "candidate": {
+            "kernel": "fmcw_accumulate_power",
+            "rows": 4,
+            "columns": 4,
+            "unroll_factor": 4,
+            "compiler_vectorize": false,
+            "architecture_vectorization": "none",
+            "bypass_constraint": 4,
+            "control_memory": 200,
+            "register_count": 8,
+            "heuristic_mapping": true
+          },
+          "success": true,
+          "mapping_ii": 4,
+          "resource_mii": 3,
+          "recurrence_mii": 0,
+          "dfg_nodes": 44,
+          "dfg_edges": 47,
+          "fu_utilization_percent": 68.75,
+          "xbar_utilization_percent": 95.3125,
+          "elapsed_seconds": 0.7410062069538981,
+          "error": null
+        },
+        {
+          "candidate": {
+            "kernel": "fmcw_cfar_2d",
+            "rows": 4,
+            "columns": 4,
+            "unroll_factor": 1,
+            "compiler_vectorize": false,
+            "architecture_vectorization": "none",
+            "bypass_constraint": 4,
+            "control_memory": 200,
+            "register_count": 8,
+            "heuristic_mapping": true
+          },
+          "success": true,
+          "mapping_ii": 10,
+          "resource_mii": 2,
+          "recurrence_mii": 6,
+          "dfg_nodes": 20,
+          "dfg_edges": 25,
+          "fu_utilization_percent": 12.5,
+          "xbar_utilization_percent": 30.0,
+          "elapsed_seconds": 0.680608649039641,
+          "error": null
+        }
+      ],
+      "scalar_compiler_baseline": {
+        "valid": false,
+        "missing_kernels": [
+          "fmcw_accumulate_power",
+          "fmcw_transpose",
+          "fmcw_window"
+        ],
+        "failed_kernels": [],
+        "estimated_cycles": null
+      },
+      "frame_estimate": {
+        "valid": true,
+        "model": "steady_state_scheduled_groups_x_mapping_ii",
+        "excluded_costs": [
+          "loop_setup",
+          "memory_stalls",
+          "fft_bit_reversal",
+          "host_cgra_transfers"
+        ],
+        "breakdown": {
+          "fmcw_window": {
+            "dynamic_iterations": 131072,
+            "compiler_unroll_factor": 4,
+            "scheduled_loop_groups": 32768,
+            "measured_mapping_ii": 7,
+            "estimated_cycles": 229376
+          },
+          "fmcw_fft_stage": {
+            "dynamic_iterations": 983040,
+            "compiler_unroll_factor": 2,
+            "scheduled_loop_groups": 557056,
+            "measured_mapping_ii": 6,
+            "estimated_cycles": 3342336
+          },
+          "fmcw_transpose": {
+            "dynamic_iterations": 262144,
+            "compiler_unroll_factor": 4,
+            "scheduled_loop_groups": 65536,
+            "measured_mapping_ii": 5,
+            "estimated_cycles": 327680
+          },
+          "fmcw_accumulate_power": {
+            "dynamic_iterations": 131072,
+            "compiler_unroll_factor": 4,
+            "scheduled_loop_groups": 32768,
+            "measured_mapping_ii": 4,
+            "estimated_cycles": 131072
+          },
+          "fmcw_cfar_2d": {
+            "dynamic_iterations": 3512388,
+            "compiler_unroll_factor": 1,
+            "scheduled_loop_groups": 3512388,
+            "measured_mapping_ii": 10,
+            "estimated_cycles": 35123880
+          }
+        },
+        "estimated_cycles": 39154344
+      },
+      "compiler_speedup_percent": null,
+      "pareto_optimal": true
+    },
+    {
+      "rows": 6,
+      "columns": 6,
+      "tiles": 36,
+      "all_kernels_feasible": true,
+      "selected_compiler_configs": [
+        {
+          "candidate": {
+            "kernel": "fmcw_window",
+            "rows": 6,
+            "columns": 6,
+            "unroll_factor": 4,
+            "compiler_vectorize": false,
+            "architecture_vectorization": "none",
+            "bypass_constraint": 4,
+            "control_memory": 200,
+            "register_count": 8,
+            "heuristic_mapping": true
+          },
+          "success": true,
+          "mapping_ii": 5,
+          "resource_mii": 2,
+          "recurrence_mii": 3,
+          "dfg_nodes": 59,
+          "dfg_edges": 76,
+          "fu_utilization_percent": 32.7778,
+          "xbar_utilization_percent": 71.6667,
+          "elapsed_seconds": 2.1520174629986286,
+          "error": null
+        },
+        {
+          "candidate": {
+            "kernel": "fmcw_fft_stage",
+            "rows": 6,
+            "columns": 6,
+            "unroll_factor": 2,
+            "compiler_vectorize": false,
+            "architecture_vectorization": "none",
+            "bypass_constraint": 4,
+            "control_memory": 200,
+            "register_count": 8,
+            "heuristic_mapping": true
+          },
+          "success": true,
+          "mapping_ii": 5,
+          "resource_mii": 2,
+          "recurrence_mii": 3,
+          "dfg_nodes": 59,
+          "dfg_edges": 88,
+          "fu_utilization_percent": 32.7778,
+          "xbar_utilization_percent": 71.1111,
+          "elapsed_seconds": 5.101689470000565,
+          "error": null
+        },
+        {
+          "candidate": {
+            "kernel": "fmcw_transpose",
+            "rows": 6,
+            "columns": 6,
+            "unroll_factor": 4,
+            "compiler_vectorize": false,
+            "architecture_vectorization": "none",
+            "bypass_constraint": 4,
+            "control_memory": 200,
+            "register_count": 8,
+            "heuristic_mapping": true
+          },
+          "success": true,
+          "mapping_ii": 4,
+          "resource_mii": 1,
+          "recurrence_mii": 3,
+          "dfg_nodes": 35,
+          "dfg_edges": 40,
+          "fu_utilization_percent": 24.3056,
+          "xbar_utilization_percent": 61.1111,
+          "elapsed_seconds": 0.9896837288979441,
+          "error": null
+        },
+        {
+          "candidate": {
+            "kernel": "fmcw_accumulate_power",
+            "rows": 6,
+            "columns": 6,
+            "unroll_factor": 4,
+            "compiler_vectorize": false,
+            "architecture_vectorization": "none",
+            "bypass_constraint": 4,
+            "control_memory": 200,
+            "register_count": 8,
+            "heuristic_mapping": true
+          },
+          "success": true,
+          "mapping_ii": 3,
+          "resource_mii": 2,
+          "recurrence_mii": 0,
+          "dfg_nodes": 44,
+          "dfg_edges": 47,
+          "fu_utilization_percent": 40.7407,
+          "xbar_utilization_percent": 71.2963,
+          "elapsed_seconds": 1.7866244381293654,
+          "error": null
+        },
+        {
+          "candidate": {
+            "kernel": "fmcw_cfar_2d",
+            "rows": 6,
+            "columns": 6,
+            "unroll_factor": 1,
+            "compiler_vectorize": false,
+            "architecture_vectorization": "none",
+            "bypass_constraint": 4,
+            "control_memory": 200,
+            "register_count": 8,
+            "heuristic_mapping": true
+          },
+          "success": true,
+          "mapping_ii": 11,
+          "resource_mii": 1,
+          "recurrence_mii": 6,
+          "dfg_nodes": 20,
+          "dfg_edges": 25,
+          "fu_utilization_percent": 5.05051,
+          "xbar_utilization_percent": 13.6364,
+          "elapsed_seconds": 2.046020505949855,
+          "error": null
+        }
+      ],
+      "scalar_compiler_baseline": {
+        "valid": false,
+        "missing_kernels": [
+          "fmcw_accumulate_power",
+          "fmcw_transpose",
+          "fmcw_window"
+        ],
+        "failed_kernels": [],
+        "estimated_cycles": null
+      },
+      "frame_estimate": {
+        "valid": true,
+        "model": "steady_state_scheduled_groups_x_mapping_ii",
+        "excluded_costs": [
+          "loop_setup",
+          "memory_stalls",
+          "fft_bit_reversal",
+          "host_cgra_transfers"
+        ],
+        "breakdown": {
+          "fmcw_window": {
+            "dynamic_iterations": 131072,
+            "compiler_unroll_factor": 4,
+            "scheduled_loop_groups": 32768,
+            "measured_mapping_ii": 5,
+            "estimated_cycles": 163840
+          },
+          "fmcw_fft_stage": {
+            "dynamic_iterations": 983040,
+            "compiler_unroll_factor": 2,
+            "scheduled_loop_groups": 557056,
+            "measured_mapping_ii": 5,
+            "estimated_cycles": 2785280
+          },
+          "fmcw_transpose": {
+            "dynamic_iterations": 262144,
+            "compiler_unroll_factor": 4,
+            "scheduled_loop_groups": 65536,
+            "measured_mapping_ii": 4,
+            "estimated_cycles": 262144
+          },
+          "fmcw_accumulate_power": {
+            "dynamic_iterations": 131072,
+            "compiler_unroll_factor": 4,
+            "scheduled_loop_groups": 32768,
+            "measured_mapping_ii": 3,
+            "estimated_cycles": 98304
+          },
+          "fmcw_cfar_2d": {
+            "dynamic_iterations": 3512388,
+            "compiler_unroll_factor": 1,
+            "scheduled_loop_groups": 3512388,
+            "measured_mapping_ii": 11,
+            "estimated_cycles": 38636268
+          }
+        },
+        "estimated_cycles": 41945836
+      },
+      "compiler_speedup_percent": null,
+      "pareto_optimal": false
+    }
+  ],
+  "recommended_by_cycle_tile_product": {
+    "rows": 4,
+    "columns": 4
+  },
+  "raw_results": [
+    {
+      "candidate": {
+        "kernel": "fmcw_window",
+        "rows": 6,
+        "columns": 6,
+        "unroll_factor": 4,
+        "compiler_vectorize": false,
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "control_memory": 200,
+        "register_count": 8,
+        "heuristic_mapping": true
+      },
+      "success": true,
+      "mapping_ii": 5,
+      "resource_mii": 2,
+      "recurrence_mii": 3,
+      "dfg_nodes": 59,
+      "dfg_edges": 76,
+      "fu_utilization_percent": 32.7778,
+      "xbar_utilization_percent": 71.6667,
+      "elapsed_seconds": 2.1520174629986286,
+      "error": null
+    },
+    {
+      "candidate": {
+        "kernel": "fmcw_fft_stage",
+        "rows": 6,
+        "columns": 6,
+        "unroll_factor": 2,
+        "compiler_vectorize": false,
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "control_memory": 200,
+        "register_count": 8,
+        "heuristic_mapping": true
+      },
+      "success": true,
+      "mapping_ii": 5,
+      "resource_mii": 2,
+      "recurrence_mii": 3,
+      "dfg_nodes": 59,
+      "dfg_edges": 88,
+      "fu_utilization_percent": 32.7778,
+      "xbar_utilization_percent": 71.1111,
+      "elapsed_seconds": 5.101689470000565,
+      "error": null
+    },
+    {
+      "candidate": {
+        "kernel": "fmcw_transpose",
+        "rows": 6,
+        "columns": 6,
+        "unroll_factor": 4,
+        "compiler_vectorize": false,
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "control_memory": 200,
+        "register_count": 8,
+        "heuristic_mapping": true
+      },
+      "success": true,
+      "mapping_ii": 4,
+      "resource_mii": 1,
+      "recurrence_mii": 3,
+      "dfg_nodes": 35,
+      "dfg_edges": 40,
+      "fu_utilization_percent": 24.3056,
+      "xbar_utilization_percent": 61.1111,
+      "elapsed_seconds": 0.9896837288979441,
+      "error": null
+    },
+    {
+      "candidate": {
+        "kernel": "fmcw_accumulate_power",
+        "rows": 6,
+        "columns": 6,
+        "unroll_factor": 4,
+        "compiler_vectorize": false,
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "control_memory": 200,
+        "register_count": 8,
+        "heuristic_mapping": true
+      },
+      "success": true,
+      "mapping_ii": 3,
+      "resource_mii": 2,
+      "recurrence_mii": 0,
+      "dfg_nodes": 44,
+      "dfg_edges": 47,
+      "fu_utilization_percent": 40.7407,
+      "xbar_utilization_percent": 71.2963,
+      "elapsed_seconds": 1.7866244381293654,
+      "error": null
+    },
+    {
+      "candidate": {
+        "kernel": "fmcw_cfar_2d",
+        "rows": 6,
+        "columns": 6,
+        "unroll_factor": 1,
+        "compiler_vectorize": false,
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "control_memory": 200,
+        "register_count": 8,
+        "heuristic_mapping": true
+      },
+      "success": true,
+      "mapping_ii": 11,
+      "resource_mii": 1,
+      "recurrence_mii": 6,
+      "dfg_nodes": 20,
+      "dfg_edges": 25,
+      "fu_utilization_percent": 5.05051,
+      "xbar_utilization_percent": 13.6364,
+      "elapsed_seconds": 2.046020505949855,
+      "error": null
+    },
+    {
+      "candidate": {
+        "kernel": "fmcw_window",
+        "rows": 4,
+        "columns": 4,
+        "unroll_factor": 2,
+        "compiler_vectorize": false,
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "control_memory": 200,
+        "register_count": 8,
+        "heuristic_mapping": true
+      },
+      "success": true,
+      "mapping_ii": 5,
+      "resource_mii": 2,
+      "recurrence_mii": 3,
+      "dfg_nodes": 31,
+      "dfg_edges": 40,
+      "fu_utilization_percent": 38.75,
+      "xbar_utilization_percent": 78.75,
+      "elapsed_seconds": 0.5964921310078353,
+      "error": null
+    },
+    {
+      "candidate": {
+        "kernel": "fmcw_fft_stage",
+        "rows": 4,
+        "columns": 4,
+        "unroll_factor": 1,
+        "compiler_vectorize": false,
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "control_memory": 200,
+        "register_count": 8,
+        "heuristic_mapping": true
+      },
+      "success": true,
+      "mapping_ii": 4,
+      "resource_mii": 2,
+      "recurrence_mii": 2,
+      "dfg_nodes": 31,
+      "dfg_edges": 46,
+      "fu_utilization_percent": 48.4375,
+      "xbar_utilization_percent": 92.1875,
+      "elapsed_seconds": 0.6279070980381221,
+      "error": null
+    },
+    {
+      "candidate": {
+        "kernel": "fmcw_transpose",
+        "rows": 4,
+        "columns": 4,
+        "unroll_factor": 2,
+        "compiler_vectorize": false,
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "control_memory": 200,
+        "register_count": 8,
+        "heuristic_mapping": true
+      },
+      "success": true,
+      "mapping_ii": 4,
+      "resource_mii": 2,
+      "recurrence_mii": 3,
+      "dfg_nodes": 19,
+      "dfg_edges": 22,
+      "fu_utilization_percent": 29.6875,
+      "xbar_utilization_percent": 65.625,
+      "elapsed_seconds": 0.5557150461245328,
+      "error": null
+    },
+    {
+      "candidate": {
+        "kernel": "fmcw_accumulate_power",
+        "rows": 4,
+        "columns": 4,
+        "unroll_factor": 2,
+        "compiler_vectorize": false,
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "control_memory": 200,
+        "register_count": 8,
+        "heuristic_mapping": true
+      },
+      "success": true,
+      "mapping_ii": 4,
+      "resource_mii": 2,
+      "recurrence_mii": 3,
+      "dfg_nodes": 25,
+      "dfg_edges": 30,
+      "fu_utilization_percent": 39.0625,
+      "xbar_utilization_percent": 82.8125,
+      "elapsed_seconds": 0.6406794809736311,
+      "error": null
+    },
+    {
+      "candidate": {
+        "kernel": "fmcw_cfar_2d",
+        "rows": 4,
+        "columns": 4,
+        "unroll_factor": 1,
+        "compiler_vectorize": false,
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "control_memory": 200,
+        "register_count": 8,
+        "heuristic_mapping": true
+      },
+      "success": true,
+      "mapping_ii": 10,
+      "resource_mii": 2,
+      "recurrence_mii": 6,
+      "dfg_nodes": 20,
+      "dfg_edges": 25,
+      "fu_utilization_percent": 12.5,
+      "xbar_utilization_percent": 30.0,
+      "elapsed_seconds": 0.680608649039641,
+      "error": null
+    },
+    {
+      "candidate": {
+        "kernel": "fmcw_window",
+        "rows": 4,
+        "columns": 4,
+        "unroll_factor": 4,
+        "compiler_vectorize": false,
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "control_memory": 200,
+        "register_count": 8,
+        "heuristic_mapping": true
+      },
+      "success": true,
+      "mapping_ii": 7,
+      "resource_mii": 4,
+      "recurrence_mii": 3,
+      "dfg_nodes": 59,
+      "dfg_edges": 76,
+      "fu_utilization_percent": 52.6786,
+      "xbar_utilization_percent": 83.9286,
+      "elapsed_seconds": 0.9599964660592377,
+      "error": null
+    },
+    {
+      "candidate": {
+        "kernel": "fmcw_fft_stage",
+        "rows": 4,
+        "columns": 4,
+        "unroll_factor": 2,
+        "compiler_vectorize": false,
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "control_memory": 200,
+        "register_count": 8,
+        "heuristic_mapping": true
+      },
+      "success": true,
+      "mapping_ii": 6,
+      "resource_mii": 4,
+      "recurrence_mii": 3,
+      "dfg_nodes": 59,
+      "dfg_edges": 88,
+      "fu_utilization_percent": 61.4583,
+      "xbar_utilization_percent": 97.9167,
+      "elapsed_seconds": 1.0184286788571626,
+      "error": null
+    },
+    {
+      "candidate": {
+        "kernel": "fmcw_transpose",
+        "rows": 4,
+        "columns": 4,
+        "unroll_factor": 4,
+        "compiler_vectorize": false,
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "control_memory": 200,
+        "register_count": 8,
+        "heuristic_mapping": true
+      },
+      "success": true,
+      "mapping_ii": 5,
+      "resource_mii": 3,
+      "recurrence_mii": 3,
+      "dfg_nodes": 35,
+      "dfg_edges": 40,
+      "fu_utilization_percent": 43.75,
+      "xbar_utilization_percent": 76.25,
+      "elapsed_seconds": 0.5841599139384925,
+      "error": null
+    },
+    {
+      "candidate": {
+        "kernel": "fmcw_accumulate_power",
+        "rows": 4,
+        "columns": 4,
+        "unroll_factor": 4,
+        "compiler_vectorize": false,
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "control_memory": 200,
+        "register_count": 8,
+        "heuristic_mapping": true
+      },
+      "success": true,
+      "mapping_ii": 4,
+      "resource_mii": 3,
+      "recurrence_mii": 0,
+      "dfg_nodes": 44,
+      "dfg_edges": 47,
+      "fu_utilization_percent": 68.75,
+      "xbar_utilization_percent": 95.3125,
+      "elapsed_seconds": 0.7410062069538981,
+      "error": null
+    },
+    {
+      "candidate": {
+        "kernel": "fmcw_window",
+        "rows": 6,
+        "columns": 6,
+        "unroll_factor": 2,
+        "compiler_vectorize": false,
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "control_memory": 200,
+        "register_count": 8,
+        "heuristic_mapping": true
+      },
+      "success": true,
+      "mapping_ii": 4,
+      "resource_mii": 1,
+      "recurrence_mii": 3,
+      "dfg_nodes": 31,
+      "dfg_edges": 40,
+      "fu_utilization_percent": 21.5278,
+      "xbar_utilization_percent": 48.6111,
+      "elapsed_seconds": 0.927162584848702,
+      "error": null
+    },
+    {
+      "candidate": {
+        "kernel": "fmcw_fft_stage",
+        "rows": 6,
+        "columns": 6,
+        "unroll_factor": 1,
+        "compiler_vectorize": false,
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "control_memory": 200,
+        "register_count": 8,
+        "heuristic_mapping": true
+      },
+      "success": true,
+      "mapping_ii": 4,
+      "resource_mii": 1,
+      "recurrence_mii": 2,
+      "dfg_nodes": 31,
+      "dfg_edges": 46,
+      "fu_utilization_percent": 21.5278,
+      "xbar_utilization_percent": 50.6944,
+      "elapsed_seconds": 1.283018418122083,
+      "error": null
+    },
+    {
+      "candidate": {
+        "kernel": "fmcw_transpose",
+        "rows": 6,
+        "columns": 6,
+        "unroll_factor": 2,
+        "compiler_vectorize": false,
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "control_memory": 200,
+        "register_count": 8,
+        "heuristic_mapping": true
+      },
+      "success": true,
+      "mapping_ii": 4,
+      "resource_mii": 1,
+      "recurrence_mii": 3,
+      "dfg_nodes": 19,
+      "dfg_edges": 22,
+      "fu_utilization_percent": 13.1944,
+      "xbar_utilization_percent": 32.6389,
+      "elapsed_seconds": 0.7595788231119514,
+      "error": null
+    },
+    {
+      "candidate": {
+        "kernel": "fmcw_accumulate_power",
+        "rows": 6,
+        "columns": 6,
+        "unroll_factor": 2,
+        "compiler_vectorize": false,
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "control_memory": 200,
+        "register_count": 8,
+        "heuristic_mapping": true
+      },
+      "success": true,
+      "mapping_ii": 4,
+      "resource_mii": 1,
+      "recurrence_mii": 3,
+      "dfg_nodes": 25,
+      "dfg_edges": 30,
+      "fu_utilization_percent": 17.3611,
+      "xbar_utilization_percent": 42.3611,
+      "elapsed_seconds": 1.2169242789968848,
+      "error": null
+    }
+  ],
+  "policy": "maco_llm_agents",
+  "config": {
+    "rounds": 3,
+    "proposals": 2,
+    "top_k": 2,
+    "mapping_budget": 30,
+    "seed": 37,
+    "epsilon_0": 0.9,
+    "gamma": 0.95,
+    "temperature": 0.2,
+    "max_tokens": 384,
+    "timeout": 180
+  },
+  "model": "harp-raw-base",
+  "model_identity": {
+    "served_model": "harp-raw-base",
+    "verification": "local serving health response",
+    "model_path": "/data2/harp_qwen38/models/Qwen3.8-27B",
+    "quantization": "nf4-double-quant",
+    "service": "harp-external-baseline",
+    "ready": true
+  },
+  "adapter_sha256": "b3522b96c732fe7ff2a7b68d441eec5e57150132852e466dd6d0e2baa637ffc7",
+  "source_commit": "31c02ce013838d89ef2a6d211acfdf639ecb178d",
+  "agent_source_sha256": {
+    "cgra_codesigner.py": "1e30befb3fcc66d32c6c70aed05db6f394b1fa11358f0469fea6da6c01af6f7c",
+    "cgra_fixer.py": "58cc1c4cb6d7b0b99bc947a040208b835c78b4b5029b067199dc7ffa936cfb0b",
+    "coarse_grained_judge.py": "eecccb89bb7078099b98600a0627ac94e828c699847c3af6efc680954879ec45",
+    "fine_grained_judge.py": "11fc0bad2712a54828135aa83118293f933f0b3cbeac293c73c71f50c523b6b6"
+  },
+  "rounds": [
+    {
+      "iteration": 1,
+      "mode": "explore",
+      "epsilon": 0.855,
+      "proposals": [
+        {
+          "tile_size": "6x6",
+          "unroll_factors": [
+            4,
+            2,
+            4,
+            4,
+            1
+          ],
+          "reasoning": "Max unroll for memory-bound stages; larger tile for parallelism."
+        },
+        {
+          "tile_size": "4x4",
+          "unroll_factors": [
+            2,
+            1,
+            2,
+            2,
+            1
+          ],
+          "reasoning": "Moderate unroll balances latency and resource pressure on mid-size tile."
+        }
+      ],
+      "repaired": [
+        {
+          "tile_size": "6x6",
+          "unroll_factors": [
+            4,
+            2,
+            4,
+            4,
+            1
+          ],
+          "reasoning": "Max unroll for memory-bound stages; larger tile for parallelism."
+        },
+        {
+          "tile_size": "4x4",
+          "unroll_factors": [
+            2,
+            1,
+            2,
+            2,
+            1
+          ],
+          "reasoning": "Moderate unroll balances latency and resource pressure on mid-size tile."
+        }
+      ],
+      "shortlist": [
+        {
+          "tile_size": "6x6",
+          "unroll_factors": [
+            4,
+            2,
+            4,
+            4,
+            1
+          ],
+          "reasoning": "Max unroll for memory-bound stages; larger tile for parallelism."
+        },
+        {
+          "tile_size": "4x4",
+          "unroll_factors": [
+            2,
+            1,
+            2,
+            2,
+            1
+          ],
+          "reasoning": "Moderate unroll balances latency and resource pressure on mid-size tile."
+        }
+      ],
+      "llm_choice": {
+        "tile_size": "6x6",
+        "unroll_factors": [
+          4,
+          2,
+          4,
+          4,
+          1
+        ],
+        "reasoning": "Max unroll for memory-bound stages; larger tile for parallelism."
+      },
+      "measured_winner": {
+        "design": {
+          "tile_size": "4x4",
+          "unroll_factors": [
+            2,
+            1,
+            2,
+            2,
+            1
+          ],
+          "reasoning": "Moderate unroll balances latency and resource pressure on mid-size tile."
+        },
+        "frame_estimate": {
+          "valid": true,
+          "model": "steady_state_scheduled_groups_x_mapping_ii",
+          "excluded_costs": [
+            "loop_setup",
+            "memory_stalls",
+            "fft_bit_reversal",
+            "host_cgra_transfers"
+          ],
+          "breakdown": {
+            "fmcw_window": {
+              "dynamic_iterations": 131072,
+              "compiler_unroll_factor": 2,
+              "scheduled_loop_groups": 65536,
+              "measured_mapping_ii": 5,
+              "estimated_cycles": 327680
+            },
+            "fmcw_fft_stage": {
+              "dynamic_iterations": 983040,
+              "compiler_unroll_factor": 1,
+              "scheduled_loop_groups": 983040,
+              "measured_mapping_ii": 4,
+              "estimated_cycles": 3932160
+            },
+            "fmcw_transpose": {
+              "dynamic_iterations": 262144,
+              "compiler_unroll_factor": 2,
+              "scheduled_loop_groups": 131072,
+              "measured_mapping_ii": 4,
+              "estimated_cycles": 524288
+            },
+            "fmcw_accumulate_power": {
+              "dynamic_iterations": 131072,
+              "compiler_unroll_factor": 2,
+              "scheduled_loop_groups": 65536,
+              "measured_mapping_ii": 4,
+              "estimated_cycles": 262144
+            },
+            "fmcw_cfar_2d": {
+              "dynamic_iterations": 3512388,
+              "compiler_unroll_factor": 1,
+              "scheduled_loop_groups": 3512388,
+              "measured_mapping_ii": 10,
+              "estimated_cycles": 35123880
+            }
+          },
+          "estimated_cycles": 40170152
+        },
+        "evaluations_so_far": 10,
+        "round": 1
+      },
+      "confidence": 0.19281705294742596,
+      "agreement": 0.6427235098247532,
+      "tool_validation": "mandatory; confidence never substitutes for measurements"
+    },
+    {
+      "iteration": 2,
+      "mode": "explore",
+      "epsilon": 0.81225,
+      "proposals": [
+        {
+          "tile_size": "6x6",
+          "unroll_factors": [
+            4,
+            2,
+            4,
+            4,
+            1
+          ],
+          "reasoning": "Max unroll for memory-bound stages; larger tile for parallelism."
+        },
+        {
+          "tile_size": "4x4",
+          "unroll_factors": [
+            2,
+            1,
+            2,
+            2,
+            1
+          ],
+          "reasoning": "Moderate unroll balances latency and resource pressure on mid-size tile."
+        }
+      ],
+      "repaired": [
+        {
+          "tile_size": "6x6",
+          "unroll_factors": [
+            4,
+            2,
+            4,
+            4,
+            1
+          ],
+          "reasoning": "Max unroll for memory-bound stages; larger tile for parallelism."
+        },
+        {
+          "tile_size": "4x4",
+          "unroll_factors": [
+            2,
+            1,
+            2,
+            2,
+            1
+          ],
+          "reasoning": "Moderate unroll balances latency and resource pressure on mid-size tile."
+        }
+      ],
+      "shortlist": [
+        {
+          "tile_size": "4x4",
+          "unroll_factors": [
+            2,
+            1,
+            2,
+            2,
+            1
+          ],
+          "reasoning": "Moderate unroll balances latency and resource pressure on mid-size tile."
+        },
+        {
+          "tile_size": "6x6",
+          "unroll_factors": [
+            4,
+            2,
+            4,
+            4,
+            1
+          ],
+          "reasoning": "Max unroll for memory-bound stages; larger tile for parallelism."
+        }
+      ],
+      "llm_choice": {
+        "tile_size": "4x4",
+        "unroll_factors": [
+          2,
+          1,
+          2,
+          2,
+          1
+        ],
+        "reasoning": "Lower CFAR II and reduced FFT overhead minimize total frame cycles."
+      },
+      "measured_winner": {
+        "design": {
+          "tile_size": "4x4",
+          "unroll_factors": [
+            2,
+            1,
+            2,
+            2,
+            1
+          ],
+          "reasoning": "Moderate unroll balances latency and resource pressure on mid-size tile."
+        },
+        "frame_estimate": {
+          "valid": true,
+          "model": "steady_state_scheduled_groups_x_mapping_ii",
+          "excluded_costs": [
+            "loop_setup",
+            "memory_stalls",
+            "fft_bit_reversal",
+            "host_cgra_transfers"
+          ],
+          "breakdown": {
+            "fmcw_window": {
+              "dynamic_iterations": 131072,
+              "compiler_unroll_factor": 2,
+              "scheduled_loop_groups": 65536,
+              "measured_mapping_ii": 5,
+              "estimated_cycles": 327680
+            },
+            "fmcw_fft_stage": {
+              "dynamic_iterations": 983040,
+              "compiler_unroll_factor": 1,
+              "scheduled_loop_groups": 983040,
+              "measured_mapping_ii": 4,
+              "estimated_cycles": 3932160
+            },
+            "fmcw_transpose": {
+              "dynamic_iterations": 262144,
+              "compiler_unroll_factor": 2,
+              "scheduled_loop_groups": 131072,
+              "measured_mapping_ii": 4,
+              "estimated_cycles": 524288
+            },
+            "fmcw_accumulate_power": {
+              "dynamic_iterations": 131072,
+              "compiler_unroll_factor": 2,
+              "scheduled_loop_groups": 65536,
+              "measured_mapping_ii": 4,
+              "estimated_cycles": 262144
+            },
+            "fmcw_cfar_2d": {
+              "dynamic_iterations": 3512388,
+              "compiler_unroll_factor": 1,
+              "scheduled_loop_groups": 3512388,
+              "measured_mapping_ii": 10,
+              "estimated_cycles": 35123880
+            }
+          },
+          "estimated_cycles": 40170152
+        },
+        "evaluations_so_far": 10,
+        "round": 2
+      },
+      "confidence": 0.43497193706319814,
+      "agreement": 1.0,
+      "tool_validation": "mandatory; confidence never substitutes for measurements"
+    },
+    {
+      "iteration": 3,
+      "mode": "explore",
+      "epsilon": 0.7716374999999999,
+      "proposals": [
+        {
+          "tile_size": "4x4",
+          "unroll_factors": [
+            4,
+            2,
+            4,
+            4,
+            1
+          ],
+          "reasoning": "Max unroll for memory-bound stages; larger tile for parallelism."
+        },
+        {
+          "tile_size": "6x6",
+          "unroll_factors": [
+            2,
+            1,
+            2,
+            2,
+            1
+          ],
+          "reasoning": "Moderate unroll balances latency and resource pressure on mid-size tile."
+        }
+      ],
+      "repaired": [
+        {
+          "tile_size": "4x4",
+          "unroll_factors": [
+            4,
+            2,
+            4,
+            4,
+            1
+          ],
+          "reasoning": "High unroll for memory-bound stages on mid-size tile."
+        },
+        {
+          "tile_size": "6x6",
+          "unroll_factors": [
+            2,
+            1,
+            2,
+            2,
+            1
+          ],
+          "reasoning": "Moderate unroll balances latency and resource pressure on mid-size tile."
+        }
+      ],
+      "shortlist": [
+        {
+          "tile_size": "4x4",
+          "unroll_factors": [
+            4,
+            2,
+            4,
+            4,
+            1
+          ],
+          "reasoning": "High unroll for memory-bound stages on mid-size tile."
+        },
+        {
+          "tile_size": "6x6",
+          "unroll_factors": [
+            2,
+            1,
+            2,
+            2,
+            1
+          ],
+          "reasoning": "Moderate unroll balances latency and resource pressure on mid-size tile."
+        }
+      ],
+      "llm_choice": {
+        "tile_size": "4x4",
+        "unroll_factors": [
+          4,
+          2,
+          4,
+          4,
+          1
+        ],
+        "reasoning": "High unroll for memory-bound stages on mid-size tile."
+      },
+      "measured_winner": {
+        "design": {
+          "tile_size": "4x4",
+          "unroll_factors": [
+            4,
+            2,
+            4,
+            4,
+            1
+          ],
+          "reasoning": "High unroll for memory-bound stages on mid-size tile."
+        },
+        "frame_estimate": {
+          "valid": true,
+          "model": "steady_state_scheduled_groups_x_mapping_ii",
+          "excluded_costs": [
+            "loop_setup",
+            "memory_stalls",
+            "fft_bit_reversal",
+            "host_cgra_transfers"
+          ],
+          "breakdown": {
+            "fmcw_window": {
+              "dynamic_iterations": 131072,
+              "compiler_unroll_factor": 4,
+              "scheduled_loop_groups": 32768,
+              "measured_mapping_ii": 7,
+              "estimated_cycles": 229376
+            },
+            "fmcw_fft_stage": {
+              "dynamic_iterations": 983040,
+              "compiler_unroll_factor": 2,
+              "scheduled_loop_groups": 557056,
+              "measured_mapping_ii": 6,
+              "estimated_cycles": 3342336
+            },
+            "fmcw_transpose": {
+              "dynamic_iterations": 262144,
+              "compiler_unroll_factor": 4,
+              "scheduled_loop_groups": 65536,
+              "measured_mapping_ii": 5,
+              "estimated_cycles": 327680
+            },
+            "fmcw_accumulate_power": {
+              "dynamic_iterations": 131072,
+              "compiler_unroll_factor": 4,
+              "scheduled_loop_groups": 32768,
+              "measured_mapping_ii": 4,
+              "estimated_cycles": 131072
+            },
+            "fmcw_cfar_2d": {
+              "dynamic_iterations": 3512388,
+              "compiler_unroll_factor": 1,
+              "scheduled_loop_groups": 3512388,
+              "measured_mapping_ii": 10,
+              "estimated_cycles": 35123880
+            }
+          },
+          "estimated_cycles": 39154344
+        },
+        "evaluations_so_far": 14,
+        "round": 3
+      },
+      "confidence": 0.6044803559442387,
+      "agreement": 1.0,
+      "tool_validation": "mandatory; confidence never substitutes for measurements"
+    }
+  ],
+  "best_evaluated_plan": {
+    "design": {
+      "tile_size": "4x4",
+      "unroll_factors": [
+        4,
+        2,
+        4,
+        4,
+        1
+      ],
+      "reasoning": "High unroll for memory-bound stages on mid-size tile."
+    },
+    "frame_estimate": {
+      "valid": true,
+      "model": "steady_state_scheduled_groups_x_mapping_ii",
+      "excluded_costs": [
+        "loop_setup",
+        "memory_stalls",
+        "fft_bit_reversal",
+        "host_cgra_transfers"
+      ],
+      "breakdown": {
+        "fmcw_window": {
+          "dynamic_iterations": 131072,
+          "compiler_unroll_factor": 4,
+          "scheduled_loop_groups": 32768,
+          "measured_mapping_ii": 7,
+          "estimated_cycles": 229376
+        },
+        "fmcw_fft_stage": {
+          "dynamic_iterations": 983040,
+          "compiler_unroll_factor": 2,
+          "scheduled_loop_groups": 557056,
+          "measured_mapping_ii": 6,
+          "estimated_cycles": 3342336
+        },
+        "fmcw_transpose": {
+          "dynamic_iterations": 262144,
+          "compiler_unroll_factor": 4,
+          "scheduled_loop_groups": 65536,
+          "measured_mapping_ii": 5,
+          "estimated_cycles": 327680
+        },
+        "fmcw_accumulate_power": {
+          "dynamic_iterations": 131072,
+          "compiler_unroll_factor": 4,
+          "scheduled_loop_groups": 32768,
+          "measured_mapping_ii": 4,
+          "estimated_cycles": 131072
+        },
+        "fmcw_cfar_2d": {
+          "dynamic_iterations": 3512388,
+          "compiler_unroll_factor": 1,
+          "scheduled_loop_groups": 3512388,
+          "measured_mapping_ii": 10,
+          "estimated_cycles": 35123880
+        }
+      },
+      "estimated_cycles": 39154344
+    },
+    "evaluations_so_far": 14,
+    "round": 3
+  },
+  "history": [
+    {
+      "design": {
+        "tile_size": "6x6",
+        "unroll_factors": [
+          4,
+          2,
+          4,
+          4,
+          1
+        ],
+        "reasoning": "Max unroll for memory-bound stages; larger tile for parallelism."
+      },
+      "frame_estimate": {
+        "valid": true,
+        "model": "steady_state_scheduled_groups_x_mapping_ii",
+        "excluded_costs": [
+          "loop_setup",
+          "memory_stalls",
+          "fft_bit_reversal",
+          "host_cgra_transfers"
+        ],
+        "breakdown": {
+          "fmcw_window": {
+            "dynamic_iterations": 131072,
+            "compiler_unroll_factor": 4,
+            "scheduled_loop_groups": 32768,
+            "measured_mapping_ii": 5,
+            "estimated_cycles": 163840
+          },
+          "fmcw_fft_stage": {
+            "dynamic_iterations": 983040,
+            "compiler_unroll_factor": 2,
+            "scheduled_loop_groups": 557056,
+            "measured_mapping_ii": 5,
+            "estimated_cycles": 2785280
+          },
+          "fmcw_transpose": {
+            "dynamic_iterations": 262144,
+            "compiler_unroll_factor": 4,
+            "scheduled_loop_groups": 65536,
+            "measured_mapping_ii": 4,
+            "estimated_cycles": 262144
+          },
+          "fmcw_accumulate_power": {
+            "dynamic_iterations": 131072,
+            "compiler_unroll_factor": 4,
+            "scheduled_loop_groups": 32768,
+            "measured_mapping_ii": 3,
+            "estimated_cycles": 98304
+          },
+          "fmcw_cfar_2d": {
+            "dynamic_iterations": 3512388,
+            "compiler_unroll_factor": 1,
+            "scheduled_loop_groups": 3512388,
+            "measured_mapping_ii": 11,
+            "estimated_cycles": 38636268
+          }
+        },
+        "estimated_cycles": 41945836
+      },
+      "evaluations_so_far": 5,
+      "round": 1
+    },
+    {
+      "design": {
+        "tile_size": "4x4",
+        "unroll_factors": [
+          2,
+          1,
+          2,
+          2,
+          1
+        ],
+        "reasoning": "Moderate unroll balances latency and resource pressure on mid-size tile."
+      },
+      "frame_estimate": {
+        "valid": true,
+        "model": "steady_state_scheduled_groups_x_mapping_ii",
+        "excluded_costs": [
+          "loop_setup",
+          "memory_stalls",
+          "fft_bit_reversal",
+          "host_cgra_transfers"
+        ],
+        "breakdown": {
+          "fmcw_window": {
+            "dynamic_iterations": 131072,
+            "compiler_unroll_factor": 2,
+            "scheduled_loop_groups": 65536,
+            "measured_mapping_ii": 5,
+            "estimated_cycles": 327680
+          },
+          "fmcw_fft_stage": {
+            "dynamic_iterations": 983040,
+            "compiler_unroll_factor": 1,
+            "scheduled_loop_groups": 983040,
+            "measured_mapping_ii": 4,
+            "estimated_cycles": 3932160
+          },
+          "fmcw_transpose": {
+            "dynamic_iterations": 262144,
+            "compiler_unroll_factor": 2,
+            "scheduled_loop_groups": 131072,
+            "measured_mapping_ii": 4,
+            "estimated_cycles": 524288
+          },
+          "fmcw_accumulate_power": {
+            "dynamic_iterations": 131072,
+            "compiler_unroll_factor": 2,
+            "scheduled_loop_groups": 65536,
+            "measured_mapping_ii": 4,
+            "estimated_cycles": 262144
+          },
+          "fmcw_cfar_2d": {
+            "dynamic_iterations": 3512388,
+            "compiler_unroll_factor": 1,
+            "scheduled_loop_groups": 3512388,
+            "measured_mapping_ii": 10,
+            "estimated_cycles": 35123880
+          }
+        },
+        "estimated_cycles": 40170152
+      },
+      "evaluations_so_far": 10,
+      "round": 1
+    },
+    {
+      "design": {
+        "tile_size": "4x4",
+        "unroll_factors": [
+          2,
+          1,
+          2,
+          2,
+          1
+        ],
+        "reasoning": "Moderate unroll balances latency and resource pressure on mid-size tile."
+      },
+      "frame_estimate": {
+        "valid": true,
+        "model": "steady_state_scheduled_groups_x_mapping_ii",
+        "excluded_costs": [
+          "loop_setup",
+          "memory_stalls",
+          "fft_bit_reversal",
+          "host_cgra_transfers"
+        ],
+        "breakdown": {
+          "fmcw_window": {
+            "dynamic_iterations": 131072,
+            "compiler_unroll_factor": 2,
+            "scheduled_loop_groups": 65536,
+            "measured_mapping_ii": 5,
+            "estimated_cycles": 327680
+          },
+          "fmcw_fft_stage": {
+            "dynamic_iterations": 983040,
+            "compiler_unroll_factor": 1,
+            "scheduled_loop_groups": 983040,
+            "measured_mapping_ii": 4,
+            "estimated_cycles": 3932160
+          },
+          "fmcw_transpose": {
+            "dynamic_iterations": 262144,
+            "compiler_unroll_factor": 2,
+            "scheduled_loop_groups": 131072,
+            "measured_mapping_ii": 4,
+            "estimated_cycles": 524288
+          },
+          "fmcw_accumulate_power": {
+            "dynamic_iterations": 131072,
+            "compiler_unroll_factor": 2,
+            "scheduled_loop_groups": 65536,
+            "measured_mapping_ii": 4,
+            "estimated_cycles": 262144
+          },
+          "fmcw_cfar_2d": {
+            "dynamic_iterations": 3512388,
+            "compiler_unroll_factor": 1,
+            "scheduled_loop_groups": 3512388,
+            "measured_mapping_ii": 10,
+            "estimated_cycles": 35123880
+          }
+        },
+        "estimated_cycles": 40170152
+      },
+      "evaluations_so_far": 10,
+      "round": 2
+    },
+    {
+      "design": {
+        "tile_size": "6x6",
+        "unroll_factors": [
+          4,
+          2,
+          4,
+          4,
+          1
+        ],
+        "reasoning": "Max unroll for memory-bound stages; larger tile for parallelism."
+      },
+      "frame_estimate": {
+        "valid": true,
+        "model": "steady_state_scheduled_groups_x_mapping_ii",
+        "excluded_costs": [
+          "loop_setup",
+          "memory_stalls",
+          "fft_bit_reversal",
+          "host_cgra_transfers"
+        ],
+        "breakdown": {
+          "fmcw_window": {
+            "dynamic_iterations": 131072,
+            "compiler_unroll_factor": 4,
+            "scheduled_loop_groups": 32768,
+            "measured_mapping_ii": 5,
+            "estimated_cycles": 163840
+          },
+          "fmcw_fft_stage": {
+            "dynamic_iterations": 983040,
+            "compiler_unroll_factor": 2,
+            "scheduled_loop_groups": 557056,
+            "measured_mapping_ii": 5,
+            "estimated_cycles": 2785280
+          },
+          "fmcw_transpose": {
+            "dynamic_iterations": 262144,
+            "compiler_unroll_factor": 4,
+            "scheduled_loop_groups": 65536,
+            "measured_mapping_ii": 4,
+            "estimated_cycles": 262144
+          },
+          "fmcw_accumulate_power": {
+            "dynamic_iterations": 131072,
+            "compiler_unroll_factor": 4,
+            "scheduled_loop_groups": 32768,
+            "measured_mapping_ii": 3,
+            "estimated_cycles": 98304
+          },
+          "fmcw_cfar_2d": {
+            "dynamic_iterations": 3512388,
+            "compiler_unroll_factor": 1,
+            "scheduled_loop_groups": 3512388,
+            "measured_mapping_ii": 11,
+            "estimated_cycles": 38636268
+          }
+        },
+        "estimated_cycles": 41945836
+      },
+      "evaluations_so_far": 10,
+      "round": 2
+    },
+    {
+      "design": {
+        "tile_size": "4x4",
+        "unroll_factors": [
+          4,
+          2,
+          4,
+          4,
+          1
+        ],
+        "reasoning": "High unroll for memory-bound stages on mid-size tile."
+      },
+      "frame_estimate": {
+        "valid": true,
+        "model": "steady_state_scheduled_groups_x_mapping_ii",
+        "excluded_costs": [
+          "loop_setup",
+          "memory_stalls",
+          "fft_bit_reversal",
+          "host_cgra_transfers"
+        ],
+        "breakdown": {
+          "fmcw_window": {
+            "dynamic_iterations": 131072,
+            "compiler_unroll_factor": 4,
+            "scheduled_loop_groups": 32768,
+            "measured_mapping_ii": 7,
+            "estimated_cycles": 229376
+          },
+          "fmcw_fft_stage": {
+            "dynamic_iterations": 983040,
+            "compiler_unroll_factor": 2,
+            "scheduled_loop_groups": 557056,
+            "measured_mapping_ii": 6,
+            "estimated_cycles": 3342336
+          },
+          "fmcw_transpose": {
+            "dynamic_iterations": 262144,
+            "compiler_unroll_factor": 4,
+            "scheduled_loop_groups": 65536,
+            "measured_mapping_ii": 5,
+            "estimated_cycles": 327680
+          },
+          "fmcw_accumulate_power": {
+            "dynamic_iterations": 131072,
+            "compiler_unroll_factor": 4,
+            "scheduled_loop_groups": 32768,
+            "measured_mapping_ii": 4,
+            "estimated_cycles": 131072
+          },
+          "fmcw_cfar_2d": {
+            "dynamic_iterations": 3512388,
+            "compiler_unroll_factor": 1,
+            "scheduled_loop_groups": 3512388,
+            "measured_mapping_ii": 10,
+            "estimated_cycles": 35123880
+          }
+        },
+        "estimated_cycles": 39154344
+      },
+      "evaluations_so_far": 14,
+      "round": 3
+    },
+    {
+      "design": {
+        "tile_size": "6x6",
+        "unroll_factors": [
+          2,
+          1,
+          2,
+          2,
+          1
+        ],
+        "reasoning": "Moderate unroll balances latency and resource pressure on mid-size tile."
+      },
+      "frame_estimate": {
+        "valid": true,
+        "model": "steady_state_scheduled_groups_x_mapping_ii",
+        "excluded_costs": [
+          "loop_setup",
+          "memory_stalls",
+          "fft_bit_reversal",
+          "host_cgra_transfers"
+        ],
+        "breakdown": {
+          "fmcw_window": {
+            "dynamic_iterations": 131072,
+            "compiler_unroll_factor": 2,
+            "scheduled_loop_groups": 65536,
+            "measured_mapping_ii": 4,
+            "estimated_cycles": 262144
+          },
+          "fmcw_fft_stage": {
+            "dynamic_iterations": 983040,
+            "compiler_unroll_factor": 1,
+            "scheduled_loop_groups": 983040,
+            "measured_mapping_ii": 4,
+            "estimated_cycles": 3932160
+          },
+          "fmcw_transpose": {
+            "dynamic_iterations": 262144,
+            "compiler_unroll_factor": 2,
+            "scheduled_loop_groups": 131072,
+            "measured_mapping_ii": 4,
+            "estimated_cycles": 524288
+          },
+          "fmcw_accumulate_power": {
+            "dynamic_iterations": 131072,
+            "compiler_unroll_factor": 2,
+            "scheduled_loop_groups": 65536,
+            "measured_mapping_ii": 4,
+            "estimated_cycles": 262144
+          },
+          "fmcw_cfar_2d": {
+            "dynamic_iterations": 3512388,
+            "compiler_unroll_factor": 1,
+            "scheduled_loop_groups": 3512388,
+            "measured_mapping_ii": 11,
+            "estimated_cycles": 38636268
+          }
+        },
+        "estimated_cycles": 43617004
+      },
+      "evaluations_so_far": 18,
+      "round": 3
+    }
+  ],
+  "llm_calls": 12,
+  "llm_usage": {
+    "prompt_tokens": 29657,
+    "completion_tokens": 1700,
+    "total_tokens": 31357
+  },
+  "monetary_cost": null,
+  "cost_note": "Local inference; no monetary rate assumed. Token counts and latency recorded.",
+  "limitations": [
+    "bounded array/unroll search; not full MACO PPA design space",
+    "confidence formula adapted to cycle regret; no tool skipping",
+    "architecture aggregates may combine measured per-kernel settings",
+    "best_evaluated_plan identifies an actually evaluated whole-frame plan"
+  ]
+}

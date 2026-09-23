@@ -1,0 +1,165 @@
+{
+  "schema_version": 2,
+  "scope": "opcode restoration only; not executable or hardware-validated",
+  "status": "opcodes_restored",
+  "candidate": {
+    "architecture_vectorization": "none",
+    "bypass_constraint": 4,
+    "columns": 4,
+    "compiler_vectorize": false,
+    "control_memory": 200,
+    "heuristic_mapping": true,
+    "kernel": "fmcw_fft_stage",
+    "register_count": 8,
+    "rows": 4,
+    "unroll_factor": 1
+  },
+  "changes": [
+    {
+      "node": 8,
+      "pe": 13,
+      "slot": 2,
+      "original": "OPT_MUL",
+      "restored": "OPT_FMUL",
+      "instruction": "%15 = fmul float %10, %14",
+      "operands": [
+        "%10",
+        "%14"
+      ],
+      "duplicate_operand": false
+    },
+    {
+      "node": 11,
+      "pe": 1,
+      "slot": 3,
+      "original": "OPT_MUL",
+      "restored": "OPT_FMUL",
+      "instruction": "%18 = fmul float %12, %17",
+      "operands": [
+        "%12",
+        "%17"
+      ],
+      "duplicate_operand": false
+    },
+    {
+      "node": 13,
+      "pe": 2,
+      "slot": 0,
+      "original": "OPT_MUL",
+      "restored": "OPT_FMUL",
+      "instruction": "%20 = fmul float %12, %14",
+      "operands": [
+        "%12",
+        "%14"
+      ],
+      "duplicate_operand": false
+    },
+    {
+      "node": 14,
+      "pe": 14,
+      "slot": 3,
+      "original": "OPT_MUL",
+      "restored": "OPT_FMUL",
+      "instruction": "%21 = fmul float %10, %17",
+      "operands": [
+        "%10",
+        "%17"
+      ],
+      "duplicate_operand": false
+    },
+    {
+      "node": 12,
+      "pe": 9,
+      "slot": 1,
+      "original": "OPT_SUB",
+      "restored": "OPT_FSUB",
+      "instruction": "%19 = fsub float %15, %18",
+      "operands": [
+        "%15",
+        "%18"
+      ],
+      "duplicate_operand": false
+    },
+    {
+      "node": 15,
+      "pe": 11,
+      "slot": 3,
+      "original": "OPT_ADD",
+      "restored": "OPT_FADD",
+      "instruction": "%22 = fadd float %20, %21",
+      "operands": [
+        "%20",
+        "%21"
+      ],
+      "duplicate_operand": false
+    },
+    {
+      "node": 20,
+      "pe": 7,
+      "slot": 0,
+      "original": "OPT_ADD",
+      "restored": "OPT_FADD",
+      "instruction": "%27 = fadd float %24, %19",
+      "operands": [
+        "%24",
+        "%19"
+      ],
+      "duplicate_operand": false
+    },
+    {
+      "node": 22,
+      "pe": 15,
+      "slot": 0,
+      "original": "OPT_ADD",
+      "restored": "OPT_FADD",
+      "instruction": "%28 = fadd float %26, %22",
+      "operands": [
+        "%26",
+        "%22"
+      ],
+      "duplicate_operand": false
+    },
+    {
+      "node": 24,
+      "pe": 3,
+      "slot": 1,
+      "original": "OPT_SUB",
+      "restored": "OPT_FSUB",
+      "instruction": "%29 = fsub float %24, %19",
+      "operands": [
+        "%24",
+        "%19"
+      ],
+      "duplicate_operand": false
+    },
+    {
+      "node": 26,
+      "pe": 2,
+      "slot": 2,
+      "original": "OPT_SUB",
+      "restored": "OPT_FSUB",
+      "instruction": "%30 = fsub float %26, %22",
+      "operands": [
+        "%26",
+        "%22"
+      ],
+      "duplicate_operand": false
+    }
+  ],
+  "adapter_sha256": "be2b082000956509a33c9a902eebfb6baf60852cf1982ea68aaf7ea25424369c",
+  "source_sha256": {
+    "config.json": "f1215b8171609cec2265c1709782bbc8377f490138354f37af040c807453903e",
+    "dfg.json": "f80bd17872ab1ea41ea1e28bf1d4a659b6950db68dc47af76a0ebec327ec2ce6",
+    "kernel_map.bc": "7e459f7b4c760bcdd27520ea8d54fa5ff1ac9945b53b44e1fc1e48ccc5a6fdac",
+    "log": "913ec0b160c7e2523871bfbcdd59b8c65c4def3c2f7a8024702e1d80ee9b534c",
+    "mapping": "9b21eed3620d925fcb73ac2f56c345b8df0b5ed192687298b5b8b7035cb96fce"
+  },
+  "pending": [
+    "operand/register and routing translation, including duplicate operands",
+    "constants (including LT operand 2) and memory addresses",
+    "integer width/address lowering",
+    "configuration/data loader",
+    "whole-kernel RTL execution"
+  ],
+  "candidate_hardware_correctness": "pending"
+}

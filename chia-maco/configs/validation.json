@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "scope": "native_float32_pipeline_vs_numpy_float64",
+  "shape_rx_chirps_samples": [4, 128, 256],
+  "seed": 37,
+  "normalized_max_error_limit": 0.00002,
+  "zero_reference_absolute_limit": 0.0000001,
+  "cfar": {"training_radius": 4, "guard_radius": 1, "threshold_scale": 6.0},
+  "detection_pass_rule": "Exact equality of the entire detection mask; threshold-adjacent mismatches are diagnostic only and do not count as a pass.",
+  "scenes": ["single_target", "multiple_targets", "noisy_targets", "zero", "edge_target", "large_amplitude"],
+  "numeric_format": "float32 complex input and C arithmetic; NumPy FFT and CFAR use float64. No fixed-point or RTL correctness claim."
+}

@@ -1,0 +1,12 @@
+{
+  "read_nj": 0.0142413,
+  "write_nj": 0.0160629,
+  "area_mm2": 0.483275,
+  "access_ns": 0.667067,
+  "banks": 8,
+  "bank_kib": 8,
+  "technology_nm": 45,
+  "source": "CGRA-Flow CACTI",
+  "scope": "SRAM only; one read and one write port per bank",
+  "evidence": "memory_8x8/cacti.log"
+}

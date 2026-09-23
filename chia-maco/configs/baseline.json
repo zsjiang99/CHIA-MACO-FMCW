@@ -1,0 +1,22 @@
+{
+  "id": "baseline-4x4-scalar-v1",
+  "status": "frozen_mapper_baseline; RTL elaboration and correctness pending",
+  "reason": "Reuse this artifact's existing reference_4x4 configuration. Original MACO has no workload-matched, hardware-validated FMCW baseline.",
+  "workload": "FMCW 256 samples x 128 chirps x 4 RX",
+  "numeric_format": "float32 complex input and arithmetic; not 16-bit fixed point",
+  "design": {"tile_size": "4x4", "unroll_factors": [1, 1, 1, 1, 1]},
+  "mapper_settings": {
+    "register_count": 8,
+    "control_memory": 200,
+    "bypass_constraint": 4,
+    "compiler_vectorize": false,
+    "architecture_vectorization": "none",
+    "heuristic_mapping": true,
+    "parameterizableCGRA": false
+  },
+  "not_defined_by_mapper": ["scratchpad capacity", "memory banks", "memory latency", "RTL FU implementation", "standard-cell library", "clock constraint"],
+  "area_reference_um2": null,
+  "clock_period_ns": null,
+  "hardware_correctness": "pending",
+  "evidence": "results/codesign_search_certified.json; select rows=4, columns=4, unroll_factor=1 per kernel"
+}

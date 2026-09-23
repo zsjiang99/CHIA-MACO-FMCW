@@ -1,0 +1,44 @@
+digraph "DFG for'fmcw_window_map' function" {
+	Node14add[shape=record, label="(14) add_0"];
+	Node15cmp[shape=record, label="(15) cmp_0"];
+	Node16br[shape=record, label="(16) br_0"];
+	Node0phi[shape=record, label="(0) phi_0"];
+	Node1getelementptr[shape=record, label="(1) getelementptr_0"];
+	Node3getelementptr[shape=record, label="(3) getelementptr_0"];
+	Node6getelementptr[shape=record, label="(6) getelementptr_0"];
+	Node8getelementptr[shape=record, label="(8) getelementptr_0"];
+	Node12getelementptr[shape=record, label="(12) getelementptr_0"];
+	Node2load[shape=record, label="(2) load_0"];
+	Node4load[shape=record, label="(4) load_0"];
+	Node9load[shape=record, label="(9) load_0"];
+	Node10load[shape=record, label="(10) load_0"];
+	Node5mul[shape=record, label="(5) mul_0"];
+	Node11mul[shape=record, label="(11) mul_0"];
+	Node7store[shape=record, label="(7) store_0"];
+	Node13store[shape=record, label="(13) store_0"];
+edge [color=blue]
+	Node16br -> Node0phi
+edge [color=red]
+	Node0phi -> Node1getelementptr
+	Node1getelementptr -> Node2load
+	Node0phi -> Node3getelementptr
+	Node3getelementptr -> Node4load
+	Node2load -> Node5mul
+	Node4load -> Node5mul
+	Node0phi -> Node6getelementptr
+	Node5mul -> Node7store
+	Node6getelementptr -> Node7store
+	Node0phi -> Node8getelementptr
+	Node8getelementptr -> Node9load
+	Node3getelementptr -> Node10load
+	Node9load -> Node11mul
+	Node10load -> Node11mul
+	Node0phi -> Node12getelementptr
+	Node11mul -> Node13store
+	Node12getelementptr -> Node13store
+	Node0phi -> Node14add
+	Node14add -> Node15cmp
+	Node15cmp -> Node16br
+edge [color=green]
+	Node14add -> Node0phi
+}

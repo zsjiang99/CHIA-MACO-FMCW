@@ -1,0 +1,34 @@
+{
+  "schema_version": 2,
+  "scope": "opcode restoration only; not executable or hardware-validated",
+  "status": "opcodes_restored",
+  "candidate": {
+    "architecture_vectorization": "none",
+    "bypass_constraint": 4,
+    "columns": 4,
+    "compiler_vectorize": false,
+    "control_memory": 200,
+    "heuristic_mapping": true,
+    "kernel": "fmcw_transpose",
+    "register_count": 8,
+    "rows": 4,
+    "unroll_factor": 1
+  },
+  "changes": [],
+  "adapter_sha256": "be2b082000956509a33c9a902eebfb6baf60852cf1982ea68aaf7ea25424369c",
+  "source_sha256": {
+    "config.json": "7baa4fb31eac1760200d7ff379c5cff397ede576878e379b59be21433672e431",
+    "dfg.json": "d71b7e0f606d2dbbbc9c1ecf9f54803f7137c6981ef8ab46fcdf791c6ecaa9ec",
+    "kernel_map.bc": "7e459f7b4c760bcdd27520ea8d54fa5ff1ac9945b53b44e1fc1e48ccc5a6fdac",
+    "log": "8804599879701c730627708a8ef61446c9d5f9ce2db3a0eadd457c598c7bea01",
+    "mapping": "4a12a3bc53e4506aa748671e790209cc4f281ea033d3e896014a6a3599fd5215"
+  },
+  "pending": [
+    "operand/register and routing translation, including duplicate operands",
+    "constants (including LT operand 2) and memory addresses",
+    "integer width/address lowering",
+    "configuration/data loader",
+    "whole-kernel RTL execution"
+  ],
+  "candidate_hardware_correctness": "pending"
+}
