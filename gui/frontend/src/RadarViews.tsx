@@ -54,8 +54,7 @@ function ArraySvg({entry,mapping,cycle,selected,onSelect,routes=false}:{entry:En
   {Array.from({length:n*n},(_,id)=>{const p=op(id),tile=entry.architecture?.tiles[String(id)];return <g key={id} className={`flow-tile radar-pe ${selected===id?'selected':''} ${p?'occupied':''} ${tile?.accessMem?'memory':''}`} role="button" tabIndex={0} aria-label={`Processing element ${id}`} onClick={()=>onSelect(id)} onKeyDown={e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();onSelect(id);}}}>
    <title>{p?`node ${p.node} · cycle ${p.cycle} · ${p.instruction}`:`Tile ${id} · ${fuName(entry,id)}`}</title>
    <rect x={x(id)-halfW} y={y(id)-halfH} width={tileWidth} height={tileHeight} rx="3"/>
-   <text x={x(id)} y={y(id)-2} textAnchor="middle">{p?`Op ${p.node}`:`Tile ${id}`}</text>
-   {p&&<text className="tile-sub" x={x(id)} y={y(id)+16} textAnchor="middle">{`c${p.cycle}`}</text>}
+   <text x={x(id)} y={y(id)} textAnchor="middle" dominantBaseline="middle">{p?`Op${p.node}`:`Tile ${id}`}</text>
   </g>;})}
   {pairs.map(({a,b})=>{const segment=routeSegment(a,b);return <line key={`mesh-${a}-${b}`} className="mesh" {...segment} markerStart={directions.has(`${b}:${a}`)?`url(#${baseArrow})`:undefined} markerEnd={directions.has(`${a}:${b}`)?`url(#${baseArrow})`:undefined}/>;})}
   {memory.map(id=><line key={`memory-${id}`} className="memory-bus" x1={spm.x+spm.w} y1={y(id)} x2={x(id)-halfW} y2={y(id)} markerStart={`url(#${memoryArrow})`} markerEnd={`url(#${memoryArrow})`}/>)}
