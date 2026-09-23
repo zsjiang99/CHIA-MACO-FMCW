@@ -17,12 +17,14 @@ reference = read("codesign_search_certified.json")
 agent = read("agent_qwen38_27b_seed37_v3/result.json")
 validation = read("validation_v1/validation.json")
 
-reference_best = min(
-    item["frame_estimate"]["estimated_cycles"]
-    for item in reference["architectures"]
-    if item["all_kernels_feasible"]
+feasible = [item for item in reference["architectures"] if item["all_kernels_feasible"]]
+reference_winner = min(
+    feasible,
+    key=lambda item: item["frame_estimate"]["estimated_cycles"],
 )
-agent_frame = agent["best_evaluated_plan"]["frame_estimate"]
+reference_best = reference_winner["frame_estimate"]["estimated_cycles"]
+agent_plan = agent["best_evaluated_plan"]
+agent_frame = agent_plan["frame_estimate"]
 cfar_share = 100 * (
     agent_frame["breakdown"]["fmcw_cfar_2d"]["estimated_cycles"]
     / agent_frame["estimated_cycles"]
@@ -33,9 +35,17 @@ checks = {
     "reference mappings": (reference["successful_mappings"], 36),
     "reference raw records": (len(reference["raw_results"]), 36),
     "reference best cycles": (reference_best, 39_154_344),
+    "reference best array": (
+        f"{reference_winner['rows']}x{reference_winner['columns']}",
+        "4x4",
+    ),
+    "reference wall time (s)": (round(reference["elapsed_seconds"], 2), 38.71),
     "agent mappings": (agent["successful_mappings"], 18),
+    "agent evaluations": (agent["evaluations"], 18),
     "agent model calls": (agent["llm_calls"], 12),
     "agent best cycles": (agent_frame["estimated_cycles"], 39_154_344),
+    "agent best array": (agent_plan["design"]["tile_size"], "4x4"),
+    "agent wall time (s)": (round(agent["elapsed_seconds"], 2), 210.43),
     "CFAR share (%)": (round(cfar_share, 1), 89.7),
     "strict CFAR scenes": (f"{passed_scenes}/{len(validation['cases'])}", "2/6"),
 }
