@@ -30,6 +30,51 @@ _active: subprocess.Popen | None = None
 _active_id: str | None = None
 
 
+def _worker_pid(job_id: str) -> int | None:
+    """Find this job's live worker, including after an API-server restart."""
+    path = RUNTIME / job_id
+    expected = str(path)
+    meta_path = path / "meta.json"
+    candidates: list[int] = []
+    if meta_path.is_file():
+        pid = read_json(meta_path).get("worker_pid")
+        if isinstance(pid, int):
+            candidates.append(pid)
+    for entry in Path("/proc").glob("[0-9]*"):
+        try:
+            pid = int(entry.name)
+        except ValueError:
+            continue
+        if pid not in candidates:
+            candidates.append(pid)
+    for pid in candidates:
+        try:
+            argv = (Path("/proc") / str(pid) / "cmdline").read_bytes().split(b"\0")
+            args = [arg.decode(errors="replace") for arg in argv if arg]
+        except (FileNotFoundError, PermissionError, ProcessLookupError):
+            continue
+        if "backend.worker" in args and expected in args:
+            return pid
+    return None
+
+
+def _running_job_id() -> str | None:
+    if _active is not None and _active.poll() is None:
+        return _active_id
+    if not RUNTIME.is_dir():
+        return None
+    running: list[tuple[float, str]] = []
+    for meta_path in RUNTIME.glob("*/meta.json"):
+        try:
+            meta = read_json(meta_path)
+        except (OSError, ValueError):
+            continue
+        job_id = meta_path.parent.name
+        if meta.get("state") == "running" and _worker_pid(job_id) is not None:
+            running.append((float(meta.get("started_at", 0)), job_id))
+    return max(running, default=(0, ""))[1] or None
+
+
 @app.middleware("http")
 async def same_origin(request: Request, call_next):
     # The unauthenticated local demo must not launch jobs for another website.
@@ -42,7 +87,7 @@ async def same_origin(request: Request, call_next):
 @app.get("/api/health")
 def health():
     return {"ok": True, "project": "maco", "mode": "local demo", "live_openroad": True,
-            "active_job": _active_id if _active is not None and _active.poll() is None else None}
+            "active_job": _running_job_id()}
 
 
 @app.get("/api/archive/maco")
@@ -260,6 +305,8 @@ def start_job(spec: JobRequest):
             _active = subprocess.Popen([sys.executable, "-m", "backend.worker", spec.kind, str(path)],
                                        cwd=ROOT, env=env, stdout=log, stderr=subprocess.STDOUT,
                                        start_new_session=True, pass_fds=(job_lock.fileno(),))
+            meta = read_json(path / "meta.json")
+            save(path / "meta.json", {**meta, "worker_pid": _active.pid})
         except OSError:
             log.close()
             save(path / "meta.json", {"id": job_id, "kind": spec.kind, "state": "failed"})
@@ -275,9 +322,13 @@ def start_job(spec: JobRequest):
 def job_status(job_id: str):
     path = _job_dir(job_id)
     meta = read_json(path / "meta.json")
-    if meta["state"] == "running" and job_id != _active_id:
-        meta["state"] = "unknown"
-        meta["error"] = "Server restarted; worker status is unknown. Inspect local logs before starting another job."
+    if meta["state"] == "running":
+        worker_pid = _worker_pid(job_id)
+        if worker_pid is None:
+            meta["state"] = "unknown"
+            meta["error"] = "The worker is no longer running. Inspect the local task log."
+        else:
+            meta["worker_pid"] = worker_pid
     for name in ("progress", "result"):
         if (path / f"{name}.json").exists():
             meta[name] = read_json(path / f"{name}.json")
