@@ -70,13 +70,13 @@ export function ArchitectureWorkbench({entry,selected,setSelected}:{entry:Entry;
 }
 
 export function ArchitectureModeling({entry,selected}:{entry:Entry;selected:number}){
- const n=entry.mappings[0].candidate.rows,tile=entry.architecture?.tiles[String(selected)],supported=new Set(tile?.supportedFUs??[]);
+ const n=entry.mappings[0].candidate.rows,tile=entry.architecture?.tiles[String(selected)],supported=new Set(tile?.supportedFUs??[]),configMemory=entry.mappings[0]?.candidate.control_memory??entry.architecture?.control_memory;
  const fus=[['add','Add'],['mul','Mul'],['div','Div'],['fadd','FAdd'],['fmul','FMul'],['cmp','Cmp'],['logic','Logic'],['sel','Sel'],['load','Ld'],['store','St']];
  const link=(target:number)=>entry.architecture?.links?.some(l=>l.srcTile===selected&&l.dstTile===target)??false;
  const row=Math.floor(selected/n),col=selected%n;
  const directions=[['NW',row>0&&col>0?selected-n-1:-1],['N',row>0?selected-n:-1],['NE',row>0&&col<n-1?selected-n+1:-1],['W',col>0?selected-1:-1],['E',col<n-1?selected+1:-1],['SW',row<n-1&&col>0?selected+n-1:-1],['S',row<n-1?selected+n:-1],['SE',row<n-1&&col<n-1?selected+n+1:-1]] as Array<[string,number]>;
  return <section className="flow-panel architecture-modeling"><header><h2>CGRA Modeling</h2><span>Tile {selected}</span></header>
-  <div className="parameter-top"><label>Rows <output>{n}</output></label><label>Columns <output>{n}</output></label><label>Per-bank SRAM <output>{entry.architecture?.memory.bank_kib??'—'} KiB</output></label><label>Config memory <output>{entry.mappings[0]?.candidate.control_memory??entry.architecture?.control_memory??'—'}</output></label></div>
+  <div className="parameter-top"><label>Rows <output>{n}</output></label><label>Columns <output>{n}</output></label><label>Per-bank SRAM <output>{entry.architecture?`${entry.architecture.memory.bank_kib} KiB`:'—'}</output></label><label>Config memory <output>{configMemory==null?'—':`${configMemory} entries/tile`}</output></label></div>
   <div className="parameter-groups"><section><h3>SPM outgoing links</h3><div className="spm-link-grid">{[0,1,2,3].map(i=><label className="check-row" key={i}><input type="checkbox" checked={i<(tile?.accessMem?1:0)} readOnly/>link {i}</label>)}</div></section>
    <section><h3>Functional units</h3><div className="fu-grid">{fus.map(([label,name])=><label className="check-row" key={name}><input type="checkbox" checked={supported.has(name)||(['add','cmp','logic','sel'].includes(label)&&supported.size>0)} readOnly/>{label}</label>)}</div></section>
    <section><h3>Crossbar outgoing links</h3><div className="direction-grid">{directions.map(([name,target])=><label className="check-row" key={name}><input type="checkbox" checked={target>=0&&link(target)} readOnly/>{name}</label>)}</div></section>
