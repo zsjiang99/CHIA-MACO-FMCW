@@ -72,8 +72,8 @@ export MACO_LLM_MODEL=harp-raw-base
 
 Use a new output directory each time. The configured local service serves the
 raw Qwen3.8-27B model with NF4 double quantization, not a HARP policy adapter.
-The service must already be running; model weights and the serving process are
-not bundled. Other compatible endpoints use the same environment variables and,
+The service must already be running and permit at least 4096 completion tokens;
+model weights and the serving process are not bundled. Other compatible endpoints use the same environment variables and,
 if needed, `MACO_LLM_API_KEY`. No key is written into the artifact.
 
 - Search: arrays 2×2/4×4/6×6 and five legal per-kernel unroll factors. Other

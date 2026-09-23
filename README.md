@@ -135,7 +135,7 @@ To regenerate only the summary from archived mappings, without running the mappe
 
 ### 3. 🤖 Run the MACO agents
 
-Start an OpenAI-compatible model service. The reported run used locally served Qwen3.8-27B with NF4 double quantization; model weights and credentials are not included.
+Start an OpenAI-compatible model service that permits at least 4096 completion tokens. The reported run used locally served Qwen3.8-27B with NF4 double quantization; model weights and credentials are not included.
 
 Point to your model service and run the loop:
 
