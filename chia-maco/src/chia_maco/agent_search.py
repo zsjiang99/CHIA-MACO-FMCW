@@ -67,9 +67,10 @@ reasoning is a brief rationale of at most 24 words.
 One architecture is shared by all five kernels; compiler unroll is per kernel.
 Mesh routing, register count 8 and bypass constraint 4 remain fixed.
 Whole-frame cost is sum(scheduled_groups(kernel,unroll) * measured_II).
-For cycles minimize estimated_cycles. For spm_energy minimize measured SRAM
-dynamic_energy_uj with cycles as tie breaker. SRAM energy excludes PE,
-interconnect and leakage. Do not invent area, FPS, correctness or total energy.
+For cycles minimize estimated_cycles. For energy minimize measured
+energy.total_dynamic_energy_uj with cycles as tie breaker. This estimate includes
+CGRA compute, registers/control, routed links and SRAM dynamic energy; it excludes
+leakage and host transfers. Do not invent area, FPS or correctness.
 Judges must select exact input designs without modifying them.
 Return compact JSON only, preserving each role's required JSON envelope.
 """
@@ -342,7 +343,7 @@ def run_agent_search(output: Path, config: AgentConfig | None = None,
     contract = MACO_CONTRACT if workload else CONTRACT
     agents = OriginalAgents(transport, config, context, contract)
     def cost(measurement):
-        return (measurement.get("memory", {}).get("dynamic_energy_uj") if workload and workload.objective == "spm_energy"
+        return (measurement.get("energy", {}).get("total_dynamic_energy_uj") if workload and workload.objective == "energy"
                 else measurement["frame_estimate"].get("estimated_cycles"))
     random_source = random.Random(config.seed)
     confidence = 0.0
@@ -368,9 +369,10 @@ def run_agent_search(output: Path, config: AgentConfig | None = None,
                        "already_evaluated_plan_keys": sorted({plan_key(h["design"]) for h in history}),
                        "instructions": "Propose distinct new full-frame plans. Learn from measured failures and costs. Do not repeat evaluated full plans."}
             emit("round_started", mode=mode, epsilon=epsilon)
+            goal = "energy" if workload and workload.objective == "energy" else "performance"
             common = {"kernel": "FMCW full frame: window, FFT, transpose, power, CA-CFAR",
                       "DFG_node_counts": {}, "max_independent_ops_per_cycle": "unknown until extraction",
-                      "vectorizable_ops": [], "optimization_goal": "performance"}
+                      "vectorizable_ops": [], "optimization_goal": goal}
             proposals = agents.invoke("CGRACoDesigner", "design", **common, N=config.proposals,
                                       extra_prompt="Source mapping views:\n" + source,
                                       extra_prompt2=f"ECE mode: {mode}. Propose {config.proposals} distinct full-frame designs.")
@@ -395,7 +397,7 @@ def run_agent_search(output: Path, config: AgentConfig | None = None,
                 raise ValueError("Fixer produced no executable bounded designs")
             emit("repaired", role="CGRAFixer", designs=valid)
             top = agents.invoke("CoarseGrainedJudge", "judge", candidate_designs=valid,
-                                optimization_goal="performance", top_k=min(config.top_k, len(valid)))
+                                optimization_goal=goal, top_k=min(config.top_k, len(valid)))
             valid_by_key = {plan_key(p): p for p in valid}
             if not isinstance(top, list) or not top or len(top) > config.top_k:
                 raise ValueError("Coarse judge returned an invalid shortlist")
@@ -404,7 +406,7 @@ def run_agent_search(output: Path, config: AgentConfig | None = None,
             top = [valid_by_key[plan_key(p)] for p in top]
             emit("shortlisted", role="CoarseGrainedJudge", designs=top)
             prediction = agents.invoke("FineGrainedJudge", "select_best", topk_designs=top,
-                                       optimization_goal="performance", feedback=json.dumps(history))
+                                       optimization_goal=goal, feedback=json.dumps(history))
             if plan_key(prediction) not in {plan_key(p) for p in top}:
                 raise ValueError("Fine judge selected a design outside the shortlist")
             emit("predicted", role="FineGrainedJudge", design=prediction)
@@ -448,8 +450,10 @@ def run_agent_search(output: Path, config: AgentConfig | None = None,
                         try:
                             if memory_key not in memory_cache:
                                 memory_cache[memory_key] = evaluate_memory(*memory_key, output / f"memory_{memory_key[0]}x{memory_key[1]}")
-                            measured["memory"] = frame_memory_energy(mapped, [log_paths[mapping_key(c)] for c in candidates],
-                                                                     measured["frame_estimate"], memory_cache[memory_key])
+                            logs = [log_paths[mapping_key(c)] for c in candidates]
+                            measured["memory"] = frame_memory_energy(mapped, logs, measured["frame_estimate"], memory_cache[memory_key])
+                            from .energy import frame_dynamic_energy
+                            measured["energy"] = frame_dynamic_energy(mapped, logs, measured["frame_estimate"], measured["memory"])
                         except (ValueError, OSError, subprocess.SubprocessError) as exc:
                             measured["memory"] = {"error": str(exc), "dynamic_energy_uj": None}
                             emit("memory_evaluation_failed", error=str(exc))

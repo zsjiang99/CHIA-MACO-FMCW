@@ -10,7 +10,7 @@
 
 The **reported paper experiment** explores one CGRA architecture shared by five FMCW kernels: **2×2, 4×4, or 6×6 arrays**, with a legal compiler unroll factor for each kernel. Functional-unit placement and memory parameters remain fixed in that comparison. CHIA maps the kernels and returns tool feedback for the next agent round. Its objective is **estimated cycles/frame**.
 
-Live exploration uses a broader MACO design schema: **2×2–8×8 arrays, per-tile functional units, configuration memory, total scratchpad capacity, memory banks, per-kernel unroll, and one global vectorization mode**. Every proposed design is retained in the trace; only successfully mapped designs can become the best measured result. This extension is outside the paper's reported array/unroll experiment.
+Live exploration uses a broader MACO design schema: **2×2–8×8 arrays, per-tile functional units, configuration memory, total scratchpad capacity, memory banks, per-kernel unroll, and one global vectorization mode**. The user selects either **Performance** (estimated cycles/frame) or **Energy** (estimated CGRA-core + SRAM dynamic energy/frame). Every proposed design is retained in the trace; only successfully mapped designs can become the best measured result. This extension is outside the paper's reported array/unroll experiment.
 
 The workload has **256 samples/chirp × 128 chirps/frame × 4 RX channels** of FP32 complex data. Its mapping views cover window, FFT (range and Doppler), transpose, power, and CA-CFAR.
 
@@ -76,7 +76,7 @@ The Docker images contain the required LLVM/Clang and EDA tools; they are not re
 | Part | Where to look | What it contains |
 | --- | --- | --- |
 | 🤖 Agents | [agent_search.py](chia-maco/src/chia_maco/agent_search.py) | Four-role MACO loop and feedback history |
-| ⚙️ Evaluation | [CHIA node](chia-maco/src/chia_maco/nodes.py) · [mapper](chia-maco/src/chia_maco/mapper.py) · [frame model](chia-maco/src/chia_maco/report.py) | Tool execution and frame estimate |
+| ⚙️ Evaluation | [CHIA node](chia-maco/src/chia_maco/nodes.py) · [mapper](chia-maco/src/chia_maco/mapper.py) · [frame model](chia-maco/src/chia_maco/report.py) · [energy model](chia-maco/src/chia_maco/energy.py) | Tool execution and measured-activity estimates |
 | 📡 Workload | [workload/](chia-maco/workload/) | Native FMCW C and mapping views |
 | 📊 Evidence | [results/](chia-maco/results/) | Candidates, traces, logs, validation |
 | 💻 Demo | [gui/](gui/) | Browser viewer and optional hardware-flow controls |
@@ -164,7 +164,7 @@ Open `http://127.0.0.1:8765/`, or forward port 8765 over SSH. Set `A3_GUI_PORT` 
 
 The server binds to loopback and has no authentication; do not expose it publicly.
 
-For architecture-aware live search (including SRAM energy), RTL generation and verification, synthesis, or optional layout, install the CGRA-Flow image:
+For architecture-aware live search, RTL generation and verification, synthesis, or optional layout, install the CGRA-Flow image:
 
 ```bash
 docker pull cgra/neura-flow:20260114
@@ -174,7 +174,8 @@ These hardware paths are experimental and are not required to reproduce the pape
 
 ## 🔬 What the evidence supports
 
-- **Performance:** CGRA-Mapper reports mapping II; the full-frame cycle count is an analytical estimate, not measured FPS or energy. It omits loop setup, memory stalls, FFT bit reversal, and host–CGRA transfers. Archived wall times are not runtime guarantees.
+- **Performance:** CGRA-Mapper reports mapping II; the full-frame cycle count is an analytical estimate, not measured FPS. It omits loop setup, memory stalls, FFT bit reversal, and host–CGRA transfers. Archived wall times are not runtime guarantees.
+- **Energy:** the live objective combines scheduled compute, register/control, routed-link activity, and CACTI SRAM access energy. It is a reproducible first-order dynamic-energy estimate, not post-layout power; leakage and host transfers are excluded.
 - **Correctness:** The native smoke test is not a hardware test. The independent [NumPy comparison](chia-maco/results/validation_v1/) meets FFT and power error criteria, but exact CA-CFAR masks agree in only **2 of 6** scenes; a fresh `validate-native` exits nonzero. Mapper and component RTL tests do not certify full-frame execution.
 - **Hardware:** Tile count is not synthesized area. FU/memory exploration and RTL/layout in the GUI are experimental, outside the paper's reported search. See the [implementation status](chia-maco/IMPLEMENTATION_STATUS.md).
 

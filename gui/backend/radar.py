@@ -47,7 +47,7 @@ def design_view(run: Path):
             architecture = {**architecture, "control_memory": mappings[0]["candidate"]["control_memory"]}
         entries.append({"id": candidate_id(design), "event": event["sequence"], "round": event["round"],
                         "design": design, "frame_estimate": event["frame_estimate"], "mappings": mappings,
-                        "architecture": architecture, "memory": event.get("memory"),
+                        "architecture": architecture, "memory": event.get("memory"), "energy": event.get("energy"),
                         "metrics": mapper_metrics(event["frame_estimate"].get("estimated_cycles"), f"{run.name}/agent_trace.json#event-{event['sequence']}")})
     baseline = read_json(ROOT / "chia-maco/configs/baseline.json")
     archive = read_json(ARCHIVES["maco"])

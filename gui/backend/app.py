@@ -145,6 +145,24 @@ def latest_agent_path() -> Path:
     return max(paths, key=lambda p: p.stat().st_mtime).parent
 
 
+def latest_measured_path() -> Path:
+    """Keep the last measured design visible while a new search is starting."""
+    if PROJECT != "maco":
+        raise HTTPException(404, "Not available in this project")
+    paths = list((ROOT / "chia-maco/results").glob("agent_*/progress.json"))
+    paths += list(RUNTIME.glob("*/progress.json"))
+    measured = []
+    for path in paths:
+        try:
+            if any(event.get("kind") == "design_measured" for event in read_json(path).get("events", [])):
+                measured.append(path)
+        except (OSError, ValueError):
+            continue
+    if not measured:
+        return latest_agent_path()
+    return max(measured, key=lambda path: path.stat().st_mtime).parent
+
+
 @app.get("/api/agent/latest")
 def latest_agent():
     path = latest_agent_path()
@@ -165,7 +183,7 @@ def latest_agent_trace():
 @app.get("/api/radar/design")
 def radar_design():
     from .radar import design_view
-    return design_view(latest_agent_path())
+    return design_view(latest_measured_path())
 
 
 @app.get("/api/radar/demo")
