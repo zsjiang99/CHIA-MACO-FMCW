@@ -5,11 +5,7 @@ from __future__ import annotations
 import time
 from collections import defaultdict
 
-import ray
-from chia.base.ChiaFunction import get
-
 from .mapper import MapperEvaluator
-from .nodes import evaluate_candidate
 from .report import estimate_frame_cycles, frame_scheduled_groups
 from .schema import CoDesignCandidate, KERNEL_LOOPS, MappingResult
 
@@ -169,6 +165,10 @@ def run_search(use_chia: bool = True) -> dict:
         return summarize_search(
             results, "local", time.monotonic() - started
         )
+
+    import ray
+    from chia.base.ChiaFunction import get
+    from .nodes import evaluate_candidate
 
     started_ray = not ray.is_initialized()
     if started_ray:

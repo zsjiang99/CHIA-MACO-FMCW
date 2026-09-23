@@ -10,6 +10,6 @@ if [[ ! -f "${gui_dir}/../chia-maco/gui/dist/index.html" ]]; then
   echo 'Build the frontend first: cd gui/frontend && npm ci && npm run build' >&2
   exit 1
 fi
-export PYTHONPATH="${gui_dir}${PYTHONPATH:+:${PYTHONPATH}}"
+export PYTHONPATH="${gui_dir}:${gui_dir}/../chia-maco/src${PYTHONPATH:+:${PYTHONPATH}}"
 exec "${A3_PYTHON:-${gui_dir}/../.venv/bin/python}" -m uvicorn backend.app:app \
   --host 127.0.0.1 --port "${A3_GUI_PORT:-8765}"

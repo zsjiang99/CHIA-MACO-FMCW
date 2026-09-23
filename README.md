@@ -43,7 +43,7 @@ The agent run matched the best estimate with fewer mappings, but took longer bec
 
 ## 🚀 Quick start
 
-Verify the archived paper results with a C compiler, `make`, and Python 3.10+:
+On Linux, verify the archived paper results with Git, a C compiler, `make`, and Python 3.10+:
 
 ```bash
 git clone https://github.com/zsjiang99/CHIA-MACO-FMCW.git
@@ -52,6 +52,14 @@ make -C chia-maco artifact-check
 ```
 
 This runs one native FMCW frame and checks the saved results. It does **not** run an LLM or CGRA-Mapper.
+
+## 🧰 Environment
+
+The archive check above needs no Docker, Node.js, model service, or GPU. Archive checking, Python setup, tests, and the browser build were verified in a clean **Ubuntu 22.04 x86-64** container; a pinned mapper image was separately built and used for a real mapping. Other systems and a fresh live-model or RTL/layout run are not yet verified.
+
+- **Live mapper:** Python 3.10 with `venv` and `pip`, network access during setup, and Docker Engine running with permission to use its daemon. Compilation uses LLVM/Clang 12 inside the mapper image, not on the host.
+- **Live agents:** an OpenAI-compatible model endpoint in addition to the mapper. Set `MACO_LLM_BASE_URL`, `MACO_LLM_MODEL`, and `MACO_LLM_API_KEY` if the endpoint requires a key; a remote endpoint needs no local GPU.
+- **Browser demo:** Node.js 20.19+ or 22.12+ and npm to build the frontend. Archived replay does not need Docker or a model. Architecture-aware live search, SRAM-energy evaluation, and experimental RTL/layout also need the public `cgra/neura-flow:20260114` image (Linux x86-64); the installed image occupies about 17 GB, so allow at least 25 GB of free Docker storage.
 
 ## 📂 Project structure
 
@@ -72,27 +80,36 @@ The following steps build on Quick start and run from the repository root. They 
 
 Install the pinned mapper, CHIA, and this package.
 
-CGRA-Mapper and its Docker image:
+CGRA-Mapper and its Docker image (built from the checked-out commit, not upstream's moving default branch):
 
 ```bash
 mkdir -p external
 git clone https://github.com/tancheng/CGRA-Mapper.git external/CGRA-Mapper
 git -C external/CGRA-Mapper checkout 5f8393acb6b3a17146806ec93a57f76f875be232
-docker build -t cgramapper:v1 external/CGRA-Mapper/docker
+docker build -t cgramapper:v1 -f chia-maco/docker/mapper.Dockerfile external/CGRA-Mapper
 ```
 
-Python environment:
+Python environment. Install the pinned CHIA checkout locally: `pip install git+...` fails because one of that commit's optional submodules is no longer fetchable.
 
 ```bash
 python3.10 -m venv .venv
-.venv/bin/python -m pip install 'git+https://github.com/ucb-bar/chia.git@16c35e92aaaf9511c6453bf94cd5cf589698f4e3'
+git clone https://github.com/ucb-bar/chia.git external/chia
+git -C external/chia checkout 16c35e92aaaf9511c6453bf94cd5cf589698f4e3
+.venv/bin/python -m pip install ./external/chia
 .venv/bin/python -m pip install -e 'chia-maco[test]'
+```
+
+Fetch the pinned MACO agent classes before running the test suite:
+
+```bash
+git clone https://github.com/coredac/MACO.git external/MACO
+git -C external/MACO checkout 31c02ce013838d89ef2a6d211acfdf639ecb178d
 ```
 
 ### 2. 🧪 Run the mapper search
 
 ```bash
-make -C chia-maco test PYTHON=../.venv/bin/python
+MACO_AGENT_DIR="$PWD/external/MACO/agent" make -C chia-maco test PYTHON=../.venv/bin/python
 make -C chia-maco mapper-smoke PYTHON=../.venv/bin/python
 make -C chia-maco codesign-search PYTHON=../.venv/bin/python
 ```
@@ -110,13 +127,6 @@ To regenerate only the summary from archived mappings, without running the mappe
 
 Start an OpenAI-compatible model service. The reported run used locally served Qwen3.8-27B with NF4 double quantization; model weights and credentials are not included.
 
-Fetch the pinned MACO agents:
-
-```bash
-git clone https://github.com/coredac/MACO.git external/MACO
-git -C external/MACO checkout 31c02ce013838d89ef2a6d211acfdf639ecb178d
-```
-
 Point to your model service and run the loop:
 
 ```bash
@@ -131,15 +141,24 @@ Use a new output directory. The [reported seed-37 run](chia-maco/results/agent_q
 
 ## 💻 Browser demo
 
-The GUI opens directly on the frozen paper experiment without starting a model or mapper. After evaluator setup, install the GUI requirements and build the frontend (Node 20.19+):
+The GUI opens directly on the frozen paper experiment without starting a model or mapper. To view the archive, you can skip Full reproduction and run these commands from the repository root:
 
 ```bash
+python3.10 -m venv .venv
 .venv/bin/python -m pip install -r gui/requirements.txt
 (cd gui/frontend && npm ci && npm run build)
 bash gui/start.sh
 ```
 
-Open `http://127.0.0.1:8765/`, or forward port 8765 over SSH. The default **Paper result** tab shows the seed-37 agent trace, exhaustive reference, per-kernel mapping evidence and scope limits. Follow the [three-minute walkthrough](chia-maco/DEMO.txt). **Live exploration** (`/?mode=live`) can start a new agent/mapper loop with a configured model service. RTL, synthesis, and layout there are separate experimental paths requiring `cgra/neura-flow:20260114`, not prerequisites for the paper. The server binds to loopback and has no authentication; do not expose it publicly.
+Open `http://127.0.0.1:8765/`, or forward port 8765 over SSH. The default **Paper result** tab shows the seed-37 agent trace, exhaustive reference, per-kernel mapping evidence and scope limits. Follow the [three-minute walkthrough](chia-maco/DEMO.txt). **Live exploration** (`/?mode=live`) can start a new agent/mapper loop with a configured model service. The server binds to loopback and has no authentication; do not expose it publicly.
+
+For architecture-aware live search (including SRAM energy), RTL, synthesis, or layout, also install the CGRA-Flow image:
+
+```bash
+docker pull cgra/neura-flow:20260114
+```
+
+These hardware paths are experimental and are not required to reproduce the paper's archived results.
 
 ## 🔬 What the evidence supports
 
