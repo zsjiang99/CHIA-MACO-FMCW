@@ -1,8 +1,10 @@
-# <img src="assets/maco-mark.svg" width="38" height="38" alt="MACO radar and CGRA icon"> MACO × CHIA
+<h1 align="center"><img src="assets/maco-mark.svg" width="42" height="42" alt="MACO radar and CGRA icon"> MACO × CHIA</h1>
 
-**Agent-guided CGRA co-design for FMCW radar.**
+<p align="center"><em>Agent-guided CGRA co-design for FMCW radar</em></p>
 
-[Paper (PDF)](paper/paper.pdf) · [Quick start](#-quick-start) · [Results and logs](chia-maco/results/README.md) · [Browser demo](#-browser-demo)
+<p align="center"><a href="paper/paper.pdf">Paper</a> · <a href="#-quick-start">Quick start</a> · <a href="chia-maco/results/README.md">Results and logs</a> · <a href="#-browser-demo">Browser demo</a></p>
+
+---
 
 ## 🧭 What this artifact explores
 
@@ -49,30 +51,43 @@ make -C chia-maco artifact-check
 
 This runs one native FMCW frame and checks the saved results. It does **not** run an LLM or CGRA-Mapper.
 
+## 📂 Project structure
+
+| Part | Where to look | What it contains |
+| --- | --- | --- |
+| 🤖 Agents | [agent_search.py](chia-maco/src/chia_maco/agent_search.py) | Four-role MACO loop and feedback history |
+| ⚙️ Evaluation | [CHIA node](chia-maco/src/chia_maco/nodes.py) · [mapper](chia-maco/src/chia_maco/mapper.py) · [frame model](chia-maco/src/chia_maco/report.py) | Tool execution and frame estimate |
+| 📡 Workload | [workload/](chia-maco/workload/) | Native FMCW C and mapping views |
+| 📊 Evidence | [results/](chia-maco/results/) | Candidates, traces, logs, validation |
+| 💻 Demo | [gui/](gui/) | Browser viewer and optional hardware-flow controls |
+| 📄 Paper | [paper/](paper/) | Four-page PDF and LaTeX source |
+
 ## ⚙️ Full reproduction
 
 The following steps build on Quick start and run from the repository root. They require Docker and network access for installation. New runs do not overwrite the [paper's archived evidence](chia-maco/results/README.md).
 
-### 🛠️ 1. Prepare the evaluator
+### 1. 🛠️ Prepare the evaluator
 
-Install the pinned mapper, CHIA, and this package. Expand for the setup commands.
+Install the pinned mapper, CHIA, and this package.
 
-<details>
-<summary>Show setup commands</summary>
+CGRA-Mapper and its Docker image:
 
 ```bash
 mkdir -p external
 git clone https://github.com/tancheng/CGRA-Mapper.git external/CGRA-Mapper
 git -C external/CGRA-Mapper checkout 5f8393acb6b3a17146806ec93a57f76f875be232
 docker build -t cgramapper:v1 external/CGRA-Mapper/docker
+```
+
+Python environment:
+
+```bash
 python3.10 -m venv .venv
 .venv/bin/python -m pip install 'git+https://github.com/ucb-bar/chia.git@16c35e92aaaf9511c6453bf94cd5cf589698f4e3'
 .venv/bin/python -m pip install -e 'chia-maco[test]'
 ```
 
-</details>
-
-### 🧪 2. Run the mapper search
+### 2. 🧪 Run the mapper search
 
 ```bash
 make -C chia-maco test PYTHON=../.venv/bin/python
@@ -82,34 +97,33 @@ make -C chia-maco codesign-search PYTHON=../.venv/bin/python
 
 `mapper-smoke` maps the five kernel views. `codesign-search` runs 36 CHIA mapping evaluations and writes `chia-maco/results/codesign_search.json`; the [reported archive](chia-maco/results/codesign_search_certified.json) is unchanged.
 
-<details>
-<summary>Recompute the summary from saved mappings (no mapper run)</summary>
+To regenerate only the summary from archived mappings, without running the mapper:
 
 ```bash
 .venv/bin/chia-maco summarize-search chia-maco/results/codesign_search_certified.json \
   --output chia-maco/results/my_summary.json
 ```
 
-</details>
+### 3. 🤖 Run the MACO agents
 
-### 🤖 3. Run the MACO agents
+Start an OpenAI-compatible model service. The reported run used locally served Qwen3.8-27B with NF4 double quantization; model weights and credentials are not included.
 
-Start an OpenAI-compatible model service, then expand the commands below. The reported run used locally served Qwen3.8-27B with NF4 double quantization; model weights and credentials are not included.
-
-<details>
-<summary>Show agent setup and run commands</summary>
+Fetch the pinned MACO agents:
 
 ```bash
 git clone https://github.com/coredac/MACO.git external/MACO
 git -C external/MACO checkout 31c02ce013838d89ef2a6d211acfdf639ecb178d
+```
+
+Point to your model service and run the loop:
+
+```bash
 export MACO_AGENT_DIR="$PWD/external/MACO/agent"
 export MACO_LLM_BASE_URL=http://127.0.0.1:18161/v1
 export MACO_LLM_MODEL=your-served-model-id
 .venv/bin/chia-maco agent-search --output-dir chia-maco/results/my_agent_run \
   --rounds 3 --mapping-budget 30 --seed 37
 ```
-
-</details>
 
 Use a new output directory. The [reported seed-37 run](chia-maco/results/agent_qwen38_27b_seed37_v3/) contains its model trace and mapper logs; a new model or sampling run may propose different designs.
 
@@ -124,17 +138,6 @@ bash gui/start.sh
 ```
 
 Open `http://127.0.0.1:8765`, or forward port 8765 over SSH. The server binds to loopback and has no authentication; do not expose it publicly. **Run MACO exploration** starts the agent/mapper loop. RTL, synthesis, and layout are separate experimental paths requiring `cgra/neura-flow:20260114`, not prerequisites for the paper.
-
-## 📂 Project structure
-
-| Part | Where to look | What it contains |
-| --- | --- | --- |
-| 🤖 Agents | [agent_search.py](chia-maco/src/chia_maco/agent_search.py) | Four-role MACO loop and feedback history |
-| ⚙️ Evaluation | [CHIA node](chia-maco/src/chia_maco/nodes.py) · [mapper](chia-maco/src/chia_maco/mapper.py) · [frame model](chia-maco/src/chia_maco/report.py) | Tool execution and frame estimate |
-| 📡 Workload | [workload/](chia-maco/workload/) | Native FMCW C and mapping views |
-| 📊 Evidence | [results/](chia-maco/results/) | Candidates, traces, logs, validation |
-| 💻 Demo | [gui/](gui/) | Browser viewer and optional hardware-flow controls |
-| 📄 Paper | [paper/](paper/) | Four-page PDF and LaTeX source |
 
 ## 🔬 What the evidence supports
 
