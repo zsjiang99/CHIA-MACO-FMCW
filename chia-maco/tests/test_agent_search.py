@@ -3,12 +3,19 @@ from types import SimpleNamespace
 
 import pytest
 
-from chia_maco.agent_search import AgentConfig, LocalModel, OriginalAgents, run_agent_search, validate_plan
+from chia_maco.agent_search import AgentConfig, LocalModel, OriginalAgents, candidates_for, run_agent_search, validate_plan
 from chia_maco.schema import MappingResult
+from chia_maco.workload import Workload
 
 
 P1 = {"tile_size": "4x4", "unroll_factors": [2, 2, 2, 2, 1], "reasoning": "Balanced plan"}
 P2 = {"tile_size": "6x6", "unroll_factors": [4, 2, 4, 4, 1], "reasoning": "Wider plan"}
+FULL = {"tile_size": "2x2", "FUs": {
+    "tile0": ["Ld", "St", "Add"], "tile1": ["Add", "FMul"],
+    "tile2": ["FAdd", "Cmp"], "tile3": ["Logic", "Sel"],
+}, "config_mem": 128, "data_spm_kb": 32, "memory_banks": 4,
+    "unroll": {"window": 4, "fft": 2, "transpose": 3, "power": 4, "cfar": 1},
+    "vectorize": "none", "reasoning": "Workload-specific per-tile architecture"}
 
 
 class Model:
@@ -24,6 +31,18 @@ class Model:
             "CGRAFixer": {"fixed_arch_json": [P1, P2]},
             "CoarseGrainedJudge": {"top_k_design": [P1, P2]},
             "FineGrainedJudge": {"best_design": {**P1, "tile_size": "2x2"} if self.invalid else P1},
+        }
+        self.calls.append({"role": role, "prompt": prompt, "usage": {"total_tokens": 3}})
+        return json.dumps(values[role])
+
+
+class FullModel(Model):
+    def __call__(self, role, prompt, temperature):
+        values = {
+            "CGRACoDesigner": [FULL],
+            "CGRAFixer": {"fixed_arch_json": [FULL]},
+            "CoarseGrainedJudge": {"top_k_design": [FULL]},
+            "FineGrainedJudge": {"best_design": FULL},
         }
         self.calls.append({"role": role, "prompt": prompt, "usage": {"total_tokens": 3}})
         return json.dumps(values[role])
@@ -81,6 +100,37 @@ def test_judge_cannot_invent_design_or_fall_back(tmp_path):
 def test_reject_unsupported_knobs(change):
     with pytest.raises(ValueError):
         validate_plan({**P1, **change})
+
+
+def test_full_maco_space_preserves_per_tile_architecture():
+    validate_plan(FULL)
+    candidates = candidates_for(FULL, Workload(max_pes=64))
+    assert [candidate.unroll_factor for candidate in candidates] == [4, 2, 3, 4, 1]
+    assert all(candidate.fu_profile == "custom" for candidate in candidates)
+    assert all(candidate.tile_fus["1"] == ["Add", "FMul"] for candidate in candidates)
+    assert all(candidate.control_memory == 128 for candidate in candidates)
+    assert all(candidate.memory_banks == 4 and candidate.bank_kib == 8 for candidate in candidates)
+
+
+def test_live_agent_uses_full_maco_space(monkeypatch, tmp_path):
+    import chia_maco.memory as memory
+    monkeypatch.setattr(memory, "evaluate_memory", lambda *args: {"read_nj": 1, "write_nj": 1})
+    monkeypatch.setattr(memory, "frame_memory_energy", lambda *args: {"dynamic_energy_uj": 10})
+    model = FullModel()
+    result = run_agent_search(tmp_path, AgentConfig(rounds=1, proposals=1, top_k=1, mapping_budget=5),
+                              model, mapper, workload=Workload(max_pes=64))
+    assert result["best_evaluated_plan"]["design"] == FULL
+    assert result["best_evaluated_plan"]["architecture"]["fu_profile"] == "custom"
+    assert "FUs maps every tile0..tileN" in model.calls[0]["prompt"]
+
+
+@pytest.mark.parametrize("change", [
+    {"FUs": {"tile0": ["Add"]}}, {"config_mem": 8}, {"data_spm_kb": 30},
+    {"unroll": {"window": 1}}, {"vectorize": "sometimes"},
+])
+def test_reject_invalid_full_maco_design(change):
+    with pytest.raises(ValueError):
+        validate_plan({**FULL, **change})
 
 
 def test_truncated_model_json_is_retained_and_rejected():

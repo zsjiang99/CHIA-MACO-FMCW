@@ -8,7 +8,9 @@
 
 ## 🧭 What this artifact explores
 
-The **reported paper experiment** explores one CGRA architecture shared by five FMCW kernels: **2×2, 4×4, or 6×6 arrays**, with a legal compiler unroll factor for each kernel. Functional-unit placement and memory parameters remain fixed in that comparison. CHIA maps the kernels and returns tool feedback for the next agent round. Its objective is **estimated cycles/frame**. The GUI also exposes experimental FU-placement, scratchpad-banking and energy-model extensions; those are outside the paper's reported array/unroll results.
+The **reported paper experiment** explores one CGRA architecture shared by five FMCW kernels: **2×2, 4×4, or 6×6 arrays**, with a legal compiler unroll factor for each kernel. Functional-unit placement and memory parameters remain fixed in that comparison. CHIA maps the kernels and returns tool feedback for the next agent round. Its objective is **estimated cycles/frame**.
+
+Live exploration uses a broader MACO design schema: **2×2–8×8 arrays, per-tile functional units, configuration memory, total scratchpad capacity, memory banks, per-kernel unroll, and one global vectorization mode**. Every proposed design is retained in the trace; only successfully mapped designs can become the best measured result. This extension is outside the paper's reported array/unroll experiment.
 
 The workload has **256 samples/chirp × 128 chirps/frame × 4 RX channels** of FP32 complex data. Its mapping views cover window, FFT (range and Doppler), transpose, power, and CA-CFAR.
 

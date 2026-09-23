@@ -25,8 +25,8 @@ class Workload:
             raise ValueError("Only the executable float32 FMCW kernels are currently supported")
         if self.objective not in ("cycles", "spm_energy"):
             raise ValueError("Choose cycles or SPM dynamic energy; full-CGRA energy is not calibrated")
-        if type(self.max_pes) is not int or not 4 <= self.max_pes <= 36:
-            raise ValueError("PE limit must be between 4 and 36")
+        if type(self.max_pes) is not int or not 4 <= self.max_pes <= 64:
+            raise ValueError("PE limit must be between 4 and 64")
 
     def to_dict(self):
         return asdict(self)
@@ -46,7 +46,7 @@ def interpret_description(description, model_call):
 Return JSON only with samples, chirps, rx, dtype, objective, max_pes, unsupported.
 Defaults for unspecified fields: 256,128,4,"float32","cycles",36.
 Supported: FMCW window, FFT, transpose, power, CA-CFAR; power-of-two samples/chirps
-32..1024, RX 1/2/4/8, float32 complex, max_pes 4..36.
+32..1024, RX 1/2/4/8, float32 complex, max_pes 4..64.
 Objectives: cycles or spm_energy (scratchpad dynamic energy ONLY).
 Put EVERY unsupported or unverifiable request in unsupported (a list of strings),
 including other algorithms, fp16/int16, full-chip energy, guaranteed FPS/latency,

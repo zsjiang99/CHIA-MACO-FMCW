@@ -20,9 +20,9 @@ KERNEL_FUNCTIONS = {
     "fmcw_accumulate_power": "fmcw_accumulate_power_map",
     "fmcw_cfar_2d": "fmcw_cfar_2d_map",
 }
-ARRAY_SIZES = {(2, 2), (4, 4), (6, 6)}
+ARRAY_SIZES = {(size, size) for size in range(2, 9)}
 VECTOR_MODES = {"none", "interleaved", "all"}
-UNROLL_FACTORS = {1, 2, 4, 8}
+UNROLL_FACTORS = set(range(1, 9))
 
 
 @dataclass(frozen=True)
@@ -45,17 +45,27 @@ class CoDesignCandidate:
     fu_profile: str = "legacy"
     memory_banks: int = 0
     bank_kib: int = 16
+    tile_fus: dict[str, list[str]] | None = None
 
     def validate(self) -> None:
         from .workload import Workload
-        from .architecture import FU_PROFILES
+        from .architecture import FU_PROFILES, FU_TYPES
         Workload(samples=self.range_bins, chirps=self.doppler_bins, rx=self.rx_channels).validate()
-        if self.fu_profile not in ("legacy", *FU_PROFILES):
+        if self.fu_profile not in ("legacy", "custom", *FU_PROFILES):
             raise ValueError("unsupported FU profile")
         if self.memory_banks not in ((0,) if self.fu_profile == "legacy" else (1, 2, 4, 8)):
             raise ValueError("parameterized architecture needs 1, 2, 4 or 8 memory banks")
-        if self.bank_kib not in (4, 8, 16, 32, 64):
+        if not 1 <= self.bank_kib <= 256:
             raise ValueError("unsupported SRAM capacity per bank")
+        if self.fu_profile == "custom":
+            expected = {str(i) for i in range(self.rows * self.columns)}
+            if not isinstance(self.tile_fus, dict) or set(self.tile_fus) != expected:
+                raise ValueError("custom architecture needs one FU list per tile")
+            if any(not isinstance(fus, list) or not fus or any(fu not in FU_TYPES for fu in fus)
+                   for fus in self.tile_fus.values()):
+                raise ValueError("custom architecture contains unsupported FUs")
+        elif self.tile_fus is not None:
+            raise ValueError("tile_fus is valid only for a custom architecture")
         if self.kernel not in KERNEL_LOOPS:
             raise ValueError(f"unsupported kernel: {self.kernel}")
         if (self.rows, self.columns) not in ARRAY_SIZES:
@@ -70,8 +80,8 @@ class CoDesignCandidate:
             )
         if not 1 <= self.bypass_constraint <= 8:
             raise ValueError("bypass_constraint must be between 1 and 8")
-        if not 8 <= self.control_memory <= 512:
-            raise ValueError("control_memory must be between 8 and 512")
+        if not 16 <= self.control_memory <= 1024:
+            raise ValueError("control_memory must be between 16 and 1024")
         if not 2 <= self.register_count <= 32:
             raise ValueError("register_count must be between 2 and 32")
 

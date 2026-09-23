@@ -121,9 +121,13 @@ class MapperEvaluator:
             "enablePowerGating": False,
         }
         if candidate.fu_profile != "legacy":
-            from .architecture import architecture_config
-            arch = architecture_config(candidate.rows, candidate.columns, candidate.fu_profile,
-                                       candidate.memory_banks, candidate.bank_kib)
+            from .architecture import architecture_config, custom_architecture
+            arch = (custom_architecture(candidate.rows, candidate.columns, candidate.tile_fus,
+                                        candidate.control_memory, candidate.memory_banks,
+                                        candidate.memory_banks * candidate.bank_kib)
+                    if candidate.fu_profile == "custom" else
+                    architecture_config(candidate.rows, candidate.columns, candidate.fu_profile,
+                                        candidate.memory_banks, candidate.bank_kib))
             params.update(parameterizableCGRA=True, tiles=arch["tiles"], links=arch["links"])
         return params
 

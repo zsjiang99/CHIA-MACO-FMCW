@@ -24,10 +24,11 @@ from .report import estimate_frame_cycles
 from .schema import CoDesignCandidate, MappingResult, KERNEL_LOOPS
 from .search import KERNEL_UNROLL_FACTORS, summarize_search
 from .workload import Workload
-from .architecture import FU_PROFILES, architecture_config
+from .architecture import FU_PROFILES, FU_TYPES, architecture_config, custom_architecture
 
 UPSTREAM_COMMIT = "31c02ce013838d89ef2a6d211acfdf639ecb178d"
 KERNELS = list(KERNEL_LOOPS)
+KERNEL_NAMES = dict(zip(KERNELS, ("window", "fft", "transpose", "power", "cfar")))
 CONTRACT = """
 FMCW EVALUATOR CONTRACT (overrides generic design examples and criteria above):
 Optimize minimum estimated whole-frame cycles, NOT PPA or raw II alone.
@@ -50,6 +51,27 @@ Keep the role's JSON envelope (list / fixed_arch_json / top_k_design / best_desi
 The top-level "reason" field, if present, MUST be at most 10 words.
 Do NOT explain calculations or repeat measured history in the output.
 Return compact JSON only, no markdown or text outside JSON. Keep output under 350 tokens.
+"""
+MACO_CONTRACT = """
+FMCW MACO DESIGN CONTRACT (overrides generic examples above):
+Return complete designs with exactly these keys:
+tile_size, FUs, config_mem, data_spm_kb, memory_banks, unroll, vectorize, reasoning.
+tile_size is square from 2x2 through 8x8 and must respect workload.max_pes.
+FUs maps every tile0..tileN to a non-empty subset of
+[Ld,St,Cmp,Phi,Br,Sel,Ret,Add,Mul,Div,Logic,Shift,FAdd,FMul,FDiv].
+config_mem is 16..1024 instructions per tile.
+data_spm_kb is 4..256 KiB and divides evenly across memory_banks in [1,2,4,8].
+unroll is an object with exactly window,fft,transpose,power,cfar; each value is 1..6.
+vectorize is one of none, interleaved, all and applies to all five kernels.
+reasoning is a brief rationale of at most 24 words.
+One architecture is shared by all five kernels; compiler unroll is per kernel.
+Mesh routing, register count 8 and bypass constraint 4 remain fixed.
+Whole-frame cost is sum(scheduled_groups(kernel,unroll) * measured_II).
+For cycles minimize estimated_cycles. For spm_energy minimize measured SRAM
+dynamic_energy_uj with cycles as tie breaker. SRAM energy excludes PE,
+interconnect and leakage. Do not invent area, FPS, correctness or total energy.
+Judges must select exact input designs without modifying them.
+Return compact JSON only, preserving each role's required JSON envelope.
 """
 
 
@@ -82,6 +104,42 @@ def save(path: Path, value):
 def validate_plan(plan: dict) -> dict:
     if not isinstance(plan, dict):
         raise ValueError("design must be an object")
+    maco_fields = {"FUs", "config_mem", "data_spm_kb", "unroll", "vectorize"}
+    if maco_fields.intersection(plan):
+        required = {"tile_size", *maco_fields, "memory_banks", "reasoning"}
+        if set(plan) != required:
+            raise ValueError("MACO design must contain the complete architecture/compiler schema")
+        try:
+            rows, columns = map(int, plan["tile_size"].split("x"))
+        except (AttributeError, ValueError):
+            raise ValueError("tile_size must be square from 2x2 through 8x8")
+        if rows != columns or not 2 <= rows <= 8:
+            raise ValueError("tile_size must be square from 2x2 through 8x8")
+        fus = plan["FUs"]
+        expected = {f"tile{i}" for i in range(rows * columns)}
+        if not isinstance(fus, dict) or set(fus) != expected:
+            raise ValueError(f"FUs must define exactly tile0 through tile{rows * columns - 1}")
+        if any(not isinstance(values, list) or not values or len(values) != len(set(values))
+               or any(fu not in FU_TYPES for fu in values) for values in fus.values()):
+            raise ValueError("Each tile needs a unique, supported FU list")
+        if type(plan["config_mem"]) is not int or not 16 <= plan["config_mem"] <= 1024:
+            raise ValueError("config_mem must be 16..1024")
+        if type(plan["data_spm_kb"]) is not int or not 4 <= plan["data_spm_kb"] <= 256:
+            raise ValueError("data_spm_kb must be 4..256")
+        if type(plan["memory_banks"]) is not int or plan["memory_banks"] not in (1, 2, 4, 8):
+            raise ValueError("memory_banks must be 1, 2, 4 or 8")
+        if plan["data_spm_kb"] % plan["memory_banks"]:
+            raise ValueError("data_spm_kb must divide evenly across memory_banks")
+        unroll = plan["unroll"]
+        if not isinstance(unroll, dict) or set(unroll) != set(KERNEL_NAMES.values()):
+            raise ValueError("unroll must define window, fft, transpose, power and cfar")
+        if any(type(value) is not int or not 1 <= value <= 6 for value in unroll.values()):
+            raise ValueError("each unroll value must be 1..6")
+        if plan["vectorize"] not in ("none", "interleaved", "all"):
+            raise ValueError("vectorize must be none, interleaved or all")
+        if not isinstance(plan["reasoning"], str):
+            raise ValueError("reasoning must be text")
+        return plan
     if set(plan) - {"tile_size", "unroll_factors", "reasoning", "fu_profile", "memory_banks", "bank_kib"}:
         raise ValueError("unsupported design fields; no unmeasured hardware knobs allowed")
     if plan.get("tile_size") not in ("2x2", "4x4", "6x6"):
@@ -107,14 +165,24 @@ def validate_plan(plan: dict) -> dict:
 
 def plan_key(plan):
     validate_plan(plan)
-    base = plan["tile_size"] + ":" + ",".join(map(str, plan["unroll_factors"]))
-    return base + (f":{plan['fu_profile']}:{plan['memory_banks']}:{plan['bank_kib']}" if "fu_profile" in plan else "")
+    return json.dumps({key: value for key, value in plan.items() if key != "reasoning"},
+                      sort_keys=True, separators=(",", ":"))
 
 
 def candidates_for(plan, workload=None):
     validate_plan(plan)
     size = int(plan["tile_size"].split("x")[0])
     w = workload or Workload()
+    if "FUs" in plan:
+        tile_fus = {key.removeprefix("tile"): value for key, value in plan["FUs"].items()}
+        vectorize = plan["vectorize"]
+        return [CoDesignCandidate(
+            kernel=kernel, rows=size, columns=size, unroll_factor=plan["unroll"][KERNEL_NAMES[kernel]],
+            compiler_vectorize=vectorize != "none", architecture_vectorization=vectorize,
+            control_memory=plan["config_mem"], range_bins=w.samples, doppler_bins=w.chirps,
+            rx_channels=w.rx, fu_profile="custom", memory_banks=plan["memory_banks"],
+            bank_kib=plan["data_spm_kb"] // plan["memory_banks"], tile_fus=tile_fus)
+            for kernel in KERNELS]
     return [CoDesignCandidate(kernel=k, rows=size, columns=size, unroll_factor=u,
                              range_bins=w.samples, doppler_bins=w.chirps, rx_channels=w.rx,
                              fu_profile=plan.get("fu_profile", "legacy"), memory_banks=plan.get("memory_banks", 0),
@@ -225,7 +293,7 @@ class OriginalAgents:
 
 def run_agent_search(output: Path, config: AgentConfig | None = None,
                      model_call=None, evaluate=None, progress_callback=None, workload: Workload | None = None) -> dict:
-    config = config or AgentConfig(max_tokens=768 if workload else 384)
+    config = config or AgentConfig(max_tokens=3072 if workload else 384)
     config.validate()
     if workload:
         workload.validate()
@@ -271,24 +339,7 @@ def run_agent_search(output: Path, config: AgentConfig | None = None,
     source = (Path(__file__).resolve().parents[2] / "workload/fmcw_mapping.c").read_text()
     def context():
         return "Current run context:\n" + json.dumps(current, separators=(",", ":"))
-    contract = CONTRACT
-    if workload:
-        contract = CONTRACT.replace("A design has ONLY these keys: tile_size, unroll_factors, reasoning.",
-            "Each design MUST have: tile_size, unroll_factors, reasoning, fu_profile, memory_banks, bank_kib.")
-        start, end = contract.index("All other architecture settings"), contract.index("Whole-frame cost")
-        contract = contract[:start] + """fu_profile: uniform (Mul on every PE), checkerboard (Mul on alternating PEs),
-column (Mul on west-column PEs). Add/control operations remain on every PE.
-memory_banks: 1,2,4,8; bank_kib: 4,8,16,32,64. Mesh interconnect fixed.
-LD/ST interfaces are min(memory_banks, array rows), placed on the west edge.
-Bank conflict/arbitration/spill timing is NOT modeled. CACTI estimates SRAM at
-45nm, 1 read + 1 write port per bank. SPM energy excludes PE/interconnect/leakage.
-Total PE count must not exceed workload.max_pes. Read workload in current context.
-For cycles minimize estimated_cycles; for spm_energy minimize memory.dynamic_energy_uj,
-using cycles as tie breaker. Do not invent unavailable area, FPS or total energy.
-""" + contract[end:]
-        contract = contract.replace("Optimize minimum estimated whole-frame cycles, NOT PPA or raw II alone.",
-                                    "Optimize workload.objective using mandatory tool evaluations.")
-        contract = contract.replace("under 350 tokens", "under 700 tokens")
+    contract = MACO_CONTRACT if workload else CONTRACT
     agents = OriginalAgents(transport, config, context, contract)
     def cost(measurement):
         return (measurement.get("memory", {}).get("dynamic_energy_uj") if workload and workload.objective == "spm_energy"
@@ -333,8 +384,8 @@ using cycles as tie breaker. Do not invent unavailable area, FPS or total energy
             for plan in repaired:
                 try:
                     key = plan_key(plan)
-                    if workload and ("fu_profile" not in plan or int(plan["tile_size"].split("x")[0]) ** 2 > workload.max_pes):
-                        raise ValueError("Candidate lacks architecture settings or exceeds the workload PE limit")
+                    if workload and ("FUs" not in plan or int(plan["tile_size"].split("x")[0]) ** 2 > workload.max_pes):
+                        raise ValueError("Candidate lacks the MACO design schema or exceeds the workload PE limit")
                     if key not in seen:
                         valid.append(plan)
                         seen.add(key)
@@ -383,10 +434,16 @@ using cycles as tie breaker. Do not invent unavailable area, FPS or total energy
                 if workload:
                     from .memory import evaluate_memory, frame_memory_energy
                     size = candidates[0].rows
-                    measured["architecture"] = architecture_config(size, size, plan["fu_profile"], plan["memory_banks"], plan["bank_kib"])
+                    if "FUs" in plan:
+                        measured["architecture"] = custom_architecture(
+                            size, size, candidates[0].tile_fus, plan["config_mem"],
+                            plan["memory_banks"], plan["data_spm_kb"])
+                    else:
+                        measured["architecture"] = architecture_config(
+                            size, size, plan["fu_profile"], plan["memory_banks"], plan["bank_kib"])
                     save(output / f"architecture_{len(history):03d}.json", measured["architecture"])
                     if measured["frame_estimate"]["valid"]:
-                        memory_key = (plan["memory_banks"], plan["bank_kib"])
+                        memory_key = (plan["memory_banks"], measured["architecture"]["memory"]["bank_kib"])
                         emit("memory_evaluation_started", banks=memory_key[0], bank_kib=memory_key[1])
                         try:
                             if memory_key not in memory_cache:

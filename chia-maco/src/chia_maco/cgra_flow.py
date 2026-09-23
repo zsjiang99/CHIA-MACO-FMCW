@@ -29,8 +29,8 @@ def architecture_yaml(payload: dict) -> dict:
         control_memory = int(architecture.get("control_memory", 32))
     except (KeyError, TypeError, ValueError) as error:
         raise ValueError("Invalid selected architecture") from error
-    if (rows != columns or rows not in (2, 4, 6) or not 1 <= banks <= 16
-            or not 1 <= bank_kib <= 256 or control_memory not in (16, 32, 64, 128, 256)):
+    if (rows != columns or not 2 <= rows <= 8 or not 1 <= banks <= 16
+            or not 1 <= bank_kib <= 256 or not 16 <= control_memory <= 1024):
         raise ValueError("Architecture is outside the evaluated MACO bounds")
     if not isinstance(tiles, dict) or set(tiles) != {str(i) for i in range(rows * columns)}:
         raise ValueError("Architecture tile set is incomplete")

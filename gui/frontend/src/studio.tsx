@@ -1,7 +1,7 @@
 import {useEffect,useState} from 'react';
 
-export type Mapping={candidate:{kernel:string;rows:number;columns:number;unroll_factor:number;fu_profile?:string;memory_banks?:number;bank_kib?:number};success:boolean;mapping_ii:number|null;dfg_nodes:number|null;elapsed_seconds?:number;error?:string};
-export type Plan={tile_size:string;unroll_factors:number[];reasoning:string;fu_profile?:string;memory_banks?:number;bank_kib?:number};
+export type Mapping={candidate:{kernel:string;rows:number;columns:number;unroll_factor:number;fu_profile?:string;memory_banks?:number;bank_kib?:number;control_memory?:number;architecture_vectorization?:string;tile_fus?:Record<string,string[]>};success:boolean;mapping_ii:number|null;dfg_nodes:number|null;elapsed_seconds?:number;error?:string};
+export type Plan={tile_size:string;reasoning:string;unroll_factors?:number[];unroll?:Record<'window'|'fft'|'transpose'|'power'|'cfar',number>;FUs?:Record<string,string[]>;config_mem?:number;data_spm_kb?:number;memory_banks?:number;vectorize?:'none'|'interleaved'|'all';fu_profile?:string;bank_kib?:number};
 export type Measured={design:Plan;frame_estimate:{estimated_cycles:number;valid:boolean}};
 export type AgentEvent={sequence:number;round:number;kind:string;role?:string;error?:string;candidate?:Mapping['candidate'];designs?:Plan[];design?:Plan;success?:boolean;mapping_ii?:number;banks?:number;bank_kib?:number};
 export type Workload={description:string;samples:number;chirps:number;rx:number;dtype:string;objective:'cycles'|'spm_energy';max_pes:number};
