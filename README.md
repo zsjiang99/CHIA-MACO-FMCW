@@ -6,11 +6,11 @@ Agent-guided compiler–architecture exploration for an FMCW radar pipeline on a
 
 ## What this release does
 
-Four MACO agent roles propose array sizes and compiler unroll factors. A CHIA
+Four MACO agent roles propose, repair, and rank array-size/unroll candidates. A CHIA
 evaluator compiles five FMCW kernel views with LLVM 12, maps them with
 CGRA-Mapper, and returns mapping results for the next agent round. The workload
-represents 256 samples/chirp, 128 chirps/frame, and four receive channels;
-the FFT kernel is used for both range and Doppler processing.
+represents 256 samples/chirp, 128 chirps/frame, four receive channels, and
+FP32 complex data. One FFT kernel serves both range and Doppler processing.
 
 ```mermaid
 flowchart LR
@@ -26,6 +26,10 @@ flowchart LR
 The reported search varies **array size and per-kernel unroll factors**.
 Functional-unit placement, memory banking, RTL, and layout are separate
 experimental extensions, not part of the paper's search result.
+In code, the [candidate and result contracts](chia-maco/src/chia_maco/schema.py)
+feed a [CHIA evaluation node](chia-maco/src/chia_maco/nodes.py); the
+[frame model](chia-maco/src/chia_maco/report.py) converts mapper results into
+agent feedback.
 
 ## Main result
 

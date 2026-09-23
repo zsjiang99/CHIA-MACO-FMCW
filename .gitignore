@@ -12,4 +12,6 @@ gui/frontend/node_modules/
 gui/frontend/dist/
 gui/frontend/*.tsbuildinfo
 gui/runtime/
-chia-maco/results/my_run/
+chia-maco/results/codesign_search.json
+chia-maco/results/my_*/
+chia-maco/results/my_*.json
