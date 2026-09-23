@@ -306,7 +306,7 @@ class OriginalAgents:
 def run_agent_search(output: Path, config: AgentConfig | None = None,
                      model_call=None, evaluate=None, progress_callback=None, workload: Workload | None = None,
                      method: str = "full_maco") -> dict:
-    config = config or AgentConfig(max_tokens=3072 if workload else 384)
+    config = config or AgentConfig(max_tokens=4096 if workload else 384)
     config.validate()
     if method not in SEARCH_METHODS:
         raise ValueError(f"method must be one of {', '.join(SEARCH_METHODS)}")
