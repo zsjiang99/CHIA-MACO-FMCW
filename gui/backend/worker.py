@@ -83,7 +83,8 @@ def run(kind: str, output: Path) -> None:
         request = json.loads((output / "request.json").read_text()) if (output / "request.json").exists() else {}
         if request.get("workload"):
             search = run_agent_search(output, config=AgentConfig(rounds=request.get("rounds", 3), max_tokens=3072),
-                                      workload=Workload.from_dict(request["workload"]))
+                                      workload=Workload.from_dict(request["workload"]),
+                                      method=request.get("method", "full_maco"))
             complete_maco_flow(output, search)
         else:
             run_agent_search(output)

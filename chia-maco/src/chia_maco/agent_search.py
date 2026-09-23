@@ -74,6 +74,17 @@ leakage and host transfers. Do not invent area, FPS or correctness.
 Judges must select exact input designs without modifying them.
 Return compact JSON only, preserving each role's required JSON envelope.
 """
+SEARCH_METHODS = ("full_maco", "hardware_only", "single_agent")
+HARDWARE_ONLY_CONTRACT = """
+HARDWARE-ONLY MODE:
+Search architecture parameters only. Compiler settings are fixed by the evaluator:
+unroll is 1 for all five kernels and vectorize is none.
+"""
+SINGLE_AGENT_CONTRACT = """
+SINGLE-AGENT MODE:
+Only the co-designer proposes candidates. Order proposals from most to least preferred.
+No fixer or judge agent will be called; tool measurements provide feedback.
+"""
 
 
 @dataclass(frozen=True)
@@ -293,9 +304,14 @@ class OriginalAgents:
 
 
 def run_agent_search(output: Path, config: AgentConfig | None = None,
-                     model_call=None, evaluate=None, progress_callback=None, workload: Workload | None = None) -> dict:
+                     model_call=None, evaluate=None, progress_callback=None, workload: Workload | None = None,
+                     method: str = "full_maco") -> dict:
     config = config or AgentConfig(max_tokens=3072 if workload else 384)
     config.validate()
+    if method not in SEARCH_METHODS:
+        raise ValueError(f"method must be one of {', '.join(SEARCH_METHODS)}")
+    if not workload and method != "full_maco":
+        raise ValueError("ablation methods require an explicit workload")
     if workload:
         workload.validate()
     output = Path(output)
@@ -315,7 +331,7 @@ def run_agent_search(output: Path, config: AgentConfig | None = None,
 
     def checkpoint():
         usage = [c.get("usage", {}) for c in getattr(transport, "calls", [])]
-        state = {"policy": "maco_llm_agents", "round": phase["round"], "rounds_total": config.rounds,
+        state = {"policy": method, "method": method, "round": phase["round"], "rounds_total": config.rounds,
                  "workload": workload.to_dict() if workload else None,
                  "model_identity": getattr(transport, "identity", {}),
                  "adapter_sha256": adapter_hash,
@@ -341,7 +357,20 @@ def run_agent_search(output: Path, config: AgentConfig | None = None,
     def context():
         return "Current run context:\n" + json.dumps(current, separators=(",", ":"))
     contract = MACO_CONTRACT if workload else CONTRACT
+    if method == "hardware_only":
+        contract += HARDWARE_ONLY_CONTRACT
+    elif method == "single_agent":
+        contract += SINGLE_AGENT_CONTRACT
     agents = OriginalAgents(transport, config, context, contract)
+    def apply_method(plan):
+        if method != "hardware_only" or not isinstance(plan, dict):
+            return plan
+        constrained = dict(plan)
+        if "unroll" in constrained:
+            constrained["unroll"] = {name: 1 for name in KERNEL_NAMES.values()}
+        if "vectorize" in constrained:
+            constrained["vectorize"] = "none"
+        return constrained
     def cost(measurement):
         return (measurement.get("energy", {}).get("total_dynamic_energy_uj") if workload and workload.objective == "energy"
                 else measurement["frame_estimate"].get("estimated_cycles"))
@@ -358,7 +387,8 @@ def run_agent_search(output: Path, config: AgentConfig | None = None,
                 ray_started = True
             def evaluate(candidate, log_path):
                 return MappingResult.from_dict(get(evaluate_candidate.chia_remote(candidate.to_dict(), str(log_path))))
-        emit("run_started", source_commit=UPSTREAM_COMMIT, config=asdict(config), model=getattr(transport, "model", "test"))
+        emit("run_started", source_commit=UPSTREAM_COMMIT, config=asdict(config), method=method,
+             model=getattr(transport, "model", "test"))
         for iteration in range(1, config.rounds + 1):
             phase["round"] = iteration
             epsilon = config.epsilon_0 * config.gamma ** iteration
@@ -378,10 +408,15 @@ def run_agent_search(output: Path, config: AgentConfig | None = None,
                                       extra_prompt2=f"ECE mode: {mode}. Propose {config.proposals} distinct full-frame designs.")
             if not isinstance(proposals, list) or not 1 <= len(proposals) <= config.proposals:
                 raise ValueError("Co-designer returned no proposals; no random fallback")
+            proposals = [apply_method(plan) for plan in proposals]
             emit("proposed", role="CGRACoDesigner", designs=proposals)
-            repaired = agents.invoke("CGRAFixer", "repair", candidates=proposals, **common)
-            if not isinstance(repaired, list) or not 1 <= len(repaired) <= config.proposals:
-                raise ValueError("Fixer returned an invalid candidate list")
+            if method == "single_agent":
+                repaired = proposals
+            else:
+                repaired = agents.invoke("CGRAFixer", "repair", candidates=proposals, **common)
+                if not isinstance(repaired, list) or not 1 <= len(repaired) <= config.proposals:
+                    raise ValueError("Fixer returned an invalid candidate list")
+                repaired = [apply_method(plan) for plan in repaired]
             valid, seen = [], set()
             for plan in repaired:
                 try:
@@ -395,21 +430,26 @@ def run_agent_search(output: Path, config: AgentConfig | None = None,
                     emit("candidate_rejected", design=plan, reason=str(exc))
             if not valid:
                 raise ValueError("Fixer produced no executable bounded designs")
-            emit("repaired", role="CGRAFixer", designs=valid)
-            top = agents.invoke("CoarseGrainedJudge", "judge", candidate_designs=valid,
-                                optimization_goal=goal, top_k=min(config.top_k, len(valid)))
-            valid_by_key = {plan_key(p): p for p in valid}
-            if not isinstance(top, list) or not top or len(top) > config.top_k:
-                raise ValueError("Coarse judge returned an invalid shortlist")
-            if any(plan_key(p) not in valid_by_key for p in top) or len({plan_key(p) for p in top}) != len(top):
-                raise ValueError("Coarse judge changed or duplicated a design")
-            top = [valid_by_key[plan_key(p)] for p in top]
-            emit("shortlisted", role="CoarseGrainedJudge", designs=top)
-            prediction = agents.invoke("FineGrainedJudge", "select_best", topk_designs=top,
-                                       optimization_goal=goal, feedback=json.dumps(history))
-            if plan_key(prediction) not in {plan_key(p) for p in top}:
-                raise ValueError("Fine judge selected a design outside the shortlist")
-            emit("predicted", role="FineGrainedJudge", design=prediction)
+            if method == "single_agent":
+                top, prediction = valid, valid[0]
+                emit("predicted", role="CGRACoDesigner", design=prediction)
+            else:
+                emit("repaired", role="CGRAFixer", designs=valid)
+                top = agents.invoke("CoarseGrainedJudge", "judge", candidate_designs=valid,
+                                    optimization_goal=goal, top_k=min(config.top_k, len(valid)))
+                if not isinstance(top, list) or not top or len(top) > config.top_k:
+                    raise ValueError("Coarse judge returned an invalid shortlist")
+                top = [apply_method(plan) for plan in top]
+                valid_by_key = {plan_key(p): p for p in valid}
+                if any(plan_key(p) not in valid_by_key for p in top) or len({plan_key(p) for p in top}) != len(top):
+                    raise ValueError("Coarse judge changed or duplicated a design")
+                top = [valid_by_key[plan_key(p)] for p in top]
+                emit("shortlisted", role="CoarseGrainedJudge", designs=top)
+                prediction = apply_method(agents.invoke("FineGrainedJudge", "select_best", topk_designs=top,
+                                                        optimization_goal=goal, feedback=json.dumps(history)))
+                if plan_key(prediction) not in {plan_key(p) for p in top}:
+                    raise ValueError("Fine judge selected a design outside the shortlist")
+                emit("predicted", role="FineGrainedJudge", design=prediction)
             measurements = []
             for plan in top:
                 candidates = candidates_for(plan, workload)
@@ -469,7 +509,7 @@ def run_agent_search(output: Path, config: AgentConfig | None = None,
                 regret = (cost(predicted_measurement) - best_cost) / best_cost
                 agreement = math.exp(-regret / 0.1)
                 confidence = 0.3 * agreement + 0.7 * confidence
-            record = {"iteration": iteration, "mode": mode, "epsilon": epsilon,
+            record = {"iteration": iteration, "mode": mode, "method": method, "epsilon": epsilon,
                       "proposals": proposals, "repaired": valid, "shortlist": top,
                       "llm_choice": prediction, "measured_winner": winner,
                       "confidence": confidence, "agreement": agreement,
@@ -483,7 +523,7 @@ def run_agent_search(output: Path, config: AgentConfig | None = None,
                    if workload else summarize_search(raw_results, "chia", time.monotonic() - started))
         feasible = [h for h in history if h["frame_estimate"]["valid"] and cost(h) is not None]
         winner = min(feasible, key=lambda h: (cost(h), h["frame_estimate"]["estimated_cycles"])) if feasible else None
-        result = {**summary, "policy": "maco_llm_agents", "config": asdict(config),
+        result = {**summary, "policy": method, "method": method, "config": asdict(config),
                   "workload": workload.to_dict() if workload else None,
                   "model": getattr(transport, "model", "test"), "model_identity": getattr(transport, "identity", {"verification": "injected test transport"}),
                   "adapter_sha256": adapter_hash,

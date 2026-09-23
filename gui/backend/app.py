@@ -116,6 +116,7 @@ class JobRequest(BaseModel):
     kind: Literal["maco", "maco-agent", "cgra-verify", "cgra-synth", "cgra-layout"]
     workload: dict | None = None
     rounds: int = Field(default=3, ge=1, le=6)
+    method: Literal["full_maco", "hardware_only", "single_agent"] = "full_maco"
     interpretation: dict | None = None
     architecture: dict | None = None
     source_run: str | None = None

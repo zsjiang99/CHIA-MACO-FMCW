@@ -131,6 +131,24 @@ def test_live_agent_uses_full_maco_space(monkeypatch, tmp_path):
     assert "FUs maps every tile0..tileN" in model.calls[0]["prompt"]
 
 
+@pytest.mark.parametrize("method,expected_calls", [("full_maco", 4), ("hardware_only", 4), ("single_agent", 1)])
+def test_live_search_methods(monkeypatch, tmp_path, method, expected_calls):
+    import chia_maco.memory as memory
+    monkeypatch.setattr(memory, "evaluate_memory", lambda *args: {"read_nj": 1, "write_nj": 1})
+    monkeypatch.setattr(memory, "frame_memory_energy", lambda *args: {"dynamic_energy_uj": 10})
+    model = FullModel()
+    result = run_agent_search(tmp_path, AgentConfig(rounds=1, proposals=1, top_k=1, mapping_budget=5),
+                              model, mapper, workload=Workload(max_pes=64), method=method)
+    assert result["method"] == method
+    assert result["llm_calls"] == expected_calls
+    design = result["best_evaluated_plan"]["design"]
+    if method == "hardware_only":
+        assert set(design["unroll"].values()) == {1}
+        assert design["vectorize"] == "none"
+    if method == "single_agent":
+        assert [call["role"] for call in model.calls] == ["CGRACoDesigner"]
+
+
 @pytest.mark.parametrize("change", [
     {"FUs": {"tile0": ["Add"]}}, {"config_mem": 8}, {"data_spm_kb": 30},
     {"unroll": {"window": 1}}, {"vectorize": "sometimes"},
