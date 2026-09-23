@@ -183,7 +183,7 @@ The \texttt{chia-maco} directory contains the workload, mapping views, evaluator
 
 The tested setup uses Python 3.10, CHIA 1.0.1 at commit \texttt{16c35e9}, and LLVM 12 inside \texttt{cgramapper:v1}. In \texttt{chia-maco}, \texttt{make smoke}, \texttt{make test}, and \texttt{make codesign-search} check the C workload, contracts, and exhaustive reference. The \texttt{agent-search} CLI runs the agent loop with a new output directory; the README documents model endpoint configuration. The independent MACO browser GUI launches the same loop and displays role progress, model usage, decisions, measured winners and failures. Automated checks cover agent contracts, caching, budgets, feedback and project-isolated APIs.
 
-The reference archive contains parsed records; the agent archive additionally includes raw mapper logs and model traces. Reused MACO modules are pinned to commit \texttt{31c02ce}. Redistribution licenses and the public release URL must be confirmed before submission.
+The reference archive contains parsed records; the agent archive additionally includes raw mapper logs and model traces. The artifact is available at \url{https://github.com/zsjiang99/CHIA-MACO-FMCW}. Upstream MACO modules are fetched at pinned commit \texttt{31c02ce} and are not redistributed.
 
 \section{Limitations and Next Steps}
 The original proposal targeted 16-bit inputs, simulation, synthesis-calibrated PPA, and at least 20 frames/s. The current experiment uses floating-point C, six software-validation scenes, heuristic mapping, and a steady-state estimate. It does not establish fixed-point accuracy or those system-level targets.

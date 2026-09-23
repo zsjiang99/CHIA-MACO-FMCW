@@ -1,5 +1,7 @@
 # CHIA-MACO-FMCW artifact
 
+Public release: https://github.com/zsjiang99/CHIA-MACO-FMCW
+
 This MACO-only repository contains the CHIA loop, FMCW C workload, compiler
 mapping views, archived tool/model evidence, tests, and a local browser demo
 for the four-page paper in `paper/paper.pdf`.

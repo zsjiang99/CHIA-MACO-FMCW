@@ -19,6 +19,6 @@ We present a CHIA workflow for compiler–architecture exploration of an FMCW ra
 ## Upload / URL
 
 - PDF: `paper/paper.pdf` (four pages, IEEE two-column).
-- Open-source artifact URL: **fill in the public GitHub repository URL after publication**.
+- Open-source artifact URL: https://github.com/zsjiang99/CHIA-MACO-FMCW
 
 Human authors should review these claims against the final PDF and artifact before submission.
