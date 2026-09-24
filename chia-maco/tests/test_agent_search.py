@@ -200,6 +200,27 @@ def test_live_search_methods(monkeypatch, tmp_path, method, expected_calls):
         assert [call["role"] for call in model.calls] == ["CGRACoDesigner"]
 
 
+def test_single_agent_gets_one_required_integer_mul_by_default(monkeypatch, tmp_path):
+    import chia_maco.memory as memory
+    monkeypatch.setattr(memory, "evaluate_memory", lambda *args: {"read_nj": 1, "write_nj": 1})
+    monkeypatch.setattr(memory, "frame_memory_energy", lambda *args: {"dynamic_energy_uj": 10})
+
+    class MissingMulModel(FullModel):
+        def __call__(self, role, prompt, temperature):
+            response = json.loads(super().__call__(role, prompt, temperature))
+            response[0]["FUs"]["tile0"].remove("Mul")
+            return json.dumps(response)
+
+    model = MissingMulModel()
+    result = run_agent_search(tmp_path, AgentConfig(rounds=1, proposals=1, top_k=1, mapping_budget=5),
+                              model, mapper, workload=Workload(max_pes=64), method="single_agent")
+    assert result["llm_calls"] == 1
+    assert result["best_evaluated_plan"]["design"]["FUs"]["tile0"] == ["Ld", "St", "Mul"]
+    trace = json.loads((tmp_path / "agent_trace.json").read_text())
+    assert any(e["kind"] == "default_fu_added" for e in trace["events"])
+    assert not any(e["kind"] == "candidate_rejected" for e in trace["events"])
+
+
 @pytest.mark.parametrize("change", [
     {"FUs": {"tile0": ["Add"]}}, {"config_mem": 8}, {"data_spm_kb": 30},
     {"unroll": {"window": 1}}, {"vectorize": "sometimes"},

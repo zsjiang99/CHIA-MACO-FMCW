@@ -27,6 +27,7 @@ const eventText=(e:AgentEvent)=>{
   case 'agent_failed':return `${roleName(e.role)} failed`;
   case 'proposed':return `Proposed ${e.designs?.length??0} designs`;
   case 'repaired':return `Checked ${e.designs?.length??0} designs`;
+  case 'default_fu_added':return 'Added required Mul to Tile 0';
   case 'candidate_rejected':return 'Rejected an invalid design';
   case 'shortlisted':return `Shortlisted ${e.designs?.length??0} designs`;
   case 'predicted':return 'Selected a design for evaluation';
@@ -154,8 +155,9 @@ function App(){
  useEffect(()=>{let active=true;const poll=()=>api<RadarData>(demo?'/radar/demo':'/radar/design').then(async d=>{if(!active)return;setError('');if(!d.entries?.length){if(!localStorage.getItem(cacheKey)){const fallback=await api<RadarData>('/radar/demo');if(active)setData(fallback);}return;}setData(d);localStorage.setItem(cacheKey,JSON.stringify(d));if(!edited.current&&d.workload?.description){setPromptState(displayPrompt(d.workload));setObjective(d.workload.objective);}}).catch(e=>active&&setError(String(e)));poll();const timer=demo?undefined:setInterval(poll,2000);return()=>{active=false;clearInterval(timer);};},[cacheKey,demo]);
  const entries=data?.entries??[],index=entries.length?bestIndex(entries,data?.workload?.objective):0,entry=entries[index];
  const running=jobs.job?.state==='running',progress=jobs.job?.kind==='maco-agent'&&jobs.job.progress?jobs.job.progress:data?.progress;
- const failedEvent=[...(jobs.job?.progress?.events??[])].reverse().find(event=>event.kind==='run_failed');
- const jobFailure=jobs.job?.state==='failed'?(failedEvent?.error??jobs.job.error??'Exploration failed'):'';
+ const failedEvent=[...(progress?.events??[])].reverse().find(event=>event.kind==='run_failed');
+ const rawFailure=!running&&failedEvent?(failedEvent.error??'Exploration failed'):jobs.job?.state==='failed'?(jobs.job.error??'Exploration failed'):'';
+ const jobFailure=rawFailure.includes('Fixer produced no executable bounded designs')?'No valid design: missing required Mul. Rerun exploration.':rawFailure;
  const displayImplementation=data&&entry&&data.implementation?.design_id===entry.id?data.implementation:null;
  const selectedImplementation=jobs.job?.kind==='maco-agent'&&data?.run!==jobs.job.id?null:displayImplementation;
  const setStage=(value:number)=>{setStageState(value);setCycle(0);setSelectedPE(0);};

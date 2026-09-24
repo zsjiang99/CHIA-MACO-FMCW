@@ -441,6 +441,16 @@ def run_agent_search(output: Path, config: AgentConfig | None = None,
             constrained["unroll"] = {name: 1 for name in KERNEL_NAMES.values()}
         if method == "hardware_only" and "vectorize" in constrained:
             constrained["vectorize"] = "none"
+        # Integer Mul is required by the mapped workload; FMul is a different
+        # operation. Keep one baseline Mul on tile0 if the agent omitted it,
+        # while leaving additional multiplier placement in the search space.
+        fus = constrained.get("FUs")
+        if workload and isinstance(fus, dict) and not any(
+                isinstance(units, list) and "Mul" in units for units in fus.values()):
+            tile0 = fus.get("tile0")
+            if isinstance(tile0, list):
+                constrained["FUs"] = {**fus, "tile0": [*tile0, "Mul"]}
+                emit("default_fu_added", role="Evaluator", tile="tile0", fu="Mul")
         return constrained
     def cost(measurement):
         return (measurement.get("energy", {}).get("total_dynamic_energy_uj") if workload and workload.objective == "energy"
@@ -500,7 +510,7 @@ def run_agent_search(output: Path, config: AgentConfig | None = None,
                 except ValueError as exc:
                     emit("candidate_rejected", design=plan, reason=str(exc))
             if not valid:
-                raise ValueError("Fixer produced no executable bounded designs")
+                raise ValueError("No valid design passed architecture checks. Rerun exploration.")
             if method == "single_agent":
                 top, prediction = valid, valid[0]
                 emit("predicted", role="CGRACoDesigner", design=prediction)
