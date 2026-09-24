@@ -14,7 +14,7 @@ P2 = {"tile_size": "6x6", "unroll_factors": [4, 2, 4, 4, 1], "reasoning": "Wider
 FULL = {"tile_size": "2x2", "FUs": {
     "tile0": ["Ld", "St", "Mul"], "tile1": ["FMul"],
     "tile2": ["FAdd"], "tile3": [],
-}, "config_mem": 128, "data_spm_kb": 32, "memory_banks": 4,
+}, "config_mem": 16, "data_spm_kb": 32, "memory_banks": 4,
     "unroll": {"window": 4, "fft": 2, "transpose": 3, "power": 4, "cfar": 1},
     "vectorize": "none", "reasoning": "Workload-specific per-tile architecture"}
 
@@ -112,8 +112,38 @@ def test_full_maco_space_preserves_per_tile_architecture():
     assert [candidate.unroll_factor for candidate in candidates] == [4, 2, 3, 4, 1]
     assert all(candidate.fu_profile == "custom" for candidate in candidates)
     assert all(candidate.tile_fus["1"] == [*BASE_FUS, "FMul"] for candidate in candidates)
-    assert all(candidate.control_memory == 128 for candidate in candidates)
+    assert all(candidate.control_memory == 16 for candidate in candidates)
     assert all(candidate.memory_banks == 4 and candidate.bank_kib == 8 for candidate in candidates)
+
+
+def test_live_config_memory_is_bounded_and_archives_remain_readable():
+    assert validate_plan({**FULL, "config_mem": 16})
+    with pytest.raises(ValueError, match="must be 16"):
+        validate_plan({**FULL, "config_mem": 32})
+    with pytest.raises(ValueError, match="must be 16"):
+        validate_plan({**FULL, "config_mem": 256})
+    archived = candidates_for({**FULL, "config_mem": 256}, Workload(max_pes=64),
+                              allow_archived_config_mem=True)
+    assert all(candidate.control_memory == 256 for candidate in archived)
+
+
+def test_agent_projects_oversized_config_memory(monkeypatch, tmp_path):
+    import chia_maco.memory as memory
+    monkeypatch.setattr(memory, "evaluate_memory", lambda *args: {"read_nj": 1, "write_nj": 1})
+    monkeypatch.setattr(memory, "frame_memory_energy", lambda *args: {"dynamic_energy_uj": 10})
+
+    class OversizedModel(FullModel):
+        def __call__(self, role, prompt, temperature):
+            response = json.loads(super().__call__(role, prompt, temperature))
+            if role == "CGRACoDesigner":
+                response[0]["config_mem"] = 256
+            elif role == "CGRAFixer":
+                response["fixed_arch_json"][0]["config_mem"] = 256
+            return json.dumps(response)
+
+    result = run_agent_search(tmp_path, AgentConfig(rounds=1, proposals=1, top_k=1, mapping_budget=5),
+                              OversizedModel(), mapper, workload=Workload(max_pes=64))
+    assert result["best_evaluated_plan"]["design"]["config_mem"] == 16
 
 
 @pytest.mark.parametrize("factor", range(1, 7))

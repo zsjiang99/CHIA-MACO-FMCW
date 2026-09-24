@@ -40,8 +40,9 @@ def design_view(run: Path):
         # Current runs execute the safe CA-CFAR settings, while older runs retain
         # their original compiler settings. Match the recorded candidate in either
         # form so both histories remain readable.
-        safe = candidates_for(design, workload)
-        archived = candidates_for(design, workload, enforce_mapper_safety=False)
+        safe = candidates_for(design, workload, allow_archived_config_mem=True)
+        archived = candidates_for(design, workload, enforce_mapper_safety=False,
+                                  allow_archived_config_mem=True)
         for options in zip(safe, archived):
             found = next((exact.get(mapping_key(c)) or legacy.get(key_without_control_memory(c))
                           for c in options if exact.get(mapping_key(c)) or legacy.get(key_without_control_memory(c))), None)

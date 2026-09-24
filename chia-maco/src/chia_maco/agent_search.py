@@ -65,7 +65,8 @@ FUs maps every tile0..tileN to its SPECIALIZED FUs selected only from
 Do NOT repeat the fixed base FUs [Add,Br,Cmp,Logic,Phi,Ret,Sel,Shift];
 the evaluator adds that base set to every tile before mapping.
 Across the specialized lists, at least one tile MUST include each of [Ld,St,Mul].
-config_mem is 16..1024 instructions per tile.
+config_mem is fixed at 16 instructions per tile. Do not search this parameter:
+larger values make full-CGRA synthesis impractically slow.
 data_spm_kb is 4..256 KiB and divides evenly across memory_banks in [1,2,4,8].
 unroll is an object with exactly window,fft,transpose,power,cfar.
 window, fft, transpose and power are 1..6; cfar MUST be 1 because larger
@@ -125,7 +126,8 @@ def save(path: Path, value):
     tmp.replace(path)
 
 
-def validate_plan(plan: dict, allow_archived_cfar: bool = False) -> dict:
+def validate_plan(plan: dict, allow_archived_cfar: bool = False,
+                  allow_archived_config_mem: bool = False) -> dict:
     if not isinstance(plan, dict):
         raise ValueError("design must be an object")
     maco_fields = {"FUs", "config_mem", "data_spm_kb", "unroll", "vectorize"}
@@ -153,8 +155,9 @@ def validate_plan(plan: dict, allow_archived_cfar: bool = False) -> dict:
                 "FUs must provide workload operations across the array: "
                 + ", ".join(sorted(missing))
             )
-        if type(plan["config_mem"]) is not int or not 16 <= plan["config_mem"] <= 1024:
-            raise ValueError("config_mem must be 16..1024")
+        legal_config_mem = range(16, 1025) if allow_archived_config_mem else (16,)
+        if type(plan["config_mem"]) is not int or plan["config_mem"] not in legal_config_mem:
+            raise ValueError("config_mem must be 16 for live exploration")
         if type(plan["data_spm_kb"]) is not int or not 4 <= plan["data_spm_kb"] <= 256:
             raise ValueError("data_spm_kb must be 4..256")
         if type(plan["memory_banks"]) is not int or plan["memory_banks"] not in (1, 2, 4, 8):
@@ -218,8 +221,10 @@ def feedback_summary(history):
     } for item in history]
 
 
-def candidates_for(plan, workload=None, enforce_mapper_safety=True):
-    validate_plan(plan, allow_archived_cfar=not enforce_mapper_safety)
+def candidates_for(plan, workload=None, enforce_mapper_safety=True,
+                   allow_archived_config_mem=False):
+    validate_plan(plan, allow_archived_cfar=not enforce_mapper_safety,
+                  allow_archived_config_mem=allow_archived_config_mem)
     size = int(plan["tile_size"].split("x")[0])
     w = workload or Workload()
     if "FUs" in plan:
@@ -424,6 +429,10 @@ def run_agent_search(output: Path, config: AgentConfig | None = None,
         if not isinstance(plan, dict):
             return plan
         constrained = {**plan, "unroll": dict(plan["unroll"])} if isinstance(plan.get("unroll"), dict) else dict(plan)
+        # A bounded correction keeps older model outputs usable without sending
+        # large configuration memories into the synthesis flow.
+        if type(constrained.get("config_mem")) is int:
+            constrained["config_mem"] = 16
         # CA-CFAR factors above one repeatedly exceed the real mapper budget.
         # Project every model response onto the legal space before evaluation.
         if isinstance(constrained.get("unroll"), dict) and "cfar" in constrained["unroll"]:
