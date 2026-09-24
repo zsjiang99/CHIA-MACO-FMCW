@@ -12,8 +12,8 @@ from chia_maco.workload import Workload
 P1 = {"tile_size": "4x4", "unroll_factors": [2, 2, 2, 2, 1], "reasoning": "Balanced plan"}
 P2 = {"tile_size": "6x6", "unroll_factors": [4, 2, 4, 4, 1], "reasoning": "Wider plan"}
 FULL = {"tile_size": "2x2", "FUs": {
-    "tile0": [*BASE_FUS, "Ld", "St", "Mul"], "tile1": [*BASE_FUS, "FMul"],
-    "tile2": [*BASE_FUS, "FAdd"], "tile3": [*BASE_FUS],
+    "tile0": ["Ld", "St", "Mul"], "tile1": ["FMul"],
+    "tile2": ["FAdd"], "tile3": [],
 }, "config_mem": 128, "data_spm_kb": 32, "memory_banks": 4,
     "unroll": {"window": 4, "fft": 2, "transpose": 3, "power": 4, "cfar": 1},
     "vectorize": "none", "reasoning": "Workload-specific per-tile architecture"}
@@ -30,8 +30,8 @@ class Model:
         values = {
             "CGRACoDesigner": [P1, P2],
             "CGRAFixer": {"fixed_arch_json": [P1, P2]},
-            "CoarseGrainedJudge": {"top_k_design": [P1, P2]},
-            "FineGrainedJudge": {"best_design": {**P1, "tile_size": "2x2"} if self.invalid else P1},
+            "CoarseGrainedJudge": {"top_k_design": ["candidate_0", "candidate_1"]},
+            "FineGrainedJudge": {"best_design": "candidate_99" if self.invalid else "candidate_0"},
         }
         self.calls.append({"role": role, "prompt": prompt, "usage": {"total_tokens": 3}})
         return json.dumps(values[role])
@@ -42,8 +42,8 @@ class FullModel(Model):
         values = {
             "CGRACoDesigner": [FULL],
             "CGRAFixer": {"fixed_arch_json": [FULL]},
-            "CoarseGrainedJudge": {"top_k_design": [FULL]},
-            "FineGrainedJudge": {"best_design": FULL},
+            "CoarseGrainedJudge": {"top_k_design": ["candidate_0"]},
+            "FineGrainedJudge": {"best_design": "candidate_0"},
         }
         self.calls.append({"role": role, "prompt": prompt, "usage": {"total_tokens": 3}})
         return json.dumps(values[role])
@@ -66,6 +66,9 @@ def test_original_four_agents_feedback_cache_and_provenance(tmp_path):
     fixer_prompt = model.calls[1]["prompt"]
     assert '"valid":true' in fixer_prompt  # bounded validator actually injected
     assert "FU dictionary has 0 tiles" not in fixer_prompt
+    assert '"candidate_id": "candidate_0"' in model.calls[2]["prompt"]
+    assert 'top_k_design as ["candidate_0"]' in model.calls[2]["prompt"]
+    assert 'best_design as "candidate_0"' in model.calls[3]["prompt"]
     assert '"measured_history":[]' in model.calls[0]["prompt"]
     assert '"estimated_cycles":' in model.calls[4]["prompt"]
     assert "39154344" not in model.calls[0]["prompt"]  # no archived optimum
@@ -129,7 +132,7 @@ def test_live_agent_uses_full_maco_space(monkeypatch, tmp_path):
                               model, mapper, workload=Workload(max_pes=64))
     assert result["best_evaluated_plan"]["design"] == FULL
     assert result["best_evaluated_plan"]["architecture"]["fu_profile"] == "custom"
-    assert "FUs maps every tile0..tileN" in model.calls[0]["prompt"]
+    assert "FUs maps every tile0..tileN to its SPECIALIZED FUs" in model.calls[0]["prompt"]
 
 
 @pytest.mark.parametrize("method,expected_calls", [("full_maco", 4), ("hardware_only", 4), ("single_agent", 1)])
@@ -159,11 +162,11 @@ def test_reject_invalid_full_maco_design(change):
         validate_plan({**FULL, **change})
 
 
-def test_full_maco_requires_base_fus_on_every_tile():
-    sparse = {tile: list(fus) for tile, fus in FULL["FUs"].items()}
-    sparse["tile2"].remove("Shift")
-    with pytest.raises(ValueError, match="tile2 is missing fixed base FUs: Shift"):
-        validate_plan({**FULL, "FUs": sparse})
+def test_full_maco_rejects_base_fus_in_compact_specialized_lists():
+    repeated_base = {tile: list(fus) for tile, fus in FULL["FUs"].items()}
+    repeated_base["tile2"].append("Shift")
+    with pytest.raises(ValueError, match="only specialized FUs"):
+        validate_plan({**FULL, "FUs": repeated_base})
 
 
 def test_full_maco_requires_workload_fus_somewhere():

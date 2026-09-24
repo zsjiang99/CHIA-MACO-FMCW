@@ -24,7 +24,7 @@ from .report import estimate_frame_cycles
 from .schema import CoDesignCandidate, MappingResult, KERNEL_LOOPS
 from .search import KERNEL_UNROLL_FACTORS, summarize_search
 from .workload import Workload
-from .architecture import BASE_FUS, FU_PROFILES, FU_TYPES, WORKLOAD_FUS, architecture_config, custom_architecture
+from .architecture import BASE_FUS, FU_PROFILES, SPECIALIZED_FUS, WORKLOAD_FUS, architecture_config, custom_architecture
 
 UPSTREAM_COMMIT = "31c02ce013838d89ef2a6d211acfdf639ecb178d"
 KERNELS = list(KERNEL_LOOPS)
@@ -48,6 +48,9 @@ Groups are rounded PER loop invocation, especially for short FFT stages.
 No DFG operation histogram is supplied initially; do not invent measurements.
 Coarse/Fine judges must select EXACT input designs, not invent or modify them.
 Keep the role's JSON envelope (list / fixed_arch_json / top_k_design / best_design).
+CoarseGrainedJudge returns top_k_design as ["candidate_0"].
+FineGrainedJudge returns best_design as "candidate_0".
+Judges must return candidate IDs only and never copy design objects.
 The top-level "reason" field, if present, MUST be at most 10 words.
 Do NOT explain calculations or repeat measured history in the output.
 Return compact JSON only, no markdown or text outside JSON. Keep output under 350 tokens.
@@ -57,11 +60,11 @@ FMCW MACO DESIGN CONTRACT (overrides generic examples above):
 Return complete designs with exactly these keys:
 tile_size, FUs, config_mem, data_spm_kb, memory_banks, unroll, vectorize, reasoning.
 tile_size is square from 2x2 through 8x8 and must respect workload.max_pes.
-FUs maps every tile0..tileN to a non-empty subset of
-[Ld,St,Cmp,Phi,Br,Sel,Ret,Add,Mul,Div,Logic,Shift,FAdd,FMul,FDiv].
-Every tile MUST include the fixed base set [Add,Br,Cmp,Logic,Phi,Ret,Sel,Shift].
-Across the array, at least one tile MUST include each of [Ld,St,Mul].
-Only the placement of Ld, St, Mul, Div, FAdd, FMul and FDiv is variable.
+FUs maps every tile0..tileN to its SPECIALIZED FUs selected only from
+[Ld,St,Mul,Div,FAdd,FMul,FDiv]. Empty tile lists are allowed.
+Do NOT repeat the fixed base FUs [Add,Br,Cmp,Logic,Phi,Ret,Sel,Shift];
+the evaluator adds that base set to every tile before mapping.
+Across the specialized lists, at least one tile MUST include each of [Ld,St,Mul].
 config_mem is 16..1024 instructions per tile.
 data_spm_kb is 4..256 KiB and divides evenly across memory_banks in [1,2,4,8].
 unroll is an object with exactly window,fft,transpose,power,cfar; each value is 1..6.
@@ -75,6 +78,9 @@ energy.total_dynamic_energy_uj with cycles as tie breaker. This estimate include
 CGRA compute, registers/control, routed links and SRAM dynamic energy; it excludes
 leakage and host transfers. Do not invent area, FPS or correctness.
 Judges must select exact input designs without modifying them.
+CoarseGrainedJudge returns top_k_design as a list of candidate ID strings.
+FineGrainedJudge returns best_design as one candidate ID string.
+Judges return IDs only and never copy design objects.
 Return compact JSON only, preserving each role's required JSON envelope.
 """
 SEARCH_METHODS = ("full_maco", "hardware_only", "single_agent")
@@ -101,7 +107,7 @@ class AgentConfig:
     gamma: float = 0.95
     temperature: float = 0.2
     max_tokens: int = 384
-    timeout: float = 180
+    timeout: float = 300
 
     def validate(self):
         if not 1 <= self.rounds <= 6 or not 1 <= self.proposals <= 3:
@@ -134,19 +140,9 @@ def validate_plan(plan: dict) -> dict:
         expected = {f"tile{i}" for i in range(rows * columns)}
         if not isinstance(fus, dict) or set(fus) != expected:
             raise ValueError(f"FUs must define exactly tile0 through tile{rows * columns - 1}")
-        if any(not isinstance(values, list) or not values or len(values) != len(set(values))
-               or any(fu not in FU_TYPES for fu in values) for values in fus.values()):
-            raise ValueError("Each tile needs a unique, supported FU list")
-        missing_by_tile = {
-            tile: sorted(set(BASE_FUS) - set(values))
-            for tile, values in fus.items()
-            if set(BASE_FUS) - set(values)
-        }
-        if missing_by_tile:
-            tile = min(missing_by_tile, key=lambda name: int(name.removeprefix("tile")))
-            raise ValueError(
-                f"{tile} is missing fixed base FUs: {', '.join(missing_by_tile[tile])}"
-            )
+        if any(not isinstance(values, list) or len(values) != len(set(values))
+               or any(fu not in SPECIALIZED_FUS for fu in values) for values in fus.values()):
+            raise ValueError("Each tile needs a unique list containing only specialized FUs")
         available = set().union(*(set(values) for values in fus.values()))
         missing = WORKLOAD_FUS - available
         if missing:
@@ -201,12 +197,31 @@ def plan_key(plan):
                       sort_keys=True, separators=(",", ":"))
 
 
+def plan_id(plan):
+    return "candidate-" + hashlib.sha256(plan_key(plan).encode()).hexdigest()[:10]
+
+
+def feedback_summary(history):
+    """Keep measured feedback compact and omit duplicated architecture payloads."""
+    return [{
+        "candidate_id": plan_id(item["design"]),
+        "design": item["design"],
+        "valid": item["frame_estimate"]["valid"],
+        "failed_kernels": item["frame_estimate"].get("failed_kernels", []),
+        "estimated_cycles": item["frame_estimate"].get("estimated_cycles"),
+        "dynamic_energy_uj": item.get("energy", {}).get("total_dynamic_energy_uj"),
+    } for item in history]
+
+
 def candidates_for(plan, workload=None):
     validate_plan(plan)
     size = int(plan["tile_size"].split("x")[0])
     w = workload or Workload()
     if "FUs" in plan:
-        tile_fus = {key.removeprefix("tile"): value for key, value in plan["FUs"].items()}
+        tile_fus = {
+            key.removeprefix("tile"): list(dict.fromkeys((*BASE_FUS, *value)))
+            for key, value in plan["FUs"].items()
+        }
         vectorize = plan["vectorize"]
         return [CoDesignCandidate(
             kernel=kernel, rows=size, columns=size, unroll_factor=plan["unroll"][KERNEL_NAMES[kernel]],
@@ -319,8 +334,24 @@ class OriginalAgents:
 
     def invoke(self, role, method, **kwargs):
         # Upstream prints responses. Durable traces below are the public interface.
+        if role == "CoarseGrainedJudge" and method == "judge":
+            kwargs["candidate_designs"] = [
+                {"candidate_id": f"candidate_{index}", "design": design}
+                for index, design in enumerate(kwargs["candidate_designs"])
+            ]
+        elif role == "FineGrainedJudge" and method == "select_best":
+            kwargs["topk_designs"] = [
+                {"candidate_id": f"candidate_{index}", "design": design}
+                for index, design in enumerate(kwargs["topk_designs"])
+            ]
         with redirect_stdout(io.StringIO()):
-            return getattr(self.agents[role], method)(**kwargs)
+            result = getattr(self.agents[role], method)(**kwargs)
+        if role == "CoarseGrainedJudge":
+            return [item if isinstance(item, str) else item.get("candidate_id")
+                    for item in result if isinstance(item, (str, dict))] if isinstance(result, list) else []
+        if role == "FineGrainedJudge":
+            return result if isinstance(result, str) else result.get("candidate_id") if isinstance(result, dict) else ""
+        return result
 
 
 def run_agent_search(output: Path, config: AgentConfig | None = None,
@@ -415,8 +446,8 @@ def run_agent_search(output: Path, config: AgentConfig | None = None,
             mode = "explore" if random_source.random() < epsilon else "exploit"
             current = {"iteration": iteration, "mode": mode, "epsilon": epsilon,
                        "workload": workload.to_dict() if workload else Workload().to_dict(),
-                       "measured_history": history, "remaining_mapping_budget": config.mapping_budget - len(raw_results),
-                       "already_evaluated_plan_keys": sorted({plan_key(h["design"]) for h in history}),
+                       "measured_history": feedback_summary(history), "remaining_mapping_budget": config.mapping_budget - len(raw_results),
+                       "already_evaluated_candidate_ids": sorted({plan_id(h["design"]) for h in history}),
                        "instructions": "Propose distinct new full-frame plans. Learn from measured failures and costs. Do not repeat evaluated full plans."}
             emit("round_started", mode=mode, epsilon=epsilon)
             goal = "energy" if workload and workload.objective == "energy" else "performance"
@@ -455,20 +486,22 @@ def run_agent_search(output: Path, config: AgentConfig | None = None,
                 emit("predicted", role="CGRACoDesigner", design=prediction)
             else:
                 emit("repaired", role="CGRAFixer", designs=valid)
-                top = agents.invoke("CoarseGrainedJudge", "judge", candidate_designs=valid,
-                                    optimization_goal=goal, top_k=min(config.top_k, len(valid)))
-                if not isinstance(top, list) or not top or len(top) > config.top_k:
+                top_ids = agents.invoke("CoarseGrainedJudge", "judge", candidate_designs=valid,
+                                        optimization_goal=goal, top_k=min(config.top_k, len(valid)))
+                if not isinstance(top_ids, list) or not top_ids or len(top_ids) > config.top_k:
                     raise ValueError("Coarse judge returned an invalid shortlist")
-                top = [apply_method(plan) for plan in top]
-                valid_by_key = {plan_key(p): p for p in valid}
-                if any(plan_key(p) not in valid_by_key for p in top) or len({plan_key(p) for p in top}) != len(top):
+                valid_by_id = {f"candidate_{index}": plan for index, plan in enumerate(valid)}
+                if any(candidate_id not in valid_by_id for candidate_id in top_ids) or len(set(top_ids)) != len(top_ids):
                     raise ValueError("Coarse judge changed or duplicated a design")
-                top = [valid_by_key[plan_key(p)] for p in top]
+                top = [valid_by_id[candidate_id] for candidate_id in top_ids]
                 emit("shortlisted", role="CoarseGrainedJudge", designs=top)
-                prediction = apply_method(agents.invoke("FineGrainedJudge", "select_best", topk_designs=top,
-                                                        optimization_goal=goal, feedback=json.dumps(history)))
-                if plan_key(prediction) not in {plan_key(p) for p in top}:
+                prediction_id = agents.invoke("FineGrainedJudge", "select_best", topk_designs=top,
+                                              optimization_goal=goal,
+                                              feedback=json.dumps(feedback_summary(history), separators=(",", ":")))
+                top_by_id = {f"candidate_{index}": plan for index, plan in enumerate(top)}
+                if prediction_id not in top_by_id:
                     raise ValueError("Fine judge selected a design outside the shortlist")
+                prediction = top_by_id[prediction_id]
                 emit("predicted", role="FineGrainedJudge", design=prediction)
             measurements = []
             for plan in top:

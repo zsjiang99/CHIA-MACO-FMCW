@@ -2,7 +2,8 @@
 
 FU_PROFILES = ("uniform", "checkerboard", "column")
 BASE_FUS = ["Add", "Br", "Cmp", "Logic", "Phi", "Ret", "Sel", "Shift"]
-FU_TYPES = frozenset((*BASE_FUS, "Ld", "St", "Mul", "Div", "FAdd", "FMul", "FDiv"))
+SPECIALIZED_FUS = frozenset(("Ld", "St", "Mul", "Div", "FAdd", "FMul", "FDiv"))
+FU_TYPES = frozenset((*BASE_FUS, *SPECIALIZED_FUS))
 WORKLOAD_FUS = frozenset(("Ld", "St", "Mul"))
 
 
