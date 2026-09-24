@@ -123,6 +123,7 @@ body{margin:0;overflow:hidden;background:#171817;color:#e7e9e7}
 .report-panel .flow-field{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:5px}
 .report-panel .flow-field>span{overflow:visible;margin:0;white-space:normal;font-size:clamp(10px,.62vw,13px)}
 .report-panel .flow-field output{width:clamp(68px,5.1vw,100px);height:26px;font-size:clamp(10px,.61vw,13px)}
+.implementation-stack .hardware-progress,.implementation-stack .hardware-error{min-width:0;max-width:100%;overflow:hidden}.implementation-stack .hardware-error{white-space:nowrap;text-overflow:ellipsis}.design-flow .flow-error{max-width:100%}.inline-error{overflow-wrap:anywhere}
 .report-panel>.hardware-progress{margin-top:auto}
 .report-panel>.panel-action{margin-top:auto}
 @keyframes loading-spin{to{transform:rotate(360deg)}}

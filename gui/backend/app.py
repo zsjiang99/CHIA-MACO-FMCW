@@ -79,7 +79,10 @@ def _job_group(kind: str) -> str:
 async def same_origin(request: Request, call_next):
     # The unauthenticated local demo must not launch jobs for another website.
     origin = request.headers.get("origin")
-    if request.method == "POST" and origin and urlparse(origin).netloc != request.headers.get("host"):
+    public_origin = os.environ.get("A3_GUI_PUBLIC_ORIGIN", "").rstrip("/")
+    local_origin = origin and urlparse(origin).netloc == request.headers.get("host")
+    tunnel_origin = origin and public_origin and origin.rstrip("/") == public_origin
+    if request.method == "POST" and origin and not (local_origin or tunnel_origin):
         return JSONResponse({"detail": "Cross-origin job requests are not allowed"}, status_code=403)
     return await call_next(request)
 
