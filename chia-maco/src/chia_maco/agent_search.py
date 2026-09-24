@@ -67,8 +67,11 @@ the evaluator adds that base set to every tile before mapping.
 Across the specialized lists, at least one tile MUST include each of [Ld,St,Mul].
 config_mem is 16..1024 instructions per tile.
 data_spm_kb is 4..256 KiB and divides evenly across memory_banks in [1,2,4,8].
-unroll is an object with exactly window,fft,transpose,power,cfar; each value is 1..6.
-vectorize is one of none, interleaved, all and applies to all five kernels.
+unroll is an object with exactly window,fft,transpose,power,cfar.
+window, fft, transpose and power are 1..6; cfar MUST be 1 because larger
+factors are excluded by measured mapper timeouts.
+vectorize is one of none, interleaved, all. It applies to window, FFT,
+transpose and power; CA-CFAR is always compiled without vectorization.
 reasoning is a brief rationale of at most 24 words.
 One architecture is shared by all five kernels; compiler unroll is per kernel.
 Mesh routing, register count 8 and bypass constraint 4 remain fixed.
@@ -161,8 +164,11 @@ def validate_plan(plan: dict) -> dict:
         unroll = plan["unroll"]
         if not isinstance(unroll, dict) or set(unroll) != set(KERNEL_NAMES.values()):
             raise ValueError("unroll must define window, fft, transpose, power and cfar")
-        if any(type(value) is not int or not 1 <= value <= 6 for value in unroll.values()):
-            raise ValueError("each unroll value must be 1..6")
+        if any(type(unroll[name]) is not int or not 1 <= unroll[name] <= 6
+               for name in ("window", "fft", "transpose", "power")):
+            raise ValueError("window, fft, transpose and power unroll must be 1..6")
+        if unroll["cfar"] != 1:
+            raise ValueError("cfar unroll must be 1; larger factors exceed the mapper budget")
         if plan["vectorize"] not in ("none", "interleaved", "all"):
             raise ValueError("vectorize must be none, interleaved or all")
         if not isinstance(plan["reasoning"], str):
@@ -225,7 +231,8 @@ def candidates_for(plan, workload=None):
         vectorize = plan["vectorize"]
         return [CoDesignCandidate(
             kernel=kernel, rows=size, columns=size, unroll_factor=plan["unroll"][KERNEL_NAMES[kernel]],
-            compiler_vectorize=vectorize != "none", architecture_vectorization=vectorize,
+            compiler_vectorize=vectorize != "none" and kernel != "fmcw_cfar_2d",
+            architecture_vectorization="none" if kernel == "fmcw_cfar_2d" else vectorize,
             control_memory=plan["config_mem"], range_bins=w.samples, doppler_bins=w.chirps,
             rx_channels=w.rx, fu_profile="custom", memory_banks=plan["memory_banks"],
             bank_kib=plan["data_spm_kb"] // plan["memory_banks"], tile_fus=tile_fus)
@@ -414,12 +421,16 @@ def run_agent_search(output: Path, config: AgentConfig | None = None,
         contract += SINGLE_AGENT_CONTRACT
     agents = OriginalAgents(transport, config, context, contract)
     def apply_method(plan):
-        if method != "hardware_only" or not isinstance(plan, dict):
+        if not isinstance(plan, dict):
             return plan
-        constrained = dict(plan)
-        if "unroll" in constrained:
+        constrained = {**plan, "unroll": dict(plan["unroll"])} if isinstance(plan.get("unroll"), dict) else dict(plan)
+        # CA-CFAR factors above one repeatedly exceed the real mapper budget.
+        # Project every model response onto the legal space before evaluation.
+        if isinstance(constrained.get("unroll"), dict) and "cfar" in constrained["unroll"]:
+            constrained["unroll"]["cfar"] = 1
+        if method == "hardware_only" and "unroll" in constrained:
             constrained["unroll"] = {name: 1 for name in KERNEL_NAMES.values()}
-        if "vectorize" in constrained:
+        if method == "hardware_only" and "vectorize" in constrained:
             constrained["vectorize"] = "none"
         return constrained
     def cost(measurement):

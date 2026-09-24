@@ -117,10 +117,22 @@ def test_full_maco_space_preserves_per_tile_architecture():
 
 
 @pytest.mark.parametrize("factor", range(1, 7))
-def test_full_maco_accepts_each_unroll_factor(factor):
-    plan = {**FULL, "unroll": {name: factor for name in ("window", "fft", "transpose", "power", "cfar")}}
+def test_full_maco_accepts_each_compute_unroll_factor(factor):
+    plan = {**FULL, "unroll": {"window": factor, "fft": factor, "transpose": factor,
+                                "power": factor, "cfar": 1}}
     validate_plan(plan)
-    assert {candidate.unroll_factor for candidate in candidates_for(plan, Workload(max_pes=64))} == {factor}
+    candidates = candidates_for(plan, Workload(max_pes=64))
+    assert [candidate.unroll_factor for candidate in candidates] == [factor, factor, factor, factor, 1]
+
+
+def test_full_maco_bans_expensive_cfar_settings():
+    with pytest.raises(ValueError, match="cfar unroll must be 1"):
+        validate_plan({**FULL, "unroll": {**FULL["unroll"], "cfar": 2}})
+    vectorized = {**FULL, "vectorize": "all"}
+    cfar = candidates_for(vectorized, Workload(max_pes=64))[-1]
+    assert cfar.unroll_factor == 1
+    assert not cfar.compiler_vectorize
+    assert cfar.architecture_vectorization == "none"
 
 
 def test_live_agent_uses_full_maco_space(monkeypatch, tmp_path):
