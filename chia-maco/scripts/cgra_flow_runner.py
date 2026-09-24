@@ -109,9 +109,10 @@ def generate(job: Path) -> Path:
         top.apply(VerilogTranslationPass())
         return top
     cgra_test.CgraTemplateRTL_test.config_model_with_cmdline_opts = translate_only
-    native_run_sim = cgra_test.CgraTemplateRTL_test.run_sim
-    cgra_test.CgraTemplateRTL_test.run_sim = lambda model, *args, **kwargs: native_run_sim(
-        model, *args, print_line_trace=False, **kwargs)
+    # The harness already translates the elaborated CGRA. Re-importing that
+    # same model inside run_sim fails for nested FAdd placeholders because their
+    # translated_filename metadata is not populated a second time.
+    cgra_test.CgraTemplateRTL_test.run_sim = lambda model, *args, **kwargs: None
     work = job / "work"
     work.mkdir(exist_ok=True)
     old = Path.cwd()
@@ -177,7 +178,10 @@ def normalized_verilog(job: Path, source: Path) -> Path:
 
 def check_verilog(job: Path, verilog: Path) -> None:
     top = "CgraCoreRTL" if verilog.name == "core.v" else "CgraTemplateRTL"
-    script = (f"read_verilog -sv {verilog}; hierarchy -top {top}; "
+    # Defer elaboration until hierarchy selects the instantiated parameters.
+    # HardFloat's unused small default parameterization otherwise emits an
+    # out-of-bounds warning even when the actual FP32 instances are valid.
+    script = (f"read_verilog -sv -defer {verilog}; hierarchy -top {top}; "
               "proc; check")
     run_quiet(["yosys", "-Q", "-T", "-p", script], job, job, "rtl-check")
     report = (job / "rtl-check.log").read_text(errors="replace")
@@ -314,8 +318,12 @@ def main() -> None:
     result = {"action": action, "status": "running"}
     try:
         rtl = generate(job)
-        result["rtl_regression"] = "passed"
+        result["rtl_regression"] = "not_run"
         if action == "verify":
+            verilog = normalized_verilog(job, rtl)
+            check_verilog(job, verilog)
+            result["rtl_regression"] = "structural_passed"
+            result["candidate_hardware_correctness"] = "pending"
             stage(job, "Translated FP32 regression", 2, 4)
             fp = fp_regression(job)
             result.update(fp32_regression=fp["status"], fp32_cases=len(fp["cases"]))

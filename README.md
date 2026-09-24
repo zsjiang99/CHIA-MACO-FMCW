@@ -10,7 +10,7 @@
 
 The **reported paper experiment** explores one CGRA architecture shared by five FMCW kernels: **2×2, 4×4, or 6×6 arrays**, with a legal compiler unroll factor for each kernel. Functional-unit placement and memory parameters remain fixed in that comparison. CHIA maps the kernels and returns tool feedback for the next agent round. Its objective is **estimated cycles/frame**.
 
-Live exploration uses a broader MACO design schema: **2×2–8×8 arrays, per-tile specialized functional units, total scratchpad capacity, memory banks, unroll from 1–6 for Window/FFT/Transpose/Power, and vectorization**. Configuration memory is fixed at **16 entries per tile** to bound synthesis cost. CA-CFAR remains scalar (`unroll=1`, no vectorization): larger settings repeatedly exceed the real mapper budget. Every tile retains the mapper-safe base set (`Add`, `Br`, `Cmp`, `Logic`, `Phi`, `Ret`, `Sel`, `Shift`); MACO searches the placement of load/store, multiply/divide, and floating-point units. The user selects either **Performance** (estimated cycles/frame) or **Energy** (estimated CGRA-core + SRAM dynamic energy/frame). Every proposed design is retained in the trace; only successfully mapped designs can become the best measured result. This extension is outside the paper's reported array/unroll experiment. The smaller configuration memory preserves mapping of the tested five-kernel design; full synthesis at this size still needs confirmation.
+Live exploration uses a broader MACO design schema: **2×2–8×8 arrays, per-tile specialized functional units, total scratchpad capacity, memory banks, unroll from 1–6 for Window/FFT/Transpose/Power, and vectorization**. Configuration memory is fixed at **16 entries per tile** to bound synthesis cost. CA-CFAR remains scalar (`unroll=1`, no vectorization): larger settings repeatedly exceed the real mapper budget. Every tile retains the mapper-safe base set (`Add`, `Br`, `Cmp`, `Logic`, `Phi`, `Ret`, `Sel`, `Shift`); MACO searches the placement of load/store, multiply/divide, and floating-point units. The user selects either **Performance** (estimated cycles/frame) or **Energy** (estimated CGRA-core + SRAM dynamic energy/frame). Every proposed design is retained in the trace; only successfully mapped designs can become the best measured result. This extension is outside the paper's reported array/unroll experiment. A live 4×4 design with 16 configuration entries per tile completed RTL generation, structural checking, FP32 unit tests, and Yosys synthesis; full candidate-level functional equivalence remains unverified.
 
 The workload has **256 samples/chirp × 128 chirps/frame × 4 RX channels** of FP32 complex data. Its mapping views cover window, FFT (range and Doppler), transpose, power, and CA-CFAR.
 
@@ -161,6 +161,10 @@ bash gui/start.sh
 ```
 
 Open `http://127.0.0.1:8765/`, or forward port 8765 over SSH. Set `A3_GUI_PORT` before `bash gui/start.sh` to use another local port. The default **Paper result** tab shows the seed-37 agent trace, exhaustive reference, per-kernel mapping evidence and scope limits. Follow the [three-minute walkthrough](chia-maco/DEMO.txt). **Live exploration** (`/?mode=live`) runs architecture search, generates and verifies RTL, then synthesizes the selected design. Layout remains an explicit optional action after that flow completes.
+
+![Live MACO flow after RTL generation and Yosys synthesis](assets/live-flow-synthesis-passed.png)
+
+*Live one-round run: five kernel mappings, generated SystemVerilog, completed synthesis, and area/energy estimates. This is a live demonstration, not the archived paper result; layout was not run.*
 
 The server binds to loopback and has no authentication; do not expose it publicly.
 
