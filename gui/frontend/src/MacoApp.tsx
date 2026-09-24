@@ -109,12 +109,12 @@ type HardwareResult={action:string;status:string;job_id?:string;rtl_regression?:
 type HardwareJob={id:string;kind:string;state:string;started_at?:number;error?:string;progress?:{stage:string;completed:number;total:number};result?:HardwareResult};
 
 function ImplementationPanel({entry,implementation,hardware,run}:{entry:Entry;implementation?:Implementation|null;hardware?:HardwareJob|null;run:string}){
- const[active,setActive]=useState<HardwareJob|null>(null),[results,setResults]=useState<Record<string,HardwareResult>>({}),[error,setError]=useState(''),[rtlSource,setRtlSource]=useState('');
+ const[active,setActive]=useState<HardwareJob|null>(null),[results,setResults]=useState<Record<string,HardwareResult>>({}),[error,setError]=useState(''),[rtlSource,setRtlSource]=useState(''),[rtlError,setRtlError]=useState('');
  const auto=implementation?.design_id===entry.id?implementation:null;
  const mainDone=auto?.stages.verify.state==='passed'&&auto.stages.synth.state==='passed';
  const layoutStage=auto?.stages.layout;
  useEffect(()=>{if(!active||active.state!=='running')return;const poll=async()=>{try{const job=await api<HardwareJob>(`/jobs/${active.id}`);setActive(job);if(job.state!=='running'){if(job.result){const result={...job.result,job_id:job.id};setResults(v=>({...v,[result.action]:result}));}setError(job.result?.error??job.error??'');}}catch(e){setError(String(e));}};const timer=setInterval(()=>void poll(),1000);return()=>clearInterval(timer);},[active?.id,active?.state]);
- useEffect(()=>{const id=auto?.stages.verify.state==='passed'?run:results.verify?.job_id;if(!id)return;let live=true;fetch(`/api/jobs/${id}/rtl`).then(response=>response.ok?response.text():Promise.reject()).then(source=>live&&setRtlSource(source)).catch(()=>{});return()=>{live=false;};},[auto?.stages.verify.state,results.verify?.job_id,run]);
+ useEffect(()=>{const id=auto?.stages.verify.state==='passed'?run:results.verify?.job_id;if(!id)return;let live=true;setRtlSource('');setRtlError('');fetch(`/api/jobs/${id}/rtl`).then(response=>response.ok?response.text():Promise.reject(Error(`RTL request returned ${response.status}`))).then(source=>{if(live)setRtlSource(source);}).catch(reason=>{if(live)setRtlError(String(reason));});return()=>{live=false;};},[auto?.stages.verify.state,results.verify?.job_id,run]);
  async function launch(action:'verify'|'synth'|'layout'){if(active?.state==='running')return;setError('');try{const job=await api<HardwareJob>('/jobs',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind:`cgra-${action}`,architecture:{design:entry.design,architecture:entry.architecture},...(action==='layout'?{source_run:run}:{})})});setActive({...job,state:'running'});}catch(e){setError(String(e));}}
  const result=(name:'verify'|'synth'|'layout')=>(auto?.stages[name].result as HardwareResult|undefined)??results[name];
  const verify=result('verify'),synth=result('synth'),layout=result('layout'),synthComplete=synth?.status==='passed',coreArea=synthComplete?(synth.core_area_mm2??synth.tile_area_mm2):undefined,sramArea=synthComplete?synth.memory?.area_mm2:undefined,dynamicEnergy=synthComplete?entry.energy?.total_dynamic_energy_uj:undefined,busy=active?.state==='running'||hardware?.state==='running',running=(name:string)=>active?.state==='running'&&active.kind===`cgra-${name}`;
@@ -122,7 +122,7 @@ function ImplementationPanel({entry,implementation,hardware,run}:{entry:Entry;im
  const layoutJob=active?.kind==='cgra-layout'?active:null;
  const generation=verify?.status==='passed'?'Generated':auto?.current==='verify'||running('verify')?'Generating':'Not run';
  return <section className="implementation-stack"><section className="flow-panel verification-panel"><header><h2>RTL Generation &amp; Verification</h2></header>
-  <div className="tool-output rtl-output" tabIndex={0}><strong>Generated SystemVerilog</strong>{auto&&task('verify')}{rtlSource?<pre>{rtlSource}</pre>:<span>{generation==='Not run'?'Not generated yet':'Code available after generation'}</span>}</div>
+  <div className="tool-output rtl-output" tabIndex={0}><strong>Generated SystemVerilog</strong>{auto&&task('verify')}{rtlSource?<pre>{rtlSource}</pre>:<span>{rtlError||(generation==='Not run'?'Not generated yet':'Loading generated RTL…')}</span>}{auto?.stages.verify.state==='passed'&&<a className="job-log" href={`/api/jobs/${run}/rtl`} target="_blank" rel="noreferrer">Open full SystemVerilog ↗</a>}</div>
   {!auto&&<button className="panel-action" disabled={busy} onClick={()=>void launch('verify')}>{running('verify')?'Generating RTL and running tests…':'Generate RTL & Run Tests'}</button>}
  </section>
   <section className="flow-panel report-panel"><header><h2>Area &amp; Energy</h2></header><div className="report-values"><Field label="CGRA logic area" value={coreArea==null?'—':`${fmt(coreArea,4)} mm²`}/><Field label="SRAM area" value={sramArea==null?'—':`${fmt(sramArea,4)} mm²`}/><Field label="Dynamic energy/frame" value={dynamicEnergy==null?'—':`${fmt(dynamicEnergy,2)} µJ`}/></div>{task('synth')}{!auto&&<button className="panel-action" disabled={busy} onClick={()=>void launch('synth')}>{running('synth')?'Synthesizing…':'Synthesize'}</button>}</section>
@@ -152,7 +152,8 @@ function App(){
  const running=jobs.job?.state==='running',progress=jobs.job?.kind==='maco-agent'&&jobs.job.progress?jobs.job.progress:data?.progress;
  const failedEvent=[...(jobs.job?.progress?.events??[])].reverse().find(event=>event.kind==='run_failed');
  const jobFailure=jobs.job?.state==='failed'?(failedEvent?.error??jobs.job.error??'Exploration failed'):'';
- const selectedImplementation=jobs.job?.kind==='maco-agent'&&data?.run!==jobs.job.id?null:data?.implementation?.design_id===entry?.id?data.implementation:null;
+ const displayImplementation=data&&entry&&data.implementation?.design_id===entry.id?data.implementation:null;
+ const selectedImplementation=jobs.job?.kind==='maco-agent'&&data?.run!==jobs.job.id?null:displayImplementation;
  const setStage=(value:number)=>{setStageState(value);setCycle(0);setSelectedPE(0);};
  const setPrompt=(value:string)=>{edited.current=true;setPromptState(value);};
  async function run(){if(running||interpreting||!prompt.trim())return;setInterpreting(true);setInputError('');try{const result=await api<Interpretation>('/workload/interpret',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({description:prompt})});if(result.unsupported.length){setInputError(result.unsupported.join(' '));return;}const workload={...result.workload,objective};await jobs.startSpec({workload,interpretation:{...result,workload},rounds:2,method});}catch(e){setInputError(String(e));}finally{setInterpreting(false);}}
@@ -164,7 +165,7 @@ function App(){
    <ArchitectureModeling entry={entry} selected={selectedPE}/>
    <MacoPanel entry={entry} workload={data.workload} prompt={prompt} setPrompt={setPrompt} method={method} setMethod={setMethod} objective={objective} setObjective={value=>{edited.current=true;setObjective(value);}} onRun={()=>void run()} busy={running||interpreting||jobs.starting} error={inputError||jobFailure||jobs.error} progress={progress} implementation={selectedImplementation} onExport={exportArch} archived={demo}/>
    <MappingWorkbench entry={entry} run={data.run} stage={stage} cycle={cycle} setCycle={setCycle} selected={selectedPE} setSelected={setSelectedPE}/>
-   {demo?<ArchivedEvidence data={data} entry={entry}/>:<ImplementationPanel entry={entry} implementation={selectedImplementation} hardware={hardware} run={data.run}/>}
+   {demo?<ArchivedEvidence data={data} entry={entry}/>:<ImplementationPanel entry={entry} implementation={displayImplementation} hardware={hardware} run={data.run}/>}
   </div>}
  </main>;
 }

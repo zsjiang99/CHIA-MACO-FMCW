@@ -37,10 +37,17 @@ def design_view(run: Path):
             continue
         design = event["design"]
         mappings = []
-        # Reconstruct archived runs exactly; current searches apply mapper safety
-        # before execution, but older evidence may contain now-excluded settings.
-        for c in candidates_for(design, workload, enforce_mapper_safety=False):
-            i, mapping = exact.get(mapping_key(c)) or legacy[key_without_control_memory(c)]
+        # Current runs execute the safe CA-CFAR settings, while older runs retain
+        # their original compiler settings. Match the recorded candidate in either
+        # form so both histories remain readable.
+        safe = candidates_for(design, workload)
+        archived = candidates_for(design, workload, enforce_mapper_safety=False)
+        for options in zip(safe, archived):
+            found = next((exact.get(mapping_key(c)) or legacy.get(key_without_control_memory(c))
+                          for c in options if exact.get(mapping_key(c)) or legacy.get(key_without_control_memory(c))), None)
+            if found is None:
+                raise ValueError(f"No recorded mapping matches {options[0].kernel} in {run.name}")
+            i, mapping = found
             log = run / f"mapper_logs/mapping_{i:03d}.log"
             overlay = schedule(str(log), log.stat().st_mtime_ns, json.dumps(mapping, sort_keys=True)) if log.exists() else {"available": False, "placements": [], "links": []}
             mappings.append({**mapping, "schedule": overlay, "log_index": i})
