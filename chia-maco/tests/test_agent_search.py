@@ -126,13 +126,18 @@ def test_full_maco_accepts_each_compute_unroll_factor(factor):
 
 
 def test_full_maco_bans_expensive_cfar_settings():
+    vectorized = {**FULL, "unroll": {**FULL["unroll"], "cfar": 2}, "vectorize": "all"}
     with pytest.raises(ValueError, match="cfar unroll must be 1"):
-        validate_plan({**FULL, "unroll": {**FULL["unroll"], "cfar": 2}})
-    vectorized = {**FULL, "vectorize": "all"}
-    cfar = candidates_for(vectorized, Workload(max_pes=64))[-1]
+        validate_plan(vectorized)
+    safe_plan = {**vectorized, "unroll": {**vectorized["unroll"], "cfar": 1}}
+    cfar = candidates_for(safe_plan, Workload(max_pes=64))[-1]
     assert cfar.unroll_factor == 1
     assert not cfar.compiler_vectorize
     assert cfar.architecture_vectorization == "none"
+    archived = candidates_for(vectorized, Workload(max_pes=64), enforce_mapper_safety=False)[-1]
+    assert archived.unroll_factor == 2
+    assert archived.compiler_vectorize
+    assert archived.architecture_vectorization == "all"
 
 
 def test_live_agent_uses_full_maco_space(monkeypatch, tmp_path):

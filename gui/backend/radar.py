@@ -33,11 +33,13 @@ def design_view(run: Path):
               for i, r in enumerate(raw)}
     entries = []
     for event in p["events"]:
-        if event["kind"] != "design_measured":
+        if event["kind"] != "design_measured" or not event.get("frame_estimate", {}).get("valid"):
             continue
         design = event["design"]
         mappings = []
-        for c in candidates_for(design, workload):
+        # Reconstruct archived runs exactly; current searches apply mapper safety
+        # before execution, but older evidence may contain now-excluded settings.
+        for c in candidates_for(design, workload, enforce_mapper_safety=False):
             i, mapping = exact.get(mapping_key(c)) or legacy[key_without_control_memory(c)]
             log = run / f"mapper_logs/mapping_{i:03d}.log"
             overlay = schedule(str(log), log.stat().st_mtime_ns, json.dumps(mapping, sort_keys=True)) if log.exists() else {"available": False, "placements": [], "links": []}

@@ -115,7 +115,7 @@ class JobRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     kind: Literal["maco", "maco-agent", "cgra-verify", "cgra-synth", "cgra-layout"]
     workload: dict | None = None
-    rounds: int = Field(default=3, ge=1, le=6)
+    rounds: int = Field(default=2, ge=1, le=6)
     method: Literal["full_maco", "hardware_only", "single_agent"] = "full_maco"
     interpretation: dict | None = None
     architecture: dict | None = None
@@ -147,7 +147,7 @@ def latest_agent_path() -> Path:
 
 
 def latest_measured_path() -> Path:
-    """Keep the last measured design visible while a new search is starting."""
+    """Keep the last complete design visible while a new search is starting."""
     if PROJECT != "maco":
         raise HTTPException(404, "Not available in this project")
     paths = list((ROOT / "chia-maco/results").glob("agent_*/progress.json"))
@@ -155,12 +155,14 @@ def latest_measured_path() -> Path:
     measured = []
     for path in paths:
         try:
-            if any(event.get("kind") == "design_measured" for event in read_json(path).get("events", [])):
+            if any(event.get("kind") == "design_measured"
+                   and event.get("frame_estimate", {}).get("valid")
+                   for event in read_json(path).get("events", [])):
                 measured.append(path)
         except (OSError, ValueError):
             continue
     if not measured:
-        return latest_agent_path()
+        raise HTTPException(404, "No fully mapped design is available")
     return max(measured, key=lambda path: path.stat().st_mtime).parent
 
 

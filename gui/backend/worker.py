@@ -82,7 +82,8 @@ def run(kind: str, output: Path) -> None:
         from chia_maco.workload import Workload
         request = json.loads((output / "request.json").read_text()) if (output / "request.json").exists() else {}
         if request.get("workload"):
-            search = run_agent_search(output, config=AgentConfig(rounds=request.get("rounds", 3), max_tokens=4096),
+            rounds = request.get("rounds", 2)
+            search = run_agent_search(output, config=AgentConfig(rounds=rounds, mapping_budget=min(30, rounds * 10), max_tokens=4096),
                                       workload=Workload.from_dict(request["workload"]),
                                       method=request.get("method", "full_maco"))
             complete_maco_flow(output, search)

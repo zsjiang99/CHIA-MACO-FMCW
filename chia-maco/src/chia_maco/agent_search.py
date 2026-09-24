@@ -125,7 +125,7 @@ def save(path: Path, value):
     tmp.replace(path)
 
 
-def validate_plan(plan: dict) -> dict:
+def validate_plan(plan: dict, allow_archived_cfar: bool = False) -> dict:
     if not isinstance(plan, dict):
         raise ValueError("design must be an object")
     maco_fields = {"FUs", "config_mem", "data_spm_kb", "unroll", "vectorize"}
@@ -164,10 +164,9 @@ def validate_plan(plan: dict) -> dict:
         unroll = plan["unroll"]
         if not isinstance(unroll, dict) or set(unroll) != set(KERNEL_NAMES.values()):
             raise ValueError("unroll must define window, fft, transpose, power and cfar")
-        if any(type(unroll[name]) is not int or not 1 <= unroll[name] <= 6
-               for name in ("window", "fft", "transpose", "power")):
-            raise ValueError("window, fft, transpose and power unroll must be 1..6")
-        if unroll["cfar"] != 1:
+        if any(type(value) is not int or not 1 <= value <= 6 for value in unroll.values()):
+            raise ValueError("each unroll value must be 1..6")
+        if not allow_archived_cfar and unroll["cfar"] != 1:
             raise ValueError("cfar unroll must be 1; larger factors exceed the mapper budget")
         if plan["vectorize"] not in ("none", "interleaved", "all"):
             raise ValueError("vectorize must be none, interleaved or all")
@@ -219,8 +218,8 @@ def feedback_summary(history):
     } for item in history]
 
 
-def candidates_for(plan, workload=None):
-    validate_plan(plan)
+def candidates_for(plan, workload=None, enforce_mapper_safety=True):
+    validate_plan(plan, allow_archived_cfar=not enforce_mapper_safety)
     size = int(plan["tile_size"].split("x")[0])
     w = workload or Workload()
     if "FUs" in plan:
@@ -230,9 +229,10 @@ def candidates_for(plan, workload=None):
         }
         vectorize = plan["vectorize"]
         return [CoDesignCandidate(
-            kernel=kernel, rows=size, columns=size, unroll_factor=plan["unroll"][KERNEL_NAMES[kernel]],
-            compiler_vectorize=vectorize != "none" and kernel != "fmcw_cfar_2d",
-            architecture_vectorization="none" if kernel == "fmcw_cfar_2d" else vectorize,
+            kernel=kernel, rows=size, columns=size,
+            unroll_factor=1 if enforce_mapper_safety and kernel == "fmcw_cfar_2d" else plan["unroll"][KERNEL_NAMES[kernel]],
+            compiler_vectorize=vectorize != "none" and not (enforce_mapper_safety and kernel == "fmcw_cfar_2d"),
+            architecture_vectorization="none" if enforce_mapper_safety and kernel == "fmcw_cfar_2d" else vectorize,
             control_memory=plan["config_mem"], range_bins=w.samples, doppler_bins=w.chirps,
             rx_channels=w.rx, fu_profile="custom", memory_banks=plan["memory_banks"],
             bank_kib=plan["data_spm_kb"] // plan["memory_banks"], tile_fus=tile_fus)
