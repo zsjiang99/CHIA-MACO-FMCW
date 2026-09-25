@@ -27,14 +27,11 @@ The round-one judge ranking was overturned by mapper-derived frame costs.
 Round two reused the same candidates. This single trajectory explains the
 feedback behavior; it does not establish a speedup over a budget-matched search.
 
-The reference archive stores parsed mapping records; the reported agent
-archive also retains raw logs and model messages. [`reference_4x4.json`](reference_4x4.json)
-is a five-kernel mapper smoke, not the 36-point result. The `agent_qwen38_27b_seed37_v1/`
-and `v2/` directories are earlier trials, not substituted for the reported
-`v3/` run. `agent_workload_banked_20260921_152350/`, `rtl_audit/`, and
-`rtl_bridge_v*/` document experimental extensions outside the paper's
-array/unroll comparison. `audit/invalid_cleanup_loop/` preserves a rejected
-early mapping and must not be used as a performance result.
+The reference archive stores parsed mapping records; the earlier agent archive
+retains raw logs and model messages. [`reference_4x4.json`](reference_4x4.json)
+is a five-kernel mapper smoke, not the 36-point result. `rtl_audit/` and
+`rtl_bridge_v3/` document component-level RTL experiments outside the paper's
+matched-budget comparison.
 
 All frame-cycle figures are analytical estimates from mapping initiation
 intervals, not measured FPS, area, total energy, or verified CGRA execution.

@@ -82,6 +82,13 @@ Open `http://127.0.0.1:8765/?mode=live`, choose **Multi-agent**, **Hardware only
 
 New model runs may differ from the saved paper results.
 
-## 📝 Notes
+## 🔬 What the evidence supports
 
-The frame-cycle figure is a mapper-based estimate, not measured runtime. RTL tests cover components, not full-frame hardware equivalence. See [implementation status](chia-maco/IMPLEMENTATION_STATUS.md) and [validation data](chia-maco/results/validation_v1/) for the current limits. The source is BSD-3-Clause licensed; see [third-party notices](gui/THIRD_PARTY.md). Authors: Zesong Jiang, Cheng Tan, and Jeff Zhang (Arizona State University).
+- **Performance:** CGRA-Mapper reports mapping II; the full-frame cycle count is an analytical estimate, not measured FPS. It omits loop setup, memory stalls, FFT bit reversal, and host–CGRA transfers. Archived wall times are not runtime guarantees.
+- **Energy:** the live objective combines scheduled compute, register/control, routed-link activity, and CACTI SRAM access energy. It is a reproducible first-order dynamic-energy estimate, not post-layout power; leakage and host transfers are excluded.
+- **Correctness:** The native smoke test is not a hardware test. The independent [NumPy comparison](chia-maco/results/validation_v1/) meets FFT and power error criteria, but exact CA-CFAR masks agree in only **2 of 6** scenes; a fresh `validate-native` exits nonzero. Mapper and component RTL tests do not certify full-frame execution.
+- **Hardware:** Tile count is not synthesized area. FU/memory exploration and RTL/layout in the GUI are experimental, outside the paper's reported search. See the [implementation status](chia-maco/IMPLEMENTATION_STATUS.md).
+
+## 📄 License and credit
+
+Zesong Jiang, Cheng Tan, and Jeff Zhang · Arizona State University. New integration code is BSD-3-Clause licensed. The agent modules are fetched from a pinned [upstream checkout](https://github.com/coredac/MACO); other dependencies retain their own terms. See the [third-party notices](gui/THIRD_PARTY.md).

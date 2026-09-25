@@ -72,6 +72,5 @@ The remaining compiler/RTL connection needs:
 The native CFAR specification is unchanged: strict detection equality remains
 2/6. No power floor or relaxed acceptance threshold was introduced.
 
-Earlier `rtl_bridge_v1`/`v2` directories are intermediate diagnostic evidence.
-In particular, v1 opcode exports predate the repeated-operand and comparison
-fixes; use **v3** exports, not v1, for further compiler integration.
+The v3 exports supersede earlier diagnostic snapshots and should be used for
+further compiler integration.
