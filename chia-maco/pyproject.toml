@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "chia-maco"
 version = "0.1.0"
-description = "CHIA loop for FMCW compiler/CGRA architecture co-design"
+description = "RACO: agentic CGRA hardware/software co-design for FMCW radar with CHIA"
 requires-python = ">=3.10"
 dependencies = [
   "chialoops==1.0.1",

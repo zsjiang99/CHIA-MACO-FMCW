@@ -3,7 +3,7 @@ set -euo pipefail
 gui_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 cd "${gui_dir}/.."
 if [[ "${1:-maco}" != "maco" ]]; then
-  echo 'This release contains only MACO' >&2
+  echo 'This release contains only RACO' >&2
   exit 1
 fi
 if [[ ! -f "${gui_dir}/../chia-maco/gui/dist/index.html" ]]; then

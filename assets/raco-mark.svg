@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
-  <title id="title">MACO radar and CGRA mark</title>
+  <title id="title">RACO radar and CGRA mark</title>
   <rect x="2" y="2" width="60" height="60" rx="13" fill="#101c2c"/>
   <path d="M12 46a18 18 0 0 1 18-18M12 46a30 30 0 0 1 30-30" fill="none" stroke="#5ce1d2" stroke-width="2" stroke-linecap="round" opacity=".75"/>
   <path d="M12 46 33 25" stroke="#5ce1d2" stroke-width="2" stroke-linecap="round"/>

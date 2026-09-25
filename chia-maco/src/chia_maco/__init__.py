@@ -1,2 +1,1 @@
-"""CHIA-MACO integration package."""
-
+"""RACO integration package."""

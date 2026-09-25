@@ -1,10 +1,12 @@
-# Evidence for the four-page paper
+# RACO result records
 
-From a fresh clone, `make -C chia-maco artifact-check` prints and checks the
-paper's headline numbers using these saved files. It does not invoke a mapper
-or model service.
+The [matched-budget records](matched_budget_10/) support the current manuscript's comparison: 38,728,360 estimated cycles/frame for RACO, 42,136,232 for HW-only, and 41,448,104 for single-agent one-shot under 10 unique kernel-mapper evaluations per method. They include result JSON, agent traces, and raw mapper logs. From a fresh clone, `make -C chia-maco artifact-check` checks these saved results without invoking a mapper or model service.
 
-| Paper claim | Authoritative record |
+## Earlier array/unroll study
+
+The files below belong to an earlier 36-mapping reference and 18-mapping agent study. They are retained as historical evidence, **not** substituted for the current matched-budget comparison.
+
+| Earlier-study claim | Authoritative record |
 | --- | --- |
 | 36 reference mappings; best 39,154,344 estimated cycles/frame | [`codesign_search_certified.json`](codesign_search_certified.json): `raw_results`, `successful_mappings`, `architectures[].frame_estimate` |
 | 18 unique agent mappings, 12 model calls, same best estimate | [`agent_qwen38_27b_seed37_v3/result.json`](agent_qwen38_27b_seed37_v3/result.json): `evaluations`, `llm_calls`, `best_evaluated_plan` |
@@ -12,7 +14,7 @@ or model service.
 | CA-CFAR contributes 89.7% of selected frame estimate | `best_evaluated_plan.frame_estimate.breakdown.fmcw_cfar_2d` in the agent result above |
 | Exact NumPy/native CFAR masks agree in 2 of 6 scenes | [`validation_v1/validation.json`](validation_v1/validation.json): `cases[].status` and `detection_mismatches` |
 
-The paper's agent/tool feedback table is reconstructed from
+The earlier study's agent/tool feedback table is reconstructed from
 [`agent_qwen38_27b_seed37_v3/result.json`](agent_qwen38_27b_seed37_v3/result.json):
 
 | Round | Fine Judge choice | Tool-selected round winner | Cumulative unique mappings | Best estimated cycles/frame |

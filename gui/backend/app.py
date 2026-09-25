@@ -21,7 +21,7 @@ from typing import Literal
 from .data import ARCHIVES, ROOT, array_model, read_json
 
 RUNTIME = ROOT / "chia-maco/gui/runtime"
-app = FastAPI(title="CHIA MACO Studio")
+app = FastAPI(title="RACO")
 allowed_hosts = ["127.0.0.1", "localhost", "testserver"]
 allowed_hosts += [host.strip() for host in os.environ.get("A3_GUI_ALLOWED_HOSTS", "").split(",") if host.strip()]
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=allowed_hosts)
@@ -199,7 +199,7 @@ def radar_demo(resource: str | None = None):
     if resource == "trace":
         return FileResponse(path / "agent_trace.json", filename="maco-demo-seed37.json")
     if resource == "guide":
-        return FileResponse(ROOT / "chia-maco/DEMO.txt", media_type="text/plain", filename="MACO_DEMO.txt")
+        return FileResponse(ROOT / "chia-maco/DEMO.txt", media_type="text/plain", filename="RACO_DEMO.txt")
     if resource is not None:
         raise HTTPException(404, "Unknown demo resource")
     from .radar import design_view
@@ -257,10 +257,10 @@ def start_job(spec: JobRequest):
     group = _job_group(spec.kind)
     if spec.kind == "cgra-layout":
         if not spec.source_run:
-            raise HTTPException(422, "Select a completed MACO run before layout")
+            raise HTTPException(422, "Select a completed RACO run before layout")
         source = _job_dir(spec.source_run)
         if read_json(source / "meta.json").get("kind") != "maco-agent":
-            raise HTTPException(422, "Layout requires a completed MACO run")
+            raise HTTPException(422, "Layout requires a completed RACO run")
         record_path = source / "implementation.json"
         if not record_path.is_file():
             raise HTTPException(422, "RTL verification and synthesis must finish before layout")
@@ -285,7 +285,7 @@ def start_job(spec: JobRequest):
             raise HTTPException(422, str(exc))
     if spec.workload is not None:
         if spec.kind != "maco-agent":
-            raise HTTPException(400, "Workload configuration requires a MACO agent job")
+            raise HTTPException(400, "Workload configuration requires a RACO agent job")
         from chia_maco.workload import Workload
         try:
             Workload.from_dict(spec.workload)
@@ -296,7 +296,7 @@ def start_job(spec: JobRequest):
     with _lock:
         for _, _, running_kind in _running_jobs():
             if _job_group(running_kind) == group:
-                label = "layout" if group == "layout" else "MACO workflow"
+                label = "layout" if group == "layout" else "RACO workflow"
                 raise HTTPException(409, f"A {label} job is already running")
         # Layout and the main workflow have isolated outputs and may run together.
         # A group-specific inherited lock prevents duplicate starts across servers.

@@ -1,16 +1,20 @@
-<h1 align="center"><img src="assets/maco-mark.svg" width="42" height="42" alt="MACO radar and CGRA icon"> MACO × CHIA</h1>
+<h1 align="center"><img src="assets/raco-mark.svg" width="42" height="42" alt="RACO radar and CGRA icon"> RACO: Agentic CGRA Hardware/Software Co-Design for FMCW Radar with CHIA</h1>
 
-<p align="center"><em>Agent-guided CGRA co-design for FMCW radar</em></p>
-
-<p align="center"><a href="paper/paper.pdf">Paper</a> · <a href="#-quick-start">Quick start</a> · <a href="chia-maco/results/README.md">Results and logs</a> · <a href="#-browser-demo">Browser demo</a></p>
+<p align="center"><a href="paper/paper.tex">Paper source</a> · <a href="#-quick-start">Quick start</a> · <a href="chia-maco/results/README.md">Results and logs</a> · <a href="#-browser-demo">Browser demo</a></p>
 
 ---
 
-## 🧭 What this artifact explores
+## 🧭 What RACO does
 
-The **reported paper experiment** explores one CGRA architecture shared by five FMCW kernels: **2×2, 4×4, or 6×6 arrays**, with a legal compiler unroll factor for each kernel. Functional-unit placement and memory parameters remain fixed in that comparison. CHIA maps the kernels and returns tool feedback for the next agent round. Its objective is **estimated cycles/frame**.
+RACO connects agent-guided CGRA architecture and compiler decisions to CHIA-managed mapping feedback for an FMCW radar workload. One candidate architecture must support all five kernels; the mapper evaluates each kernel, and a frame-level cost model combines their results.
 
-Live exploration uses a broader MACO design schema: **2×2–8×8 arrays, per-tile specialized functional units, total scratchpad capacity, memory banks, unroll from 1–6 for Window/FFT/Transpose/Power, and vectorization**. Configuration memory is fixed at **16 entries per tile** to bound synthesis cost. CA-CFAR remains scalar (`unroll=1`, no vectorization): larger settings repeatedly exceed the real mapper budget. Every tile retains the mapper-safe base set (`Add`, `Br`, `Cmp`, `Logic`, `Phi`, `Ret`, `Sel`, `Shift`); MACO searches the placement of load/store, multiply/divide, and floating-point units. If an agent omits the required integer `Mul`, the evaluator adds one on Tile 0 and records that adjustment; additional `Mul` placement remains searchable. The user selects either **Performance** (estimated cycles/frame) or **Energy** (estimated CGRA-core + SRAM dynamic energy/frame). Every proposed design is retained in the trace; only successfully mapped designs can become the best measured result. This extension is outside the paper's reported array/unroll experiment. A live 4×4 design with 16 configuration entries per tile completed RTL generation, structural checking, FP32 unit tests, and Yosys synthesis; full candidate-level functional equivalence remains unverified.
+The **reported comparison** evaluates RACO, a hardware-only ablation, and a single-agent baseline under the same budget of **10 unique kernel-mapper evaluations per method**. One full design requires five evaluations, one for each FMCW kernel view. The objective is **estimated steady-state CGRA cycles/frame**.
+
+Live exploration extends the search to **2×2–8×8 arrays** (subject to the PE limit), per-tile specialized functional units, scratchpad capacity and bank count, and per-kernel unroll and vectorization. Window, FFT, Transpose, and Power allow unroll factors 1–6; CA-CFAR remains scalar (`unroll=1`, no vectorization) because larger settings exceeded the mapper budget. Configuration memory is fixed at **16 entries per tile** to bound synthesis cost.
+
+Every tile retains the mapper-safe base set (`Add`, `Br`, `Cmp`, `Logic`, `Phi`, `Ret`, `Sel`, `Shift`); agents choose where to place load/store, multiply/divide, and floating-point units. If a proposal omits the required integer `Mul`, the evaluator adds one on Tile 0 and records the correction. Users can optimize **Performance** (estimated cycles/frame) or **Energy** (estimated CGRA-core + SRAM dynamic energy/frame).
+
+All proposals remain in the trace, but only designs that map all five kernels can win. RTL generation, component verification, synthesis, and optional layout are experimental extensions outside the reported cycle-cost comparison; full candidate-level functional equivalence remains unverified.
 
 The workload has **256 samples/chirp × 128 chirps/frame × 4 RX channels** of FP32 complex data. Its mapping views cover window, FFT (range and Doppler), transpose, power, and CA-CFAR.
 
@@ -18,8 +22,8 @@ The workload has **256 samples/chirp × 128 chirps/frame × 4 RX channels** of F
 
 ```text
 ┌──────────────┐   ┌──────────────┐   ┌──────────────────┐   ┌──────────────────┐
-│ CGRA         │ → │ CGRA         │ → │ Coarse-grained   │ → │ Fine-grained     │
-│ Co-designer  │   │ Fixer        │   │ Judge            │   │ Judge            │
+│ CGRA         │ → │ Design       │ → │ Shortlist        │ → │ Final            │
+│ Co-designer  │   │ Checker      │   │ Reviewer         │   │ Reviewer         │
 │ propose      │   │ repair       │   │ shortlist        │   │ predict best     │
 └──────────────┘   └──────────────┘   └──────────────────┘   └─────────┬────────┘
        ↑                                                               │ shortlist
@@ -30,26 +34,27 @@ The workload has **256 samples/chirp × 128 chirps/frame × 4 RX channels** of F
                          └─────────────────────────────────────────────────────────┘
 ```
 
-The Fine-grained Judge predicts a winner; CHIA maps shortlisted plans that fit the budget. The reported frame estimate uses mapper II and fixed workload counts, not the agent's prediction.
+The final reviewer predicts a winner; CHIA maps shortlisted plans that fit the budget. The reported frame estimate uses mapper II and fixed workload counts, not the agent's prediction.
 
 ## 📊 Findings
 
-The archived paper experiment evaluates the array/unroll slice of this larger design space.
+The reported runs use one seed (37), the same FMCW workload and evaluator, and 10 unique kernel-mapper evaluations per method—not 10 complete CGRA designs.
 
-| Search | Unique mapper runs | Best estimated cycles/frame | Archived wall time |
-| --- | ---: | ---: | ---: |
-| Exhaustive reference | 36 | 39,154,344 | 38.71 s |
-| MACO agents (12 model calls) | 18 | 39,154,344 | 210.43 s |
+| Method | Successful mappings | Best estimated cycles/frame |
+| --- | ---: | ---: |
+| RACO | 10/10 | **38,728,360** |
+| Hardware-only | 10/10 | 42,136,232 |
+| Single-agent one-shot | 9/10 | 41,448,104 |
 
-The agent run matched the best estimate with fewer mappings, but took longer because of model calls. Its best measured plan is **4×4 with unroll factors [4, 2, 4, 4, 1]**; CA-CFAR accounts for **89.7%** of modeled frame cycles. [Inspect the raw evidence.](chia-maco/results/README.md)
+RACO's estimate is **8.1%** below hardware-only and **6.6%** below single-agent in these recorded runs. Its two evaluated designs cost 38,728,360 and 40,202,920 cycles/frame; the selected design uses a 4×4 array, 4 × 16 KiB SRAM, and unroll factors [4, 4, 4, 4, 1]. A separate 20-evaluation run records a second design round, but its additional proposal did not improve the first-round incumbent. [Inspect the run records and raw logs.](chia-maco/results/README.md)
 
 ## 🚀 Quick start
 
-On Linux, verify the archived paper results with Git, a C compiler, `make`, and Python 3.10+:
+On Linux, verify the reported mapping results with Git, a C compiler, `make`, and Python 3.10+:
 
 ```bash
-git clone https://github.com/zsjiang99/CHIA-MACO-FMCW.git
-cd CHIA-MACO-FMCW
+git clone https://github.com/zsjiang99/RACO.git
+cd RACO
 make -C chia-maco artifact-check
 ```
 
@@ -63,28 +68,28 @@ The following combinations are supported:
 | --- | --- |
 | Archived result check | Linux x86-64, Git, `make`, a C compiler, Python 3.10+ |
 | Browser archive | The above, plus Node.js 20.19+ or 22.12+ and npm |
-| Live MACO search | Python 3.10, Docker Engine, `cgramapper:v1`, the pinned MACO checkout, and an OpenAI-compatible model endpoint |
+| Live agent search | Python 3.10, Docker Engine, `cgramapper:v1`, the pinned upstream agent checkout, and an OpenAI-compatible model endpoint |
 | RTL generation, verification and synthesis | The live-search environment plus `cgra/neura-flow:20260114` |
 | Optional layout | The same CGRA-Flow image; layout is launched separately after synthesis |
 
 Archive checking, Python installation, tests, and the browser build were verified in a clean **Ubuntu 22.04 x86-64** container. A pinned mapper image was also built and used for a real mapping. A complete fresh live-model-to-layout run has not been certified, so the README does not claim that result.
 
-The Docker images contain the required LLVM/Clang and EDA tools; they are not required on the host. The CGRA-Flow image occupies about 17 GB, so allow at least 25 GB of free Docker storage. A remote model endpoint does not require a local GPU. If authentication is required, set `MACO_LLM_API_KEY` in addition to `MACO_LLM_BASE_URL` and `MACO_LLM_MODEL`.
+The Docker images contain the required LLVM/Clang and EDA tools; they are not required on the host. The CGRA-Flow image occupies about 17 GB, so allow at least 25 GB of free Docker storage. A remote model endpoint does not require a local GPU. If authentication is required, set `RACO_LLM_API_KEY` in addition to `RACO_LLM_BASE_URL` and `RACO_LLM_MODEL`.
 
 ## 📂 Project structure
 
 | Part | Where to look | What it contains |
 | --- | --- | --- |
-| 🤖 Agents | [agent_search.py](chia-maco/src/chia_maco/agent_search.py) | Four-role MACO loop and feedback history |
+| 🤖 Agents | [agent_search.py](chia-maco/src/chia_maco/agent_search.py) | Four-role RACO loop and feedback history |
 | ⚙️ Evaluation | [CHIA node](chia-maco/src/chia_maco/nodes.py) · [mapper](chia-maco/src/chia_maco/mapper.py) · [frame model](chia-maco/src/chia_maco/report.py) · [energy model](chia-maco/src/chia_maco/energy.py) | Tool execution and measured-activity estimates |
 | 📡 Workload | [workload/](chia-maco/workload/) | Native FMCW C and mapping views |
-| 📊 Evidence | [results/](chia-maco/results/) | Candidates, traces, logs, validation |
+| 📊 Evidence | [results/](chia-maco/results/) | All four runs discussed in the paper, with traces and mapper logs; earlier experiments are marked separately |
 | 💻 Demo | [gui/](gui/) | Browser viewer and optional hardware-flow controls |
-| 📄 Paper | [paper/](paper/) | Four-page PDF and LaTeX source |
+| 📄 Paper | [paper/](paper/) | Current LaTeX source; PDF requires the paper's missing figure and bibliography files |
 
-## ⚙️ Full reproduction
+## ⚙️ Run a new exploration
 
-The following steps build on Quick start and run from the repository root. They require Docker and network access for installation. New runs do not overwrite the [paper's archived evidence](chia-maco/results/README.md).
+The following steps run the current RACO workflow from the repository root. They require Docker, a model endpoint, and network access for installation. The [recorded paper results](chia-maco/results/matched_budget_10/) remain unchanged; a new model run can produce different candidates and costs.
 
 ### 1. 🛠️ Prepare the evaluator
 
@@ -97,6 +102,7 @@ mkdir -p external
 git clone https://github.com/tancheng/CGRA-Mapper.git external/CGRA-Mapper
 git -C external/CGRA-Mapper checkout 5f8393acb6b3a17146806ec93a57f76f875be232
 docker build -t cgramapper:v1 -f chia-maco/docker/mapper.Dockerfile external/CGRA-Mapper
+docker pull cgra/neura-flow:20260114
 ```
 
 Python environment. Install the pinned CHIA checkout locally: `pip install git+...` fails because one of that commit's optional submodules is no longer fetchable.
@@ -109,49 +115,40 @@ git -C external/chia checkout 16c35e92aaaf9511c6453bf94cd5cf589698f4e3
 .venv/bin/python -m pip install -e 'chia-maco[test]'
 ```
 
-Fetch the pinned MACO agent classes before running the test suite:
+Fetch the pinned upstream agent classes before running the test suite:
 
 ```bash
-git clone https://github.com/coredac/MACO.git external/MACO
-git -C external/MACO checkout 31c02ce013838d89ef2a6d211acfdf639ecb178d
+git clone https://github.com/coredac/MACO.git external/upstream-agents
+git -C external/upstream-agents checkout 31c02ce013838d89ef2a6d211acfdf639ecb178d
 ```
 
-### 2. 🧪 Run the mapper search
+### 2. 🧪 Check the evaluator
 
 ```bash
-MACO_AGENT_DIR="$PWD/external/MACO/agent" make -C chia-maco test PYTHON=../.venv/bin/python
+RACO_AGENT_DIR="$PWD/external/upstream-agents/agent" make -C chia-maco test PYTHON=../.venv/bin/python
 make -C chia-maco mapper-smoke PYTHON=../.venv/bin/python
-make -C chia-maco codesign-search PYTHON=../.venv/bin/python
 ```
 
-`mapper-smoke` maps the five kernel views. `codesign-search` runs 36 CHIA mapping evaluations and writes `chia-maco/results/codesign_search.json`; the [reported archive](chia-maco/results/codesign_search_certified.json) is unchanged.
+`mapper-smoke` maps the five kernel views. The separate `codesign-search` command in the package is an earlier array/unroll study, not the paper's budget-matched comparison.
 
-To regenerate only the summary from archived mappings, without running the mapper:
+### 3. 🤖 Start the RACO workflow
+
+Start an OpenAI-compatible model service that permits at least 4096 completion tokens. The recorded runs used locally served Qwen3.8-27B with NF4 double quantization; model weights and credentials are not included. Then launch the browser workflow:
 
 ```bash
-.venv/bin/chia-maco summarize-search chia-maco/results/codesign_search_certified.json \
-  --output chia-maco/results/my_summary.json
+export RACO_AGENT_DIR="$PWD/external/upstream-agents/agent"
+export RACO_LLM_BASE_URL=http://127.0.0.1:18161/v1
+export RACO_LLM_MODEL=your-served-model-id
+.venv/bin/python -m pip install -r gui/requirements.txt
+(cd gui/frontend && npm ci && npm run build)
+bash gui/start.sh
 ```
 
-### 3. 🤖 Run the MACO agents
-
-Start an OpenAI-compatible model service that permits at least 4096 completion tokens. The reported run used locally served Qwen3.8-27B with NF4 double quantization; model weights and credentials are not included.
-
-Point to your model service and run the loop:
-
-```bash
-export MACO_AGENT_DIR="$PWD/external/MACO/agent"
-export MACO_LLM_BASE_URL=http://127.0.0.1:18161/v1
-export MACO_LLM_MODEL=your-served-model-id
-.venv/bin/chia-maco agent-search --output-dir chia-maco/results/my_agent_run \
-  --rounds 3 --mapping-budget 30 --seed 37
-```
-
-Use a new output directory. The [reported seed-37 run](chia-maco/results/agent_qwen38_27b_seed37_v3/) contains its model trace and mapper logs; a new model or sampling run may propose different designs.
+Open `http://127.0.0.1:8765/?mode=live`, select Multi-agent, Hardware only, or Single agent, and run one exploration at a time. Each one-round run has a budget of 10 unique kernel-mapper evaluations. The standalone `agent-search` CLI without a workload uses the earlier study; it does **not** reproduce the current comparison. For exact paper numbers without rerunning the model, use `make -C chia-maco artifact-check` and inspect the saved results.
 
 ## 💻 Browser demo
 
-The GUI opens directly on the frozen paper experiment without starting a model or mapper. To view the archive, you can skip Full reproduction and run these commands from the repository root:
+The GUI opens on an earlier archived experiment without starting a model or mapper. To view it, you can skip the live setup and run these commands from the repository root:
 
 ```bash
 python3.10 -m venv .venv
@@ -160,21 +157,15 @@ python3.10 -m venv .venv
 bash gui/start.sh
 ```
 
-Open `http://127.0.0.1:8765/`, or forward port 8765 over SSH. Set `A3_GUI_PORT` before `bash gui/start.sh` to use another local port. The default **Paper result** tab shows the seed-37 agent trace, exhaustive reference, per-kernel mapping evidence and scope limits. Follow the [three-minute walkthrough](chia-maco/DEMO.txt). **Live exploration** (`/?mode=live`) runs architecture search, generates and verifies RTL, then synthesizes the selected design. Layout remains an explicit optional action after that flow completes.
+Open `http://127.0.0.1:8765/`, or forward port 8765 over SSH. Set `A3_GUI_PORT` before `bash gui/start.sh` to use another local port. **Earlier demo** shows the older search, not the paper's 38.73M result; the [paper run records](chia-maco/results/matched_budget_10/) contain that result and both baselines. **Live exploration** (`/?mode=live`) runs architecture search, generates and verifies RTL, then synthesizes the selected design. Layout remains an explicit optional action after that flow completes.
 
-![Live MACO flow after RTL generation and Yosys synthesis](assets/live-flow-synthesis-passed.png)
+![Live RACO flow after RTL generation and Yosys synthesis](assets/live-flow-synthesis-passed.png)
 
 *Live one-round run: five kernel mappings, generated SystemVerilog, completed synthesis, and area/energy estimates. This is a live demonstration, not the archived paper result; layout was not run.*
 
 The server binds to loopback and has no authentication; do not expose it publicly.
 
-For architecture-aware live search, RTL generation and verification, synthesis, or optional layout, install the CGRA-Flow image:
-
-```bash
-docker pull cgra/neura-flow:20260114
-```
-
-These hardware paths are experimental and are not required to reproduce the paper's archived results.
+Live RTL generation, verification, synthesis, and optional layout use the CGRA-Flow image installed above. These hardware paths are experimental and are not required to check the paper's saved mapping results.
 
 ## 🔬 What the evidence supports
 
@@ -185,4 +176,4 @@ These hardware paths are experimental and are not required to reproduce the pape
 
 ## 📄 License and credit
 
-Zesong Jiang, Cheng Tan, and Jeff Zhang · Arizona State University. New integration code is BSD-3-Clause licensed. Original MACO agents are fetched from a pinned [upstream checkout](https://github.com/coredac/MACO); other dependencies retain their own terms. See the [third-party notices](gui/THIRD_PARTY.md).
+Zesong Jiang, Cheng Tan, and Jeff Zhang · Arizona State University. New integration code is BSD-3-Clause licensed. The agent modules are fetched from a pinned [upstream checkout](https://github.com/coredac/MACO); other dependencies retain their own terms. See the [third-party notices](gui/THIRD_PARTY.md).

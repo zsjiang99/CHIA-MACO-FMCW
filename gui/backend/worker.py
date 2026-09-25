@@ -95,7 +95,7 @@ def run(kind: str, output: Path) -> None:
 
     started = time.monotonic()
     if kind != "maco":
-        raise ValueError(f"Unsupported MACO job: {kind}")
+        raise ValueError(f"Unsupported RACO job: {kind}")
     resources = {"cgra_mapper": 1}
     ray.init(include_dashboard=False, num_cpus=2, resources=resources)
     try:

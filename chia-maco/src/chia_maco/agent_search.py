@@ -1,7 +1,7 @@
-"""MACO's four original LLM agents driving bounded CHIA mapper evaluations.
+"""RACO's four LLM agents driving bounded CHIA mapper evaluations.
 
 The original prompts and classes are reused, with an explicit evaluator contract
-and injectable transport. ECE is adapted from MACO's decaying-epsilon driver.
+and injectable transport. ECE uses a decaying-epsilon driver.
 DC/PPA scoring and confidence-based tool skipping are deliberately NOT claimed.
 """
 from __future__ import annotations
@@ -55,8 +55,8 @@ The top-level "reason" field, if present, MUST be at most 10 words.
 Do NOT explain calculations or repeat measured history in the output.
 Return compact JSON only, no markdown or text outside JSON. Keep output under 350 tokens.
 """
-MACO_CONTRACT = """
-FMCW MACO DESIGN CONTRACT (overrides generic examples above):
+RACO_CONTRACT = """
+FMCW RACO DESIGN CONTRACT (overrides generic examples above):
 Return complete designs with exactly these keys:
 tile_size, FUs, config_mem, data_spm_kb, memory_banks, unroll, vectorize, reasoning.
 tile_size is square from 2x2 through 8x8 and must respect workload.max_pes.
@@ -134,7 +134,7 @@ def validate_plan(plan: dict, allow_archived_cfar: bool = False,
     if maco_fields.intersection(plan):
         required = {"tile_size", *maco_fields, "memory_banks", "reasoning"}
         if set(plan) != required:
-            raise ValueError("MACO design must contain the complete architecture/compiler schema")
+            raise ValueError("RACO design must contain the complete architecture/compiler schema")
         try:
             rows, columns = map(int, plan["tile_size"].split("x"))
         except (AttributeError, ValueError):
@@ -258,9 +258,9 @@ class LocalModel:
     def __init__(self, config: AgentConfig, emit: Callable):
         from openai import OpenAI
         self.config, self.emit = config, emit
-        self.model = os.environ.get("MACO_LLM_MODEL", "harp-raw-base")
-        self.base_url = os.environ.get("MACO_LLM_BASE_URL", "http://127.0.0.1:18161/v1")
-        self.client = OpenAI(base_url=self.base_url, api_key=os.environ.get("MACO_LLM_API_KEY", "local"),
+        self.model = os.environ.get("RACO_LLM_MODEL", os.environ.get("MACO_LLM_MODEL", "harp-raw-base"))
+        self.base_url = os.environ.get("RACO_LLM_BASE_URL", os.environ.get("MACO_LLM_BASE_URL", "http://127.0.0.1:18161/v1"))
+        self.client = OpenAI(base_url=self.base_url, api_key=os.environ.get("RACO_LLM_API_KEY", os.environ.get("MACO_LLM_API_KEY", "local")),
                              timeout=config.timeout, max_retries=0)
         self.calls = []
         self.identity = {"served_model": self.model, "verification": "not available"}
@@ -282,7 +282,7 @@ class LocalModel:
         try:
             response = self.client.chat.completions.create(
                 model=self.model,
-                messages=[{"role": "system", "content": "You are a MACO CGRA co-design agent. Follow the final FMCW evaluator contract exactly."},
+                messages=[{"role": "system", "content": "You are a RACO CGRA co-design agent. Follow the final FMCW evaluator contract exactly."},
                           {"role": "user", "content": prompt}],
                 temperature=temperature, max_tokens=self.config.max_tokens, seed=self.config.seed)
         except Exception as exc:
@@ -318,11 +318,12 @@ class OriginalAgents:
 
     def __init__(self, model_call, config, context, contract=CONTRACT):
         self.agents, self.hashes = {}, {}
-        root = Path(os.environ["MACO_AGENT_DIR"]) if os.environ.get("MACO_AGENT_DIR") else Path(__file__).parent / "vendor/maco"
+        agent_dir = os.environ.get("RACO_AGENT_DIR") or os.environ.get("MACO_AGENT_DIR")
+        root = Path(agent_dir) if agent_dir else Path(__file__).parent / "vendor/maco"
         for module_name, role in self.ROLES:
             path = root / f"{module_name}.py"
             if not path.is_file():
-                raise FileNotFoundError(f"MACO agent module not found: {path}; set MACO_AGENT_DIR")
+                raise FileNotFoundError(f"RACO agent module not found: {path}; set RACO_AGENT_DIR")
             self.hashes[path.name] = hashlib.sha256(path.read_bytes()).hexdigest()
             spec = importlib.util.spec_from_file_location(f"maco_reused_{module_name}_{id(self)}", path)
             module = importlib.util.module_from_spec(spec)
@@ -419,7 +420,7 @@ def run_agent_search(output: Path, config: AgentConfig | None = None,
     source = (Path(__file__).resolve().parents[2] / "workload/fmcw_mapping.c").read_text()
     def context():
         return "Current run context:\n" + json.dumps(current, separators=(",", ":"))
-    contract = MACO_CONTRACT if workload else CONTRACT
+    contract = RACO_CONTRACT if workload else CONTRACT
     if method == "hardware_only":
         contract += HARDWARE_ONLY_CONTRACT
     elif method == "single_agent":
@@ -503,7 +504,7 @@ def run_agent_search(output: Path, config: AgentConfig | None = None,
                 try:
                     key = plan_key(plan)
                     if workload and ("FUs" not in plan or int(plan["tile_size"].split("x")[0]) ** 2 > workload.max_pes):
-                        raise ValueError("Candidate lacks the MACO design schema or exceeds the workload PE limit")
+                        raise ValueError("Candidate lacks the RACO design schema or exceeds the workload PE limit")
                     if key not in seen:
                         valid.append(plan)
                         seen.add(key)

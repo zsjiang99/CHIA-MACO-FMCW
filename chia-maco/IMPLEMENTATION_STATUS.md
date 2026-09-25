@@ -1,4 +1,4 @@
-# MACO artifact status
+# RACO artifact status
 
 ## Reported CHIA–mapper experiment
 
@@ -15,7 +15,7 @@ scenes; all four failures are retained in `results/validation_v1/`.
 
 ## Experimental hardware extension
 
-The live GUI accepts the broader MACO schema (per-tile FUs, configuration
+The live GUI accepts the broader RACO design space (per-tile FUs, configuration
 memory, SPM organization, compiler unroll and vectorization), then runs architecture search, RTL generation and component
 verification, then synthesis. CGRA-core layout is a separate optional action
 enabled only after those stages pass. These extensions are separate from the

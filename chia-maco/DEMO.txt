@@ -1,11 +1,11 @@
-MACO × CHIA / FMCW: a three-minute artifact walkthrough
+RACO: a three-minute artifact walkthrough
 
 Setup: follow the repository README to install the evaluator and GUI dependencies,
 build the frontend, and start `bash gui/start.sh`. Open http://127.0.0.1:8765/.
 The landing page is the frozen seed-37 paper experiment. Reading it does not
 start a model, mapper, synthesis, or physical-design job.
 
-1. Read "MACO Agent Decisions". In round 1, the Fine Judge preferred a 6×6
+1. Read "RACO Agent Decisions". In round 1, the final reviewer preferred a 6×6
    array, but actual mapper-derived frame costs favored the other shortlisted
    4×4 design (40.17 million estimated cycles). Round 2 repeated its plans:
    the cumulative count stayed at 10 unique mappings. The new 4×4 compiler

@@ -1,4 +1,4 @@
-"""Check reported paper numbers against the archived results."""
+"""Check the current manuscript's budget-matched mapping records."""
 
 from __future__ import annotations
 
@@ -6,61 +6,57 @@ import json
 from pathlib import Path
 
 
-RESULTS = Path(__file__).resolve().parents[1] / "results"
-
-
-def read(path: str) -> dict:
-    return json.loads((RESULTS / path).read_text(encoding="utf-8"))
-
-
-reference = read("codesign_search_certified.json")
-agent = read("agent_qwen38_27b_seed37_v3/result.json")
-validation = read("validation_v1/validation.json")
-
-feasible = [item for item in reference["architectures"] if item["all_kernels_feasible"]]
-reference_winner = min(
-    feasible,
-    key=lambda item: item["frame_estimate"]["estimated_cycles"],
-)
-reference_best = reference_winner["frame_estimate"]["estimated_cycles"]
-agent_plan = agent["best_evaluated_plan"]
-agent_frame = agent_plan["frame_estimate"]
-rounds = agent["rounds"]
-cfar_share = 100 * (
-    agent_frame["breakdown"]["fmcw_cfar_2d"]["estimated_cycles"]
-    / agent_frame["estimated_cycles"]
-)
-passed_scenes = sum(case["status"] == "passed" for case in validation["cases"])
-
-checks = {
-    "reference mappings": (reference["successful_mappings"], 36),
-    "reference raw records": (len(reference["raw_results"]), 36),
-    "reference best cycles": (reference_best, 39_154_344),
-    "reference best array": (
-        f"{reference_winner['rows']}x{reference_winner['columns']}",
-        "4x4",
-    ),
-    "reference wall time (s)": (round(reference["elapsed_seconds"], 2), 38.71),
-    "agent mappings": (agent["successful_mappings"], 18),
-    "agent evaluations": (agent["evaluations"], 18),
-    "agent model calls": (agent["llm_calls"], 12),
-    "agent best cycles": (agent_frame["estimated_cycles"], 39_154_344),
-    "agent best array": (agent_plan["design"]["tile_size"], "4x4"),
-    "agent wall time (s)": (round(agent["elapsed_seconds"], 2), 210.43),
-    "CFAR share (%)": (round(cfar_share, 1), 89.7),
-    "strict CFAR scenes": (f"{passed_scenes}/{len(validation['cases'])}", "2/6"),
-    "agent rounds": (len(rounds), 3),
-    "initial judge choice": (rounds[0]["llm_choice"]["tile_size"], "6x6"),
-    "first measured winner": (rounds[0]["measured_winner"]["design"]["tile_size"], "4x4"),
-    "round one best estimate": (rounds[0]["measured_winner"]["frame_estimate"]["estimated_cycles"], 40_170_152),
-    "round two cached mappings": (rounds[1]["measured_winner"]["evaluations_so_far"], 10),
-    "round three best estimate": (rounds[2]["measured_winner"]["frame_estimate"]["estimated_cycles"], 39_154_344),
+RESULTS = Path(__file__).resolve().parents[1] / "results" / "matched_budget_10"
+EXPECTED = {
+    "full_maco": ("full_maco", 10, 38_728_360),
+    "hardware_only": ("hardware_only", 10, 42_136_232),
+    "single_agent": ("single_agent", 9, 41_448_104),
 }
-for label, (actual, expected) in checks.items():
-    if actual != expected:
-        raise SystemExit(f"{label}: expected {expected}, found {actual}")
 
-print("Archived paper results: PASS (no mapper or model run)")
-print(f"Reference: 36 mappings, {reference_best:,} estimated cycles/frame")
-print(f"MACO: 18 mappings, 12 model calls, {agent_frame['estimated_cycles']:,} estimated cycles/frame")
-print(f"CFAR: {cfar_share:.1f}% of modeled cycles; strict native masks: {passed_scenes}/6 scenes")
+
+def check(label: str, actual: object, expected: object) -> None:
+    if actual != expected:
+        raise SystemExit(f"{label}: expected {expected!r}, found {actual!r}")
+
+
+for folder, (method, successful, best_cycles) in EXPECTED.items():
+    root = RESULTS / folder
+    result = json.loads((root / "result.json").read_text(encoding="utf-8"))
+    trace = json.loads((root / "agent_trace.json").read_text(encoding="utf-8"))
+    request = json.loads((root / "request.json").read_text(encoding="utf-8"))
+    raw = result["raw_results"]
+    unique = {json.dumps(item["candidate"], sort_keys=True) for item in raw}
+    measured = result["best_evaluated_plan"]["frame_estimate"]
+
+    check(f"{folder} method", result["method"], method)
+    check(f"{folder} budget", result["config"]["mapping_budget"], 10)
+    check(f"{folder} seed", result["config"]["seed"], 37)
+    check(f"{folder} rounds", len(result["rounds"]), 1)
+    check(f"{folder} evaluations", result["evaluations"], 10)
+    check(f"{folder} raw mappings", len(raw), 10)
+    check(f"{folder} unique mappings", len(unique), 10)
+    check(f"{folder} successful mappings", result["successful_mappings"], successful)
+    check(f"{folder} best estimate", measured["estimated_cycles"], best_cycles)
+    check(
+        f"{folder} breakdown sum",
+        sum(item["estimated_cycles"] for item in measured["breakdown"].values()),
+        best_cycles,
+    )
+    check(f"{folder} mapper logs", len(list((root / "mapper_logs").glob("mapping_*.log"))), 10)
+    check(f"{folder} trace method", trace["method"], method)
+    check(f"{folder} request present", bool(request), True)
+
+full = json.loads((RESULTS / "full_maco" / "result.json").read_text(encoding="utf-8"))
+check("RACO candidate costs", [item["frame_estimate"]["estimated_cycles"] for item in full["history"]],
+      [38_728_360, 40_202_920])
+
+second = json.loads((RESULTS / "two_round_trace" / "result.json").read_text(encoding="utf-8"))
+check("separate trace rounds", len(second["rounds"]), 2)
+check("separate trace evaluations", second["evaluations"], 20)
+check("separate trace successful mappings", second["successful_mappings"], 17)
+check("separate trace incumbent", second["best_evaluated_plan"]["frame_estimate"]["estimated_cycles"], 38_728_360)
+
+print("RACO matched-budget records: PASS (no mapper or model run)")
+for folder, (_, successful, best_cycles) in EXPECTED.items():
+    print(f"{folder}: {successful}/10 mappings, {best_cycles:,} estimated cycles/frame")
+print("Separate two-round trace: 17/20 mappings; incumbent 38,728,360 cycles/frame")

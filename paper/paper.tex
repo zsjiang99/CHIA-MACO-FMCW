@@ -5,221 +5,385 @@
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta,positioning}
 \usepackage[hidelinks]{hyperref}
-\title{CHIA-MACO-FMCW: Reproducible Compiler--Architecture Exploration for a Radar Pipeline}
+\usepackage{caption}
+\captionsetup[table]{
+    position=bottom,
+    justification=raggedright,
+    singlelinecheck=false,
+    labelsep=colon,
+    labelfont=bf,
+    textfont=normalfont,
+    name=TABLE
+}
+\title{RACO: Agentic CGRA Hardware/Software Co-Design for FMCW Radar with CHIA}
 \author{\IEEEauthorblockN{Zesong Jiang, Cheng Tan, Jeff Zhang}
 \IEEEauthorblockA{Arizona State University}}
 \begin{document}
+
 \maketitle
 \begin{abstract}
-We present a CHIA workflow for compiler--architecture exploration of a frequency-modulated continuous-wave (FMCW) radar pipeline on a coarse-grained reconfigurable array (CGRA). Four original MACO agent roles, driven by Qwen3.8-27B, propose and rank bounded array/unroll configurations using real mapper feedback. In one three-round run, 12 model calls and 18 unique mappings find the same 39.15-million-cycle estimate as a 36-mapping exhaustive reference, but require more wall time. Tool feedback reverses the agent's initial preference for a larger array; CA-CFAR accounts for 89.7\% of the final modeled cycles. The artifact includes the C workload, agent/model traces, mapper logs, and a local GUI. Cycle results are analytical estimates from mapper initiation intervals; end-to-end CGRA correctness and physical performance remain unverified.
+Frequency-modulated continuous-wave (FMCW) radar processing comprises windowing, fast Fourier transforms, power accumulation, and neighborhood-based detection, which exhibit distinct computational and data-movement characteristics. Coarse-grained reconfigurable arrays (CGRAs) can accommodate this heterogeneity by configuring their computational resources for individual pipeline stages. Identifying an effective end-to-end design, however, requires joint exploration of architectural resources and compiler transformations within a large, interdependent design space. We present RACO, an agentic framework for FMCW acceleration on CGRAs that organizes design-space exploration into four stages: HW/SW Co-design, Error Correction, Best-Design Selection, and Evaluation \& Feedback. Within this loop, CHIA executes the Evaluation \& Feedback stage: it compiles and maps five FMCW kernel views with an LLVM-based CGRA toolchain, converts the mapper-reported initiation intervals into an estimated cycle count for the complete frame, and records design validity and aggregate cost for later co-design rounds. In a recorded FMCW case study with a common budget of 10 unique kernel-mapper evaluations, RACO achieved an estimated steady-state cost of 38.73 million CGRA cycles per frame, compared with 42.14 million for the HW-only ablation and 41.45 million for the single-agent one-shot baseline.
+
+
 \end{abstract}
 
 \section{Introduction}
-FMCW radar processing combines stages with different computational structures. Windowing performs regular elementwise arithmetic, FFTs perform complex butterflies, transposition changes data layout, power accumulation reduces across receivers, and two-dimensional cell-averaging constant-false-alarm-rate (CA-CFAR) detection aggregates neighborhoods of a range--Doppler map. Range--Doppler detection motivates joint consideration of these stages~\cite{cfar}. A compiler setting that benefits one kernel may offer little benefit for the complete frame.
+Frequency-modulated continuous-wave (FMCW) radar estimates target range and velocity by processing sequences of sampled chirps. A typical range--Doppler pipeline performs windowing, range and Doppler FFTs, data transposition, power accumulation, and cell-averaging constant-false-alarm-rate (CA-CFAR) detection. These stages exhibit distinct computational and data-movement patterns, ranging from elementwise arithmetic and FFT butterflies to data reordering, channel reduction, and neighborhood scans. Coarse-grained reconfigurable arrays (CGRAs) can accommodate this diversity by configuring their processing elements and interconnects for the computational and dataflow requirements of each stage.
 
-CGRA co-design couples the program representation and its mapping to the processing array. MACO studies this coupling through a multi-agent design workflow~\cite{maco}. This hackathon artifact isolates a smaller, reproducible question: what compiler/array tradeoffs can a CHIA workflow expose for one radar workload using a real LLVM-based mapper? CHIA supplies a composable execution interface for hardware/software research workflows~\cite{chia}; CGRA-Mapper supplies loop extraction and mapping for parameterized arrays~\cite{opencgra}.
+% Despite this flexibility, identifying an effective CGRA configuration for the complete FMCW pipeline remains challenging. The architecture space spans array dimensions, functional-unit allocation, memory organization, and configuration capacity, while the compiler space includes per-kernel transformations such as loop unrolling and vectorization. These decisions are tightly coupled: compiler transformations alter the parallelism and dataflow graph presented to the mapper, whereas architectural resources constrain how efficiently the resulting graph can be placed and scheduled. Moreover, because one architecture must support the entire pipeline, a resource allocation that benefits one kernel may provide limited benefit to another. Effective end-to-end design therefore requires joint HW/SW exploration guided by whole-pipeline evaluation.
+Despite this flexibility, finding an effective CGRA configuration for the complete FMCW pipeline remains challenging~\cite{tan2022asap,tan2021opencgra}. As is shown in Fig.~\ref{fig:challenges}, the challenge arises from three factors. \textbf{First}, selecting a shared architecture and compatible per-kernel compiler settings requires expertise in both hardware and compiler design. \textbf{Second}, the joint design space spans array dimensions, functional-unit and memory allocation, configuration capacity, loop unrolling, and vectorization. These choices are tightly coupled: compiler transformations reshape the parallelism and dataflow graph presented to the mapper, while architectural resources determine whether the graph can be mapped and at what initiation interval. Because all five kernels share one architecture, resources that benefit one stage may provide little improvement in whole-frame cost. \textbf{Third}, each candidate must be compiled and mapped across the five kernel views, while failed mappings consume the evaluation budget without yielding a viable design. Manual tuning and exhaustive evaluation therefore scale poorly, motivating a search process that uses whole-pipeline feedback to guide subsequent exploration.
 
-Our contributions are an executable FMCW C workload, mapping views with explicit loop selection, a MACO-agent/CHIA feedback loop, and a deterministic 36-evaluation reference search. Both policies use the same evaluator and frame-cost model. The agent experiment is a bounded adaptation, not a reproduction of MACO's full PPA optimization.
 
-\section{Workload and CHIA Workflow}
-\subsection{Executable workload}
-The nominal input contains 256 samples per chirp, 128 chirps per frame, and four receive channels. The native reference uses single-precision complex values and executes Hann windowing, radix-2 range FFTs, transposition, Doppler FFTs, power accumulation, and CA-CFAR. Beamforming and tracking are outside its scope.
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=1.0\linewidth]{CGRA_design_complexity.png}
+    \vspace{-15pt}
+    \caption{Conventional CGRA HW/SW co-design for FMCW radar~\cite{tan2021opencgra} and its challenges.}
+    \vspace{-20pt}\label{fig:challenges}
+\end{figure}
 
-A native smoke test injects a noiseless target at range bin 17 and Doppler bin 9. The compiled program recovers that peak and emits a power checksum of approximately $1.60432109\times10^9$. This is a functional test of the reference pipeline. The scene does not establish detection probability, false-alarm performance, or robustness to noise. In particular, a recovered peak should not be interpreted as validation of every CFAR detection in a noiseless scene.
+To address this challenge, we present RACO, an open-source multi-agent framework for CGRA HW/SW co-design of FMCW radar pipelines. Rather than treating design-space exploration as a monolithic process, the framework decomposes the workflow into four stages: \textit{HW/SW Co-design}, \textit{Design Error Correction}, \textit{Best Design Selection}, and \textit{Evaluation \& Feedback}. These stages respectively generate complete HW/SW designs, correct invalid configurations, identify high-quality candidates, and evaluate their mapping outcomes. Each design combines one CGRA architecture shared across the pipeline with compiler transformations specified for the five FMCW mapping views. CHIA implements the Evaluation \& Feedback stage by compiling and mapping these views with an LLVM-based CGRA toolchain, estimating complete-frame cost from mapper-reported initiation intervals, and recording design validity and aggregate cost for the next design round. The resulting closed loop grounds subsequent design decisions in observed mapping behavior.
 
-A subsequent independent NumPy comparison covers six deterministic scenes. Range FFT, Doppler FFT and power outputs all satisfy a predefined normalized maximum-error bound of $2\times10^{-5}$. However, exact full-mask CFAR equality passes only the noisy-target and zero-input scenes. The four noiseless scenes differ at near-zero-power bins; the single-target case has 1,343 differing decisions. These failures are retained rather than relaxing the pass criterion. This validates neither mapped kernels nor candidate hardware.
 
-\subsection{Candidate and evaluator contracts}
-A candidate specifies the kernel, array dimensions, source unroll factor, and fixed mapping parameters. The evaluator compiles a mapping view with LLVM 12, extracts its dataflow graph (DFG), and invokes CGRA-Mapper in a Docker container. Parsed results include mapping success, initiation interval (II), resource and recurrence lower bounds, DFG node/edge counts, and reported functional-unit and crossbar utilization.
+We evaluate RACO against a hardware-only ablation and a single-agent one-shot baseline under the same budget of 10 unique mapper evaluations. RACO attains an estimated steady-state frame cost of 38.73 million CGRA cycles, 8.1\% lower than hardware-only (42.14 million) and 6.6\% lower than single-agent one-shot (41.45 million). We contribute an executable FMCW co-design task spanning five kernel views, a closed feedback loop that links agent decisions to CHIA~\cite{cui2026chia} mapper evaluations through a frame-level mapping objective, and an open-source artifact containing the complete workflow, decision traces, and raw mapper logs.
+
+
+\section{Background}
+In this section, we discuss the background of FMCW Radar processing and CGRA HW/SW design.
+
+\subsection{FMCW Radar Processing}
+An FMCW radar transmits frequency-swept chirps; after mixing the received echoes with the transmitted waveform, beat frequency encodes target range and phase progression across chirps encodes radial velocity. A range--Doppler pipeline applies windowing and a range FFT within each chirp, transposes the intermediate data, and performs a Doppler FFT across chirps~\cite{li2021signal}. Power accumulation combines the receiver channels, and CA-CFAR detects targets by comparing each range--Doppler cell with its local background~\cite{rohling1983radar}. These stages span elementwise arithmetic, butterfly computation, data reordering, channel reduction, and neighborhood aggregation. We represent the pipeline with five mapping views—windowing, FFT, transposition, power accumulation, and CA-CFAR—with the FFT view shared by the range and Doppler transforms.
+
+\subsection{CGRA HW/SW Co-Design}
+As shown in Fig.~\ref{fig:wide_background}, CGRA HW/SW design spans compiler (software) and architecture (hardware) spaces. A CGRA fabric consists of a two-dimensional grid of tiles integrating functional units, local memory, and programmable interconnects. Architectural choices determine the array dimensions and resource allocation, while compiler choices, such as loop-unrolling and vectorization factors, affect how efficiently each kernel maps onto the fabric. Effective CGRA design therefore requires joint HW/SW optimization.
+
+The strong interdependence among architectural parameters, compiler choices, and performance objectives makes identifying an effective CGRA design both time- and effort-intensive~\cite{weng2019daegen,weng2020dsagen}. This challenge is particularly pronounced for FMCW processing, where five mapping views with distinct computational and data-movement patterns must share a single CGRA architecture. RACO addresses this challenge through an agentic HW/SW co-design loop guided by compiler and mapper feedback.
+
+\section{RACO Framework}
+This section introduces the RACO, a LLM-based multi-agent system tailored for CGRA HW/SW co-design.
+\subsection{Workflow Overview}
+
+% As shown in Fig.~\ref{fig:workflow},
+
+RACO organizes CGRA HW/SW exploration as a four-stage closed loop comprising \textit{CGRA Design}, \textit{Validation \& Correction}, \textit{Multi-Judge Selection}, and \textit{Performance Evaluation \& Feedback}. The first three stages generate, repair, and select complete HW/SW candidates, while the fourth stage uses CHIA to evaluate their mapping behavior and return tool-derived feedback. Repeating this process enables subsequent design decisions to respond to observed mapper outcomes.
+
+\subsection{CGRA Design}
+
+A domain-aware \textbf{CGRA Co-designer} generates candidate designs spanning both architectural and compiler parameters for FMCW acceleration. The agent is provided with CGRA HW/SW co-design principles, FMCW workload characteristics, the legal design space, and the optimization objective, enabling it to reason about the interactions between architectural resources and compiler transformations. Each proposal specifies a complete HW/SW configuration for subsequent validation and evaluation.
+
+Across design iterations, the Co-designer receives prior candidate configurations, validity status, and aggregate frame costs from CHIA evaluation. This feedback lets the agent reconsider failed designs or poor pipeline-level estimates. Candidate generation can therefore respond to observed tool outcomes rather than relying solely on the LLM's initial predictions.
+
+\subsection{Validation \& Correction}
+
+Candidate configurations generated by the Co-designer may contain missing fields, illegal parameter values, or incompatible HW/SW settings. RACO applies a rule-based validator to ensure that each candidate specifies a complete CGRA architecture, provides legal compiler settings for every FMCW kernel, and can be executed by the CHIA evaluation workflow.
+
+If a candidate fails validation, the \textbf{CGRA Fixer} receives the configuration and the corresponding error report, then revises the offending fields while preserving the remaining design choices. This repair loop continues until the candidate passes validation or the repair budget is exhausted. Only valid configurations proceed to selection, preventing malformed or infeasible candidates from consuming mapper evaluations.
 
 \begin{figure}[t]
 \centering
-\begin{tikzpicture}[node distance=4mm and 5mm,>=Latex,
- box/.style={draw,rounded corners,align=center,font=\scriptsize,
- text width=21mm,minimum height=8mm}]
-\node[box] (enum) {MACO agents\\array + unroll};
-\node[box,right=of enum] (compile) {Compile\\LLVM 12};
-\node[box,right=of compile] (map) {Extract DFG\\and map};
-\node[box,below=of map] (parse) {Parse II\\and bounds};
-\node[box,left=of parse] (model) {Estimate\\frame cost};
-\node[box,left=of model] (archive) {Measured\\feedback};
-\draw[->] (enum)--(compile);
-\draw[->] (compile)--(map);
-\draw[->] (map)--(parse);
-\draw[->] (parse)--(model);
-\draw[->] (model)--(archive);
-\draw[->] (archive)--(enum);
-\end{tikzpicture}
-\caption{Agent loop. Four MACO roles propose, repair, screen and predict; CHIA executes real mappings before measurements feed the next round. Enumeration replaces the agent policy for the reference search.}
-\label{fig:loop}
+\includegraphics[width=0.9\linewidth]{CGRA_arch_4.png}
+\vspace{-10pt}
+\caption{CGRA compiler and architecture design spaces.}
+\label{fig:wide_background}
+\vspace{-20pt}
 \end{figure}
 
-Figure~\ref{fig:loop} summarizes the workflow. CHIA schedules the evaluator through a declared mapper resource. Each invocation has a unique container name and a 60-second timeout. A failed or timed-out evaluation returns a structured failure rather than a favorable cost. These interfaces allow the outer search policy to change without changing the tool or result contract.
-The reusable CHIA node accepts a validated kernel/array/unroll candidate and returns a structured mapping record. A separate frame-cost reducer combines five such records. This boundary lets enumeration and the MACO policy share exactly the same compiler, mapper, failure handling, and aggregation without passing reference-search results to the agents.
+\subsection{Multi-Judge Selection}
 
-\subsection{MACO agent policy}
-The original MACO Co-designer, Fixer, Coarse Judge and Fine Judge classes share a local Qwen3.8-27B raw model, served with NF4 double quantization. An adapter supplies the transport and bounded schema; no HARP-trained policy is used. Each of three rounds proposes two full-frame plans, repairs invalid settings, ranks the shortlist and predicts a winner. Every shortlisted plan that fits the 30-mapping budget is measured through CHIA. Only this run's measurements are cached and fed back; the exhaustive archive is never provided to the model.
+RACO ranks validated candidates through a two-level hierarchical selection process. The \textbf{Coarse Judge} screens the candidate set using the proposed HW/SW configurations and the evaluation history accumulated across previous rounds, retaining designs likely to improve the pipeline-level objective. The \textbf{Fine Judge} then performs a detailed comparison of the shortlisted candidates, assessing the interaction between the shared CGRA resources and the kernel-specific compiler transformations. It ranks the resulting designs and prioritizes candidates for evaluation within the available CHIA mapper budget.
 
-Exploration hints follow a decaying-epsilon schedule. Prediction confidence is updated from measured cycle regret but never substitutes for tool validation. This deliberately omits MACO's confidence-based tool skipping and synthesis/PPA evaluator. Model output is limited to 384 tokens per call; malformed output fails visibly rather than triggering a random fallback. Full prompts, responses, usage, source hashes and mapper logs are retained.
+The two judges constitute the search policy rather than the performance evaluator. Their predictions determine which candidates receive tool evaluation, whereas CHIA measurements establish mapping feasibility and final design quality. This separation focuses the limited evaluation budget on promising regions of the design space while preserving tool-derived results as the basis for design selection.
 
-\subsection{Correct loop selection}
-CGRA-Mapper targets a selected loop in the LLVM representation. An early runtime-unroll experiment appeared favorable, but log inspection showed that the mapper selected a scalar cleanup loop instead of the intended unrolled body. Those results were excluded from the reported search.
 
-The final \texttt{fmcw\_mapping.c} exposes one fixed-shape top-level loop per stage, with explicit source-level unrolling. This makes the mapping target unambiguous. The complete native implementation remains the functional reference. A mapper success establishes schedulability of the extracted DFG; it does not by itself prove numerical equivalence between a mapping view and every dynamic invocation in the native program.
+\subsection{Performance Evaluation \& Feedback}
 
-DFG statistics support the audit: the selected $4\times4$ window view has 59 nodes at unroll four, versus 17 in its scalar view. Node count helps detect suspicious extraction but is not a semantic proof.
+For each candidate \(d\) selected for evaluation, CHIA invokes an LLVM-based CGRA toolchain~\cite{tan2021opencgra} to compile and map the five FMCW kernels using the proposed shared architecture and kernel-specific compiler settings \(u_{d,k}\). The toolchain extracts a dataflow graph for each kernel and reports its mapping status, initiation interval \(\mathrm{II}_{d,k}\), and diagnostic information. A mapping failure in any kernel renders the complete candidate infeasible.
 
-\section{Search Space and Cost Model}
-\subsection{Bounded compiler--array search}
-We evaluate $2\times2$, $4\times4$, and $6\times6$ square arrays under the same mapper template. Legal unroll factors are $\{1,2,4\}$ for windowing, transpose, and power; $\{1,2\}$ for FFT; and $\{1\}$ for CFAR. The resulting space contains 12 kernel configurations per array and 36 mapper evaluations.
+RACO compares feasible candidates using a frame-level objective that accounts for the different workloads of the FMCW kernels. Let \(G_k(u_{d,k})\) denote the number of scheduled loop groups required by kernel \(k\) per frame under compiler setting \(u_{d,k}\). The estimated frame-cycle cost of candidate \(d\) is
 
-CFAR unrolling is excluded from the final bounded space after exploratory larger-DFG evaluations exceeded the time budget. Thus, the reported mapping success rate applies to the retained legal space. Architecture exploration varies array dimensions; it does not vary functional-unit mix, memory banking, or interconnect topology.
+$$
+\widehat{C}_{\mathrm{frame}}(d)
+=
+\sum_{k \in \mathcal{K}}
+G_k(u_{d,k})\,\mathrm{II}_{d,k},
+$$
 
-For each array, we select the lowest estimated cost among successful compiler settings for each kernel. Because the model sums independent kernel costs, these selections can be made separately without enumerating every combination of stage settings. Cross-stage fusion, shared-memory constraints, or overlapping execution would invalidate that separability and require a different search formulation.
+where \(\mathcal{K}\) denotes the five FMCW kernels. CHIA records per-kernel results and aggregate cost; the next Co-designer prompt receives candidate configurations, validity, failures, and aggregate costs, but not per-kernel initiation intervals. Because the objective is derived from mapper-reported initiation intervals, it represents an analytical estimate of steady-state CGRA cycles rather than measured end-to-end execution time or physical performance.
 
-\subsection{Counting scheduled work}
-Let $\mathcal I_k$ be the dynamic invocations of the mapped loop for stage $k$, and let $n_{k,j}$ denote its iteration count in invocation $j$. With unroll factor $u_k$, the model is
-\begin{align}
-G_k(u_k)&=\sum_{j\in\mathcal I_k}
-             \left\lceil n_{k,j}/u_k\right\rceil,\\
-\widehat C_{\mathrm{frame}}&=\sum_k G_k(u_k)\,\mathrm{II}_k.
-\end{align}
-Rounding occurs per invocation, not once after summing iterations. This matters for the short inner loops of early FFT stages. For example, the FFT has 983,040 scalar butterflies per frame, but unroll two yields 557,056 scheduled groups in the artifact's accounting, rather than simply half the scalar count.
 
+
+\section{Evaluation}
+We evaluate whether closed-loop HW/SW co-design improves the mapping efficiency of the FMCW pipeline under a fixed evaluation budget. We compare the complete RACO workflow with two baselines that isolate the contributions of joint HW/SW exploration and iterative multi-agent feedback. We further analyze the search trajectory to determine how CHIA measurements influence subsequent design decisions.
+
+\subsection{Experimental Setup}
+
+We evaluate RACO on an FMCW workload comprising 256 samples per chirp, 128 chirps per frame, and four receiver channels. We represent the pipeline using five kernel views supplied to the mapper: windowing, FFT, transposition, power accumulation, and CA-CFAR. Each view isolates the computational loop evaluated by the CGRA mapper. The co-design space includes array dimensions, functional-unit allocation, scratchpad banking and capacity, and unrolling and vectorization factors for individual kernels.
+
+All methods use the same LLM, legal parameter constraints, CHIA evaluator, frame-cost model, and cache policy. Each receives a budget of 10 unique kernel-mapper evaluations; evaluating one complete design requires five such evaluations, and failures count toward the budget. We report the best feasible cost from one recorded seed (37), not a multi-seed distribution.
+
+\textbf{RACO} jointly explores architectural and kernel-specific compiler parameters through the complete four-stage loop. \textbf{HW-only} uses the same loop and CHIA feedback but fixes the compiler settings, isolating the benefit of software exploration. \textbf{Single-agent} uses one agent to generate all HW/SW candidates before tool evaluation, without subsequent correction, selection, or feedback rounds. Where tractable, exhaustive search provides a larger-budget reference for the fixed design space.
+
+
+\subsection{Overall Results}
+
+%
+
+% \begin{table}[t]
+% \caption{Frame cost under the same evaluation budget.}
+% \label{tab:overall}
+% \centering
+% \small
+% \begin{tabular}{lccc}
+% \toprule
+% Method & Search & Feedback & Cycles/frame (M) \
+% \midrule
+% RACO & HW/SW & Iterative & \textbf{38.73} \
+% HW-only & HW & Iterative & 42.14 \
+% Single-agent one-shot & HW/SW & None & 41.45 \
+% \bottomrule
+% \end{tabular}
+% \end{table}
+
+% \begin{table}[t]
+% \caption{Frame cost under the same evaluation budget.}
+% \label{tab:overall}
+% \centering
+% \small
+% \begin{tabular}{@{}lccc@{}}
+% \toprule
+% Method & Search & Decision structure & Cycles (M) \tabularnewline
+% \midrule
+% RACO & HW/SW & Four-stage & \textbf{38.73} \tabularnewline
+% HW-only & HW & Four-stage & 42.14 \tabularnewline
+% Single-agent & HW/SW & Unified & 41.45 \tabularnewline
+% \bottomrule
+% \end{tabular}
+% \end{table}
 \begin{table}[t]
-\caption{Scalar work counted by the frame model}
-\label{tab:work}
-\centering\small
-\begin{tabular}{lr}
-\toprule
-Mapped operation & Iterations/frame\\
-\midrule
-Window sample & 131,072\\
-FFT butterfly (range + Doppler) & 983,040\\
-Transpose copy (two passes) & 262,144\\
-Receiver power accumulation & 131,072\\
-CFAR neighborhood-loop visit & 3,512,388\\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Table~\ref{tab:work} lists the scalar counts. The transpose term includes two passes. The CFAR term counts $(256-10)(128-10)11^2$ neighborhood-loop visits for interior cells with outer radius five. It is not the number of detected targets or the number of output pixels.
-
-The estimate excludes loop setup, FFT bit reversal, memory stalls, host/CGRA transfers, and pipeline fill/drain. It also applies one measured stage II across the modeled invocations. The use of short FFT loops makes this an approximation even after invocation-level rounding. Tile count is a size proxy, not synthesized area. No clock frequency is measured, so estimated cycles are not converted into throughput or energy.
-
-\section{Results and Findings}
-The archived CHIA run completed all 36 mappings successfully in 38.71 seconds. Table~\ref{tab:results} compares the selected compiler settings with the scalar setting on the same array. Percentages describe reductions in the analytical estimate, not measured application speedups.
-
-\subsection{Agent-guided run}
-The GUI-launched seed-37 run completed three rounds, 12 model calls and 18 successful unique mappings in 210.43 seconds, with 29,657 prompt and 1,700 completion tokens. Table~\ref{tab:trajectory} reconstructs the feedback sequence from the archived trace. In round one, the Fine Judge preferred $6\times6$, but measured frame costs selected the other shortlisted plan, $4\times4$. Round two repeated the two plans and reused cached mappings. A new $4\times4$ compiler setting in round three attained 39,154,344 cycles using unroll factors $[4,2,4,4,1]$. This is an actually proposed and evaluated full-frame plan, not a combination assembled after search.
-
-\begin{table}[t]
-\caption{Archived agent/tool feedback; cost is the best measured plan after each round. Mapper count is cumulative.}
-\label{tab:trajectory}
-\centering\small
-\begin{tabular}{lcccc}
-\toprule
-Round & Judge choice & Measured best & Maps & M cycles\\
-\midrule
-1 & $6\times6$ & $4\times4$ & 10 & 40.170\\
-2 & $4\times4$ & $4\times4$ & 10 & 40.170\\
-3 & $4\times4$ & $4\times4$ & 18 & 39.154\\
-\bottomrule
-\end{tabular}
-\end{table}
-
-The agent matched the exhaustive reference's best estimate with half as many unique mappings, but was slower overall because of model-call overhead. The trace shows why tool feedback matters for this run, not that the agent policy outperforms a budget-matched random or heuristic search. An earlier integration trial stopped on truncated judge JSON at the service's 384-token limit; a stricter rationale-length contract resolved this in the reported run. The failed trace is retained.
-
-\begin{table}[t]
-\caption{Array comparison: estimated millions of cycles/frame}
-\label{tab:results}
-\centering\small
-\begin{tabular}{lrrrr}
-\toprule
-Array & Tiles & Scalar & Selected & Reduction\\
-\midrule
-$2\times2$ & 4 & 46.199 & 45.479 & 1.56\%\\
-$4\times4$ & 16 & 41.153 & 39.154 & 4.86\%\\
-$6\times6$ & 36 & 44.666 & 41.946 & 6.09\%\\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\subsection{Array size is not monotonic}
-The $4\times4$ array has the lowest estimate, 39,154,344 cycles. The $6\times6$ array has a 7.13\% higher estimate despite using $2.25\times$ as many tiles. Its scalar CFAR II is 11, compared with 10 for both smaller arrays. Since CFAR dominates total modeled work, this one-cycle change outweighs improvements in the other stages.
-
-This observation concerns a heuristic mapper and a fixed architecture template. It does not prove that the larger array is intrinsically inferior or that no better mapping exists. Instead, it demonstrates why tool feedback is needed: greater nominal compute capacity did not translate into a better schedule for the dominant loop in this run.
-
-\begin{figure}[t]
 \centering
-\begin{tikzpicture}[x=0.17cm,y=0.32cm,font=\scriptsize]
-\draw[->] (0,38)--(39,38);
-\node at (20,36.4) {Tiles};
-\draw[->] (0,38)--(0,47.5);
-\foreach \x in {4,16,36}
- {\draw (\x,38)--(\x,37.8) node[below]{\x};}
-\foreach \y in {39,42,45,47}
- {\draw (0,\y)--(-0.5,\y) node[left]{\y};}
-\node[rotate=90] at (-6,42.5) {Estimated cycles (millions)};
-\draw[thick] (4,45.478568)--(16,39.154344);
-\fill (4,45.478568) circle(2pt) node[above right]{$2\times2$};
-\fill (16,39.154344) circle(2pt) node[above right]{$4\times4$};
-\draw[fill=white] (36,41.945836) circle(2pt) node[above left]{$6\times6$};
-\end{tikzpicture}
-\caption{Cycle/tile frontier from the archived run. Filled points are nondominated; $6\times6$ is dominated by $4\times4$.}
-\label{fig:pareto}
-\end{figure}
-
-\subsection{Compiler choice and the dominant stage}
-Table~\ref{tab:compiler} gives the selected $4\times4$ settings. Unrolling increases DFG size and can increase raw II, but can still reduce estimated cost because each scheduled group covers more work. Accordingly, the selector minimizes $G_k\mathrm{II}_k$, not II alone.
-
-\begin{table}[t]
-\caption{Selected compiler settings for the $4\times4$ array}
-\label{tab:compiler}
-\centering\small
-\begin{tabular}{lrrr}
+\small
+\begin{tabular*}{\columnwidth}
+{@{\extracolsep{\fill}}lccc@{}}
 \toprule
-Stage & Unroll & II & DFG nodes\\
+Method & Search & Decision Structure & Cycles (M) \tabularnewline
 \midrule
-Window & 4 & 7 & 59\\
-FFT & 2 & 6 & 59\\
-Transpose & 4 & 5 & 35\\
-Power & 4 & 4 & 44\\
-CA-CFAR & 1 & 10 & 20\\
+RACO & HW/SW & Four-stage & \textbf{38.73} \tabularnewline
+HW-only & HW & Four-stage & 42.14 \tabularnewline
+Single-agent & HW/SW & Unified & 41.45 \tabularnewline
 \bottomrule
-\end{tabular}
+\end{tabular*}
+\caption{Frame cost under the same evaluation budget.}
+\label{tab:overall}
 \end{table}
 
-CFAR contributes 35,123,880 cycles, or 89.7\% of the selected $4\times4$ total. Improvements to windowing or power accumulation alone therefore have limited effect on the frame estimate. This finding directs subsequent work toward the neighborhood reduction and its data reuse. A faster CFAR formulation would need both a correctness check and a revised cost model; an assumed reduction cannot be inserted into the measured result.
+Table~\ref{tab:overall} compares the three methods under the same budget of 10 kernel-mapper evaluations, sufficient for two complete five-kernel designs. RACO achieves the lowest estimated frame cost, reducing cycles by 8.1\% relative to HW-only and by 6.6\% relative to Single-agent. The HW-only comparison isolates the benefit of kernel-specific compiler exploration. Because these budget-matched runs each have one round, the single-agent comparison concerns the multi-role proposal, correction, and selection policy, not cross-round feedback.
 
-Figure~\ref{fig:pareto} shows two useful choices. The $2\times2$ array minimizes the cycle--tile product, while $4\times4$ minimizes estimated latency. Reporting both avoids treating a proxy-weighted objective as a universal best design. A physical-area budget or memory constraint could change the preferred point.
+Table~\ref{tab:candidates} summarizes the two candidates evaluated by RACO. The Co-designer proposes two \(4\times4\) HW/SW designs, and the Fixer replaces \texttt{FMul} with \texttt{Mul} in their FU layouts. The Coarse Judge retains both candidates, and the Fine Judge predicts that design A will perform better. CHIA confirms this prediction, estimating 38.73 million cycles per frame for A and 40.20 million for B. Although A has a higher FFT II (8 versus 7), its larger unroll factor reduces the FFT contribution from 3.90 to 3.01 million cycles. CA-CFAR contributes the same 35.12 million cycles to both designs, so A's 1.47-million-cycle advantage arises from the remaining kernel views. This result shows that candidate selection must consider frame-level cost rather than individual mapper II alone.
 
-\section{Artifact and Reproduction}
-The \texttt{chia-maco} directory contains the workload, mapping views, evaluator, CHIA node, search code, tests and result JSON. The exhaustive reference is \path{results/codesign_search_certified.json}; the reported agent run is \path{results/agent_qwen38_27b_seed37_v3/}. These retain the measurements, selected settings and provenance used in this paper.
 
-The tested setup uses Python 3.10, CHIA 1.0.1 at commit \texttt{16c35e9}, and LLVM 12 inside \texttt{cgramapper:v1}. In \texttt{chia-maco}, \texttt{make smoke}, \texttt{make test}, and \texttt{make codesign-search} check the C workload, contracts, and exhaustive reference. The \texttt{agent-search} CLI runs the agent loop with a new output directory; the README documents model endpoint configuration. The independent MACO browser GUI launches the same loop and displays role progress, model usage, decisions, measured winners and failures. Automated checks cover agent contracts, caching, budgets, feedback and project-isolated APIs.
+\begin{table}[t]
+\centering
+\small
+\renewcommand{\arraystretch}{1.05}
+\begin{tabular*}{\columnwidth}{@{\extracolsep{\fill}}lcc@{}}
+\toprule
+Parameter & Design A & Design B \tabularnewline
+\midrule
+Array size & \(4\times4\) & \(4\times4\) \tabularnewline
+Configuration memory & 16 & 16 \tabularnewline
+SRAM (banks \(\times\) size)
+    & \(4\times16\) KiB
+    & \(8\times16\) KiB \tabularnewline
+Main unroll factor & 4 & 2 \tabularnewline
+Vectorization
+    & \texttt{all}
+    & \texttt{interleaved} \tabularnewline
+\midrule
+Frame cycles
+    & \textbf{38,728,360}
+    & 40,202,920 \tabularnewline
+\bottomrule
+\end{tabular*}
+\vspace{3pt}
+\caption{RACO candidate comparison.}
+\label{tab:candidates}
+\end{table}
 
-The reference archive contains parsed records; the agent archive additionally includes raw mapper logs and model traces. The artifact is available at \url{https://github.com/zsjiang99/CHIA-MACO-FMCW}. Upstream MACO modules are fetched at pinned commit \texttt{31c02ce} and are not redistributed.
+\subsection{Cross-Round Feedback}
 
-\section{Limitations and Next Steps}
-The original proposal targeted 16-bit inputs, simulation, synthesis-calibrated PPA, and at least 20 frames/s. The current experiment uses floating-point C, six software-validation scenes, heuristic mapping, and a steady-state estimate. Even under this optimistic model, 20 frames/s would require at least 783 MHz for the 39.15-million-cycle plan; no clock frequency or memory overhead has been measured. Fixed-point accuracy and system-level targets remain unestablished.
+We further examine the closed-loop behavior in a separate two-round run with 20 unique kernel-mapping attempts. After the first round identifies design A at 38.73 million estimated cycles per frame, its configuration, validity status, and frame cost are returned to the next co-design round. The Co-designer subsequently proposes configurations with additional SRAM banks and larger unroll factors. Three second-round kernel mappings fail, and RACO retains the first-round incumbent, leaving the best estimate unchanged. This trace demonstrates that measured outcomes are incorporated into subsequent proposals and that CHIA prevents unsuccessful candidates from replacing the measured incumbent. Because the recorded feedback contains total frame costs but no per-kernel IIs, it does not support attributing the second-round changes to a specific kernel.
 
-An export audit found lost floating-point opcodes, misclassified squares, and a comparison-predicate mismatch. We recover these from LLVM evidence and correct the wrapper's HardFloat format parameters. Translated Verilog tests pass 1,568 bit-exact FP32 results and nine unsigned comparisons at both FU and isolated-tile levels, including control loading and backpressure. These programs do not execute the mapper schedule. Operand translation, constant/address loading, and whole-frame execution remain unfinished. Component tests therefore do not certify candidate hardware correctness.
 
-The search contains three arrays and restricted unrolling. A single-seed agent demonstration does not establish search efficiency; no matched-budget evolutionary comparison is reported. Kernel mappings are not independently validated end-to-end accelerators. Mapping views and analytical aggregation omit the hardware interface between stages.
+\subsection{Artifact and Reproducibility}
 
-Next steps are resolving the CFAR numerical discrepancies, compiler-to-RTL integration, explicit-memory simulation and synthesis. Hardware performance claims require those checks; multi-seed, matched-budget studies are also needed to assess the agent policy.
+We release RACO as an open-source artifact at \url{https://github.com/zsjiang99/RACO}. The repository includes the executable four-stage workflow, five FMCW kernel views, CHIA evaluation scripts, experiment configurations, agent decision traces, and per-kernel mapper logs for the reported runs. The accompanying interface presents candidate configurations, stage-level decisions, mapping outcomes, and frame-cost breakdowns, enabling users to inspect the complete path from design generation to tool-based evaluation. The reported frame costs are estimates derived from mapper initiation intervals and scheduled loop counts.
 
-\balance
 \section{Conclusion}
-CHIA-MACO-FMCW connects original MACO agents to real CHIA compiler/mapper feedback. One bounded Qwen run matched the exhaustive best with fewer mappings but higher elapsed time. The reference identifies two Pareto choices and CFAR as the dominant modeled cost. The reusable contribution is an inspectable agent/tool loop with explicit contracts, failures and model limitations.
 
-\begin{thebibliography}{4}
-\bibitem{cfar} M. Kronauge and H. Rohling, \emph{Fast two-dimensional CFAR procedure}, IEEE Trans. Aerospace and Electronic Systems, vol. 49, no. 3, pp. 1817--1823, 2013.
-\bibitem{maco} Z. Jiang et al., \emph{MACO: A multi-agent LLM framework for automated CGRA hardware/software co-design}, arXiv:2509.13557, 2025, revised 2026.
-\bibitem{chia} A. Cui et al., \emph{CHIA: An open-source framework for principled, agentic AI-driven hardware/software co-design research}, arXiv:2606.27350, 2026.
-\bibitem{opencgra} C. Tan, C. Xie, A. Li, K. J. Barker, and A. Tumeo, \emph{OpenCGRA: An open-source unified framework for modeling, testing, and evaluating CGRAs}, ICCD, 2020, pp. 381--388.
-\end{thebibliography}
-\section*{Acknowledgment of AI Assistance}
-OpenAI Codex assisted with drafting, editing, and LaTeX preparation of this paper, as well as artifact implementation and experiment scripting. The human authors are responsible for the entire contents, tone, and quality of the paper, including its claims and reported results.
+We presented RACO, a four-stage agentic framework for CGRA HW/SW co-design targeting FMCW radar processing. RACO integrates HW/SW candidate generation, validation and correction, multi-judge selection, and CHIA-based mapping evaluation into a closed-loop workflow. Under a common budget of 10 unique kernel-mapping evaluations, RACO identifies a design with an estimated frame cost of 38.73 million cycles, 8.1\% lower than HW-only exploration and 6.6\% lower than the single-agent baseline. We release the executable workflow, complete decision traces, and mapper logs to support reproduction and further investigation. Future work will extend RACO with end-to-end execution measurements and post-synthesis PPA evaluation across a broader range of radar workloads.
+
+
+
+% \subsection{Correct loop selection}
+% CGRA-Mapper targets a selected loop in the LLVM representation. An early runtime-unroll experiment appeared favorable, but log inspection showed that the mapper selected a scalar cleanup loop instead of the intended unrolled body. Those results were excluded from the reported search.
+
+% The final \texttt{fmcw\_mapping.c} exposes one fixed-shape top-level loop per stage, with explicit source-level unrolling. This makes the mapping target unambiguous. The complete native implementation remains the functional reference. A mapper success establishes schedulability of the extracted DFG; it does not by itself prove numerical equivalence between a mapping view and every dynamic invocation in the native program.
+
+% DFG statistics support the audit: the selected $4\times4$ window view has 59 nodes at unroll four, versus 17 in its scalar view. Node count helps detect suspicious extraction but is not a semantic proof.
+
+% \section{Search Space and Cost Model}
+% \subsection{Bounded compiler--array search}
+% We evaluate $2\times2$, $4\times4$, and $6\times6$ square arrays under the same mapper template. Legal unroll factors are $\{1,2,4\}$ for windowing, transpose, and power; $\{1,2\}$ for FFT; and $\{1\}$ for CFAR. The resulting space contains 12 kernel configurations per array and 36 mapper evaluations.
+
+% CFAR unrolling is excluded from the final bounded space after exploratory larger-DFG evaluations exceeded the time budget. Thus, the reported mapping success rate applies to the retained legal space. Architecture exploration varies array dimensions; it does not vary functional-unit mix, memory banking, or interconnect topology.
+
+% For each array, we select the lowest estimated cost among successful compiler settings for each kernel. Because the model sums independent kernel costs, these selections can be made separately without enumerating every combination of stage settings. Cross-stage fusion, shared-memory constraints, or overlapping execution would invalidate that separability and require a different search formulation.
+
+% \subsection{Counting scheduled work}
+% Let $\mathcal I_k$ be the dynamic invocations of the mapped loop for stage $k$, and let $n_{k,j}$ denote its iteration count in invocation $j$. With unroll factor $u_k$, the model is
+% \begin{align}
+% G_k(u_k)&=\sum_{j\in\mathcal I_k}
+%              \left\lceil n_{k,j}/u_k\right\rceil,\\
+% \widehat C_{\mathrm{frame}}&=\sum_k G_k(u_k)\,\mathrm{II}_k.
+% \end{align}
+% Rounding occurs per invocation, not once after summing iterations. This matters for the short inner loops of early FFT stages. For example, the FFT has 983,040 scalar butterflies per frame, but unroll two yields 557,056 scheduled groups in the artifact's accounting, rather than simply half the scalar count.
+
+% \begin{table}[t]
+% \caption{Scalar work counted by the frame model}
+% \label{tab:work}
+% \centering\small
+% \begin{tabular}{lr}
+% \toprule
+% Mapped operation & Iterations/frame\\
+% \midrule
+% Window sample & 131,072\\
+% FFT butterfly (range + Doppler) & 983,040\\
+% Transpose copy (two passes) & 262,144\\
+% Receiver power accumulation & 131,072\\
+% CFAR neighborhood-loop visit & 3,512,388\\
+% \bottomrule
+% \end{tabular}
+% \end{table}
+
+% Table~\ref{tab:work} lists the scalar counts. The transpose term includes two passes. The CFAR term counts $(256-10)(128-10)11^2$ neighborhood-loop visits for interior cells with outer radius five. It is not the number of detected targets or the number of output pixels.
+
+% The estimate excludes loop setup, FFT bit reversal, memory stalls, host/CGRA transfers, and pipeline fill/drain. It also applies one measured stage II across the modeled invocations. The use of short FFT loops makes this an approximation even after invocation-level rounding. Tile count is a size proxy, not synthesized area. No clock frequency is measured, so estimated cycles are not converted into throughput or energy.
+
+% \section{Results and Findings}
+% The archived CHIA run completed all 36 mappings successfully in 38.71 seconds. Table~\ref{tab:results} compares the selected compiler settings with the scalar setting on the same array. Percentages describe reductions in the analytical estimate, not measured application speedups.
+
+% \subsection{Agent-guided run}
+% The GUI-launched seed-37 run completed three rounds, 12 model calls and 18 successful unique mappings in 210.43 seconds, with 29,657 prompt and 1,700 completion tokens. Table~\ref{tab:trajectory} reconstructs the feedback sequence from the archived trace. In round one, the Fine Judge preferred $6\times6$, but measured frame costs selected the other shortlisted plan, $4\times4$. Round two repeated the two plans and reused cached mappings. A new $4\times4$ compiler setting in round three attained 39,154,344 cycles using unroll factors $[4,2,4,4,1]$. This is an actually proposed and evaluated full-frame plan, not a combination assembled after search.
+
+% \begin{table}[t]
+% \caption{Archived agent/tool feedback; cost is the best measured plan after each round. Mapper count is cumulative.}
+% \label{tab:trajectory}
+% \centering\small
+% \begin{tabular}{lcccc}
+% \toprule
+% Round & Judge choice & Measured best & Maps & M cycles\\
+% \midrule
+% 1 & $6\times6$ & $4\times4$ & 10 & 40.170\\
+% 2 & $4\times4$ & $4\times4$ & 10 & 40.170\\
+% 3 & $4\times4$ & $4\times4$ & 18 & 39.154\\
+% \bottomrule
+% \end{tabular}
+% \end{table}
+
+% The agent matched the exhaustive reference's best estimate with half as many unique mappings, but was slower overall because of model-call overhead. The trace shows why tool feedback matters for this run, not that the agent policy outperforms a budget-matched random or heuristic search. An earlier integration trial stopped on truncated judge JSON at the service's 384-token limit; a stricter rationale-length contract resolved this in the reported run. The failed trace is retained.
+
+% \begin{table}[t]
+% \caption{Array comparison: estimated millions of cycles/frame}
+% \label{tab:results}
+% \centering\small
+% \begin{tabular}{lrrrr}
+% \toprule
+% Array & Tiles & Scalar & Selected & Reduction\\
+% \midrule
+% $2\times2$ & 4 & 46.199 & 45.479 & 1.56\%\\
+% $4\times4$ & 16 & 41.153 & 39.154 & 4.86\%\\
+% $6\times6$ & 36 & 44.666 & 41.946 & 6.09\%\\
+% \bottomrule
+% \end{tabular}
+% \end{table}
+
+% \subsection{Array size is not monotonic}
+% The $4\times4$ array has the lowest estimate, 39,154,344 cycles. The $6\times6$ array has a 7.13\% higher estimate despite using $2.25\times$ as many tiles. Its scalar CFAR II is 11, compared with 10 for both smaller arrays. Since CFAR dominates total modeled work, this one-cycle change outweighs improvements in the other stages.
+
+% This observation concerns a heuristic mapper and a fixed architecture template. It does not prove that the larger array is intrinsically inferior or that no better mapping exists. Instead, it demonstrates why tool feedback is needed: greater nominal compute capacity did not translate into a better schedule for the dominant loop in this run.
+
+% \begin{figure}[t]
+% \centering
+% \begin{tikzpicture}[x=0.17cm,y=0.32cm,font=\scriptsize]
+% \draw[->] (0,38)--(39,38);
+% \node at (20,36.4) {Tiles};
+% \draw[->] (0,38)--(0,47.5);
+% \foreach \x in {4,16,36}
+%  {\draw (\x,38)--(\x,37.8) node[below]{\x};}
+% \foreach \y in {39,42,45,47}
+%  {\draw (0,\y)--(-0.5,\y) node[left]{\y};}
+% \node[rotate=90] at (-6,42.5) {Estimated cycles (millions)};
+% \draw[thick] (4,45.478568)--(16,39.154344);
+% \fill (4,45.478568) circle(2pt) node[above right]{$2\times2$};
+% \fill (16,39.154344) circle(2pt) node[above right]{$4\times4$};
+% \draw[fill=white] (36,41.945836) circle(2pt) node[above left]{$6\times6$};
+% \end{tikzpicture}
+% \caption{Cycle/tile frontier from the archived run. Filled points are nondominated; $6\times6$ is dominated by $4\times4$.}
+% \label{fig:pareto}
+% \end{figure}
+
+% \subsection{Compiler choice and the dominant stage}
+% Table~\ref{tab:compiler} gives the selected $4\times4$ settings. Unrolling increases DFG size and can increase raw II, but can still reduce estimated cost because each scheduled group covers more work. Accordingly, the selector minimizes $G_k\mathrm{II}_k$, not II alone.
+
+% \begin{table}[t]
+% \caption{Selected compiler settings for the $4\times4$ array}
+% \label{tab:compiler}
+% \centering\small
+% \begin{tabular}{lrrr}
+% \toprule
+% Stage & Unroll & II & DFG nodes\\
+% \midrule
+% Window & 4 & 7 & 59\\
+% FFT & 2 & 6 & 59\\
+% Transpose & 4 & 5 & 35\\
+% Power & 4 & 4 & 44\\
+% CA-CFAR & 1 & 10 & 20\\
+% \bottomrule
+% \end{tabular}
+% \end{table}
+
+% CFAR contributes 35,123,880 cycles, or 89.7\% of the selected $4\times4$ total. Improvements to windowing or power accumulation alone therefore have limited effect on the frame estimate. This finding directs subsequent work toward the neighborhood reduction and its data reuse. A faster CFAR formulation would need both a correctness check and a revised cost model; an assumed reduction cannot be inserted into the measured result.
+
+% Figure~\ref{fig:pareto} shows two useful choices. The $2\times2$ array minimizes the cycle--tile product, while $4\times4$ minimizes estimated latency. Reporting both avoids treating a proxy-weighted objective as a universal best design. A physical-area budget or memory constraint could change the preferred point.
+
+% \section{Artifact and Reproduction}
+% The \texttt{chia-maco} directory contains the workload, mapping views, evaluator, CHIA node, search code, tests and result JSON. The exhaustive reference is \path{results/codesign_search_certified.json}; the reported agent run is \path{results/agent_qwen38_27b_seed37_v3/}. These retain the measurements, selected settings and provenance used in this paper.
+
+% The tested setup uses Python 3.10, CHIA 1.0.1 at commit \texttt{16c35e9}, and LLVM 12 inside \texttt{cgramapper:v1}. In \texttt{chia-maco}, \texttt{make smoke}, \texttt{make test}, and \texttt{make codesign-search} check the C workload, contracts, and exhaustive reference. The \texttt{agent-search} CLI runs the agent loop with a new output directory; the README documents model endpoint configuration. The independent MACO browser GUI launches the same loop and displays role progress, model usage, decisions, measured winners and failures. Automated checks cover agent contracts, caching, budgets, feedback and project-isolated APIs.
+
+% The reference archive contains parsed records; the agent archive additionally includes raw mapper logs and model traces. The artifact is available at \url{https://github.com/zsjiang99/CHIA-MACO-FMCW}. Upstream MACO modules are fetched at pinned commit \texttt{31c02ce} and are not redistributed.
+
+% \section{Limitations and Next Steps}
+% The original proposal targeted 16-bit inputs, simulation, synthesis-calibrated PPA, and at least 20 frames/s. The current experiment uses floating-point C, six software-validation scenes, heuristic mapping, and a steady-state estimate. Even under this optimistic model, 20 frames/s would require at least 783 MHz for the 39.15-million-cycle plan; no clock frequency or memory overhead has been measured. Fixed-point accuracy and system-level targets remain unestablished.
+
+% An export audit found lost floating-point opcodes, misclassified squares, and a comparison-predicate mismatch. We recover these from LLVM evidence and correct the wrapper's HardFloat format parameters. Translated Verilog tests pass 1,568 bit-exact FP32 results and nine unsigned comparisons at both FU and isolated-tile levels, including control loading and backpressure. These programs do not execute the mapper schedule. Operand translation, constant/address loading, and whole-frame execution remain unfinished. Component tests therefore do not certify candidate hardware correctness.
+
+% The search contains three arrays and restricted unrolling. A single-seed agent demonstration does not establish search efficiency; no matched-budget evolutionary comparison is reported. Kernel mappings are not independently validated end-to-end accelerators. Mapping views and analytical aggregation omit the hardware interface between stages.
+
+% Next steps are resolving the CFAR numerical discrepancies, compiler-to-RTL integration, explicit-memory simulation and synthesis. Hardware performance claims require those checks; multi-seed, matched-budget studies are also needed to assess the agent policy.
+
+% \balance
+% \section{Conclusion}
+% CHIA-MACO-FMCW connects original MACO agents to real CHIA compiler/mapper feedback. One bounded Qwen run matched the exhaustive best with fewer mappings but higher elapsed time. The reference identifies two Pareto choices and CFAR as the dominant modeled cost. The reusable contribution is an inspectable agent/tool loop with explicit contracts, failures and model limitations.
+
+% \begin{thebibliography}{4}
+% \bibitem{cfar} M. Kronauge and H. Rohling, \emph{Fast two-dimensional CFAR procedure}, IEEE Trans. Aerospace and Electronic Systems, vol. 49, no. 3, pp. 1817--1823, 2013.
+% \bibitem{maco} Z. Jiang et al., \emph{MACO: A multi-agent LLM framework for automated CGRA hardware/software co-design}, arXiv:2509.13557, 2025, revised 2026.
+% \bibitem{chia} A. Cui et al., \emph{CHIA: An open-source framework for principled, agentic AI-driven hardware/software co-design research}, arXiv:2606.27350, 2026.
+% \bibitem{opencgra} C. Tan, C. Xie, A. Li, K. J. Barker, and A. Tumeo, \emph{OpenCGRA: An open-source unified framework for modeling, testing, and evaluating CGRAs}, ICCD, 2020, pp. 381--388.
+% \end{thebibliography}
+% \section*{Acknowledgment of AI Assistance}
+% OpenAI Codex assisted with drafting, editing, and LaTeX preparation of this paper, as well as artifact implementation and experiment scripting. The human authors are responsible for the entire contents, tone, and quality of the paper, including its claims and reported results.
+\bibliographystyle{IEEEtran}
+\bibliography{ref}
 \end{document}

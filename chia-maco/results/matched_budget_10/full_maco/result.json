@@ -1,0 +1,5500 @@
+{
+  "execution": "chia",
+  "evaluations": 10,
+  "successful_mappings": 10,
+  "raw_results": [
+    {
+      "candidate": {
+        "kernel": "fmcw_window",
+        "rows": 4,
+        "columns": 4,
+        "unroll_factor": 4,
+        "compiler_vectorize": true,
+        "architecture_vectorization": "all",
+        "bypass_constraint": 4,
+        "control_memory": 16,
+        "register_count": 8,
+        "heuristic_mapping": true,
+        "range_bins": 256,
+        "doppler_bins": 128,
+        "rx_channels": 4,
+        "fu_profile": "custom",
+        "memory_banks": 4,
+        "bank_kib": 16,
+        "tile_fus": {
+          "0": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Ld",
+            "Mul"
+          ],
+          "1": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul"
+          ],
+          "2": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul"
+          ],
+          "3": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "St"
+          ],
+          "4": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Ld",
+            "FAdd"
+          ],
+          "5": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul",
+            "FAdd"
+          ],
+          "6": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul",
+            "FAdd"
+          ],
+          "7": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "St"
+          ],
+          "8": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Ld"
+          ],
+          "9": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul"
+          ],
+          "10": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul"
+          ],
+          "11": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "St"
+          ],
+          "12": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Ld",
+            "FAdd"
+          ],
+          "13": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul",
+            "FAdd"
+          ],
+          "14": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul",
+            "FAdd"
+          ],
+          "15": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "St"
+          ]
+        }
+      },
+      "success": true,
+      "mapping_ii": 6,
+      "resource_mii": 4,
+      "recurrence_mii": 3,
+      "dfg_nodes": 59,
+      "dfg_edges": 76,
+      "fu_utilization_percent": 61.4583,
+      "xbar_utilization_percent": 92.7083,
+      "elapsed_seconds": 0.8561891079880297,
+      "error": null
+    },
+    {
+      "candidate": {
+        "kernel": "fmcw_fft_stage",
+        "rows": 4,
+        "columns": 4,
+        "unroll_factor": 4,
+        "compiler_vectorize": true,
+        "architecture_vectorization": "all",
+        "bypass_constraint": 4,
+        "control_memory": 16,
+        "register_count": 8,
+        "heuristic_mapping": true,
+        "range_bins": 256,
+        "doppler_bins": 128,
+        "rx_channels": 4,
+        "fu_profile": "custom",
+        "memory_banks": 4,
+        "bank_kib": 16,
+        "tile_fus": {
+          "0": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Ld",
+            "Mul"
+          ],
+          "1": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul"
+          ],
+          "2": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul"
+          ],
+          "3": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "St"
+          ],
+          "4": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Ld",
+            "FAdd"
+          ],
+          "5": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul",
+            "FAdd"
+          ],
+          "6": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul",
+            "FAdd"
+          ],
+          "7": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "St"
+          ],
+          "8": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Ld"
+          ],
+          "9": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul"
+          ],
+          "10": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul"
+          ],
+          "11": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "St"
+          ],
+          "12": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Ld",
+            "FAdd"
+          ],
+          "13": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul",
+            "FAdd"
+          ],
+          "14": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul",
+            "FAdd"
+          ],
+          "15": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "St"
+          ]
+        }
+      },
+      "success": true,
+      "mapping_ii": 8,
+      "resource_mii": 8,
+      "recurrence_mii": 3,
+      "dfg_nodes": 115,
+      "dfg_edges": 172,
+      "fu_utilization_percent": 89.8438,
+      "xbar_utilization_percent": 100.0,
+      "elapsed_seconds": 1.102117728907615,
+      "error": null
+    },
+    {
+      "candidate": {
+        "kernel": "fmcw_transpose",
+        "rows": 4,
+        "columns": 4,
+        "unroll_factor": 4,
+        "compiler_vectorize": true,
+        "architecture_vectorization": "all",
+        "bypass_constraint": 4,
+        "control_memory": 16,
+        "register_count": 8,
+        "heuristic_mapping": true,
+        "range_bins": 256,
+        "doppler_bins": 128,
+        "rx_channels": 4,
+        "fu_profile": "custom",
+        "memory_banks": 4,
+        "bank_kib": 16,
+        "tile_fus": {
+          "0": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Ld",
+            "Mul"
+          ],
+          "1": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul"
+          ],
+          "2": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul"
+          ],
+          "3": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "St"
+          ],
+          "4": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Ld",
+            "FAdd"
+          ],
+          "5": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul",
+            "FAdd"
+          ],
+          "6": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul",
+            "FAdd"
+          ],
+          "7": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "St"
+          ],
+          "8": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Ld"
+          ],
+          "9": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul"
+          ],
+          "10": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul"
+          ],
+          "11": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "St"
+          ],
+          "12": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Ld",
+            "FAdd"
+          ],
+          "13": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul",
+            "FAdd"
+          ],
+          "14": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul",
+            "FAdd"
+          ],
+          "15": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "St"
+          ]
+        }
+      },
+      "success": true,
+      "mapping_ii": 4,
+      "resource_mii": 3,
+      "recurrence_mii": 3,
+      "dfg_nodes": 35,
+      "dfg_edges": 40,
+      "fu_utilization_percent": 54.6875,
+      "xbar_utilization_percent": 90.625,
+      "elapsed_seconds": 0.6503316059242934,
+      "error": null
+    },
+    {
+      "candidate": {
+        "kernel": "fmcw_accumulate_power",
+        "rows": 4,
+        "columns": 4,
+        "unroll_factor": 4,
+        "compiler_vectorize": true,
+        "architecture_vectorization": "all",
+        "bypass_constraint": 4,
+        "control_memory": 16,
+        "register_count": 8,
+        "heuristic_mapping": true,
+        "range_bins": 256,
+        "doppler_bins": 128,
+        "rx_channels": 4,
+        "fu_profile": "custom",
+        "memory_banks": 4,
+        "bank_kib": 16,
+        "tile_fus": {
+          "0": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Ld",
+            "Mul"
+          ],
+          "1": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul"
+          ],
+          "2": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul"
+          ],
+          "3": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "St"
+          ],
+          "4": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Ld",
+            "FAdd"
+          ],
+          "5": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul",
+            "FAdd"
+          ],
+          "6": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul",
+            "FAdd"
+          ],
+          "7": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "St"
+          ],
+          "8": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Ld"
+          ],
+          "9": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul"
+          ],
+          "10": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul"
+          ],
+          "11": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "St"
+          ],
+          "12": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Ld",
+            "FAdd"
+          ],
+          "13": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul",
+            "FAdd"
+          ],
+          "14": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul",
+            "FAdd"
+          ],
+          "15": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "St"
+          ]
+        }
+      },
+      "success": true,
+      "mapping_ii": 4,
+      "resource_mii": 3,
+      "recurrence_mii": 0,
+      "dfg_nodes": 44,
+      "dfg_edges": 47,
+      "fu_utilization_percent": 68.75,
+      "xbar_utilization_percent": 95.3125,
+      "elapsed_seconds": 0.6685065641067922,
+      "error": null
+    },
+    {
+      "candidate": {
+        "kernel": "fmcw_cfar_2d",
+        "rows": 4,
+        "columns": 4,
+        "unroll_factor": 1,
+        "compiler_vectorize": false,
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "control_memory": 16,
+        "register_count": 8,
+        "heuristic_mapping": true,
+        "range_bins": 256,
+        "doppler_bins": 128,
+        "rx_channels": 4,
+        "fu_profile": "custom",
+        "memory_banks": 4,
+        "bank_kib": 16,
+        "tile_fus": {
+          "0": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Ld",
+            "Mul"
+          ],
+          "1": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul"
+          ],
+          "2": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul"
+          ],
+          "3": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "St"
+          ],
+          "4": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Ld",
+            "FAdd"
+          ],
+          "5": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul",
+            "FAdd"
+          ],
+          "6": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul",
+            "FAdd"
+          ],
+          "7": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "St"
+          ],
+          "8": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Ld"
+          ],
+          "9": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul"
+          ],
+          "10": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul"
+          ],
+          "11": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "St"
+          ],
+          "12": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Ld",
+            "FAdd"
+          ],
+          "13": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul",
+            "FAdd"
+          ],
+          "14": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul",
+            "FAdd"
+          ],
+          "15": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "St"
+          ]
+        }
+      },
+      "success": true,
+      "mapping_ii": 10,
+      "resource_mii": 2,
+      "recurrence_mii": 6,
+      "dfg_nodes": 20,
+      "dfg_edges": 25,
+      "fu_utilization_percent": 12.5,
+      "xbar_utilization_percent": 30.0,
+      "elapsed_seconds": 0.6581343950238079,
+      "error": null
+    },
+    {
+      "candidate": {
+        "kernel": "fmcw_window",
+        "rows": 4,
+        "columns": 4,
+        "unroll_factor": 2,
+        "compiler_vectorize": true,
+        "architecture_vectorization": "interleaved",
+        "bypass_constraint": 4,
+        "control_memory": 16,
+        "register_count": 8,
+        "heuristic_mapping": true,
+        "range_bins": 256,
+        "doppler_bins": 128,
+        "rx_channels": 4,
+        "fu_profile": "custom",
+        "memory_banks": 8,
+        "bank_kib": 16,
+        "tile_fus": {
+          "0": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Ld",
+            "Mul"
+          ],
+          "1": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul"
+          ],
+          "2": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul"
+          ],
+          "3": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "St"
+          ],
+          "4": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Ld",
+            "FAdd"
+          ],
+          "5": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul",
+            "FAdd"
+          ],
+          "6": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul",
+            "FAdd"
+          ],
+          "7": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "St"
+          ],
+          "8": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Ld"
+          ],
+          "9": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul"
+          ],
+          "10": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul"
+          ],
+          "11": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "St"
+          ],
+          "12": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Ld",
+            "FAdd"
+          ],
+          "13": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul",
+            "FAdd"
+          ],
+          "14": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul",
+            "FAdd"
+          ],
+          "15": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "St"
+          ]
+        }
+      },
+      "success": true,
+      "mapping_ii": 4,
+      "resource_mii": 2,
+      "recurrence_mii": 3,
+      "dfg_nodes": 31,
+      "dfg_edges": 40,
+      "fu_utilization_percent": 48.4375,
+      "xbar_utilization_percent": 84.375,
+      "elapsed_seconds": 0.5718129661399871,
+      "error": null
+    },
+    {
+      "candidate": {
+        "kernel": "fmcw_fft_stage",
+        "rows": 4,
+        "columns": 4,
+        "unroll_factor": 2,
+        "compiler_vectorize": true,
+        "architecture_vectorization": "interleaved",
+        "bypass_constraint": 4,
+        "control_memory": 16,
+        "register_count": 8,
+        "heuristic_mapping": true,
+        "range_bins": 256,
+        "doppler_bins": 128,
+        "rx_channels": 4,
+        "fu_profile": "custom",
+        "memory_banks": 8,
+        "bank_kib": 16,
+        "tile_fus": {
+          "0": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Ld",
+            "Mul"
+          ],
+          "1": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul"
+          ],
+          "2": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul"
+          ],
+          "3": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "St"
+          ],
+          "4": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Ld",
+            "FAdd"
+          ],
+          "5": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul",
+            "FAdd"
+          ],
+          "6": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul",
+            "FAdd"
+          ],
+          "7": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "St"
+          ],
+          "8": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Ld"
+          ],
+          "9": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul"
+          ],
+          "10": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul"
+          ],
+          "11": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "St"
+          ],
+          "12": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Ld",
+            "FAdd"
+          ],
+          "13": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul",
+            "FAdd"
+          ],
+          "14": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul",
+            "FAdd"
+          ],
+          "15": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "St"
+          ]
+        }
+      },
+      "success": true,
+      "mapping_ii": 7,
+      "resource_mii": 4,
+      "recurrence_mii": 3,
+      "dfg_nodes": 59,
+      "dfg_edges": 88,
+      "fu_utilization_percent": 52.6786,
+      "xbar_utilization_percent": 89.2857,
+      "elapsed_seconds": 1.1924415440298617,
+      "error": null
+    },
+    {
+      "candidate": {
+        "kernel": "fmcw_transpose",
+        "rows": 4,
+        "columns": 4,
+        "unroll_factor": 2,
+        "compiler_vectorize": true,
+        "architecture_vectorization": "interleaved",
+        "bypass_constraint": 4,
+        "control_memory": 16,
+        "register_count": 8,
+        "heuristic_mapping": true,
+        "range_bins": 256,
+        "doppler_bins": 128,
+        "rx_channels": 4,
+        "fu_profile": "custom",
+        "memory_banks": 8,
+        "bank_kib": 16,
+        "tile_fus": {
+          "0": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Ld",
+            "Mul"
+          ],
+          "1": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul"
+          ],
+          "2": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul"
+          ],
+          "3": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "St"
+          ],
+          "4": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Ld",
+            "FAdd"
+          ],
+          "5": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul",
+            "FAdd"
+          ],
+          "6": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul",
+            "FAdd"
+          ],
+          "7": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "St"
+          ],
+          "8": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Ld"
+          ],
+          "9": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul"
+          ],
+          "10": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul"
+          ],
+          "11": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "St"
+          ],
+          "12": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Ld",
+            "FAdd"
+          ],
+          "13": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul",
+            "FAdd"
+          ],
+          "14": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul",
+            "FAdd"
+          ],
+          "15": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "St"
+          ]
+        }
+      },
+      "success": true,
+      "mapping_ii": 5,
+      "resource_mii": 2,
+      "recurrence_mii": 3,
+      "dfg_nodes": 19,
+      "dfg_edges": 22,
+      "fu_utilization_percent": 23.75,
+      "xbar_utilization_percent": 51.25,
+      "elapsed_seconds": 0.5836986100766808,
+      "error": null
+    },
+    {
+      "candidate": {
+        "kernel": "fmcw_accumulate_power",
+        "rows": 4,
+        "columns": 4,
+        "unroll_factor": 2,
+        "compiler_vectorize": true,
+        "architecture_vectorization": "interleaved",
+        "bypass_constraint": 4,
+        "control_memory": 16,
+        "register_count": 8,
+        "heuristic_mapping": true,
+        "range_bins": 256,
+        "doppler_bins": 128,
+        "rx_channels": 4,
+        "fu_profile": "custom",
+        "memory_banks": 8,
+        "bank_kib": 16,
+        "tile_fus": {
+          "0": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Ld",
+            "Mul"
+          ],
+          "1": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul"
+          ],
+          "2": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul"
+          ],
+          "3": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "St"
+          ],
+          "4": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Ld",
+            "FAdd"
+          ],
+          "5": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul",
+            "FAdd"
+          ],
+          "6": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul",
+            "FAdd"
+          ],
+          "7": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "St"
+          ],
+          "8": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Ld"
+          ],
+          "9": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul"
+          ],
+          "10": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul"
+          ],
+          "11": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "St"
+          ],
+          "12": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Ld",
+            "FAdd"
+          ],
+          "13": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul",
+            "FAdd"
+          ],
+          "14": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul",
+            "FAdd"
+          ],
+          "15": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "St"
+          ]
+        }
+      },
+      "success": true,
+      "mapping_ii": 4,
+      "resource_mii": 2,
+      "recurrence_mii": 3,
+      "dfg_nodes": 25,
+      "dfg_edges": 30,
+      "fu_utilization_percent": 39.0625,
+      "xbar_utilization_percent": 70.3125,
+      "elapsed_seconds": 0.6306167950388044,
+      "error": null
+    },
+    {
+      "candidate": {
+        "kernel": "fmcw_cfar_2d",
+        "rows": 4,
+        "columns": 4,
+        "unroll_factor": 1,
+        "compiler_vectorize": false,
+        "architecture_vectorization": "none",
+        "bypass_constraint": 4,
+        "control_memory": 16,
+        "register_count": 8,
+        "heuristic_mapping": true,
+        "range_bins": 256,
+        "doppler_bins": 128,
+        "rx_channels": 4,
+        "fu_profile": "custom",
+        "memory_banks": 8,
+        "bank_kib": 16,
+        "tile_fus": {
+          "0": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Ld",
+            "Mul"
+          ],
+          "1": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul"
+          ],
+          "2": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul"
+          ],
+          "3": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "St"
+          ],
+          "4": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Ld",
+            "FAdd"
+          ],
+          "5": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul",
+            "FAdd"
+          ],
+          "6": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul",
+            "FAdd"
+          ],
+          "7": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "St"
+          ],
+          "8": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Ld"
+          ],
+          "9": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul"
+          ],
+          "10": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul"
+          ],
+          "11": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "St"
+          ],
+          "12": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Ld",
+            "FAdd"
+          ],
+          "13": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul",
+            "FAdd"
+          ],
+          "14": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul",
+            "FAdd"
+          ],
+          "15": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "St"
+          ]
+        }
+      },
+      "success": true,
+      "mapping_ii": 10,
+      "resource_mii": 2,
+      "recurrence_mii": 6,
+      "dfg_nodes": 20,
+      "dfg_edges": 25,
+      "fu_utilization_percent": 12.5,
+      "xbar_utilization_percent": 30.0,
+      "elapsed_seconds": 0.713378279004246,
+      "error": null
+    }
+  ],
+  "architectures": [],
+  "elapsed_seconds": 126.78259116993286,
+  "policy": "full_maco",
+  "method": "full_maco",
+  "config": {
+    "rounds": 1,
+    "proposals": 2,
+    "top_k": 2,
+    "mapping_budget": 10,
+    "seed": 37,
+    "epsilon_0": 0.9,
+    "gamma": 0.95,
+    "temperature": 0.2,
+    "max_tokens": 4096,
+    "timeout": 300
+  },
+  "workload": {
+    "description": "FMCW range\u2013Doppler detection, 256 samples per chirp, 128 chirps per frame, 4 RX channels, FP32 complex, with at most 16 PEs. Search the array, functional units, compiler settings, and memory organization.",
+    "samples": 256,
+    "chirps": 128,
+    "rx": 4,
+    "dtype": "float32",
+    "objective": "cycles",
+    "max_pes": 16
+  },
+  "model": "harp-raw-base",
+  "model_identity": {
+    "served_model": "harp-raw-base",
+    "verification": "local serving health response",
+    "model_path": "/data2/harp_qwen38/models/Qwen3.8-27B",
+    "quantization": "nf4-double-quant",
+    "service": "harp-external-baseline",
+    "ready": true
+  },
+  "adapter_sha256": "bd6f0164869f6e527dba13357ac3d891a68313e64a299cff42fbce3b28571a1c",
+  "source_commit": "31c02ce013838d89ef2a6d211acfdf639ecb178d",
+  "agent_source_sha256": {
+    "cgra_codesigner.py": "1e30befb3fcc66d32c6c70aed05db6f394b1fa11358f0469fea6da6c01af6f7c",
+    "cgra_fixer.py": "58cc1c4cb6d7b0b99bc947a040208b835c78b4b5029b067199dc7ffa936cfb0b",
+    "coarse_grained_judge.py": "eecccb89bb7078099b98600a0627ac94e828c699847c3af6efc680954879ec45",
+    "fine_grained_judge.py": "11fc0bad2712a54828135aa83118293f933f0b3cbeac293c73c71f50c523b6b6"
+  },
+  "rounds": [
+    {
+      "iteration": 1,
+      "mode": "explore",
+      "method": "full_maco",
+      "epsilon": 0.855,
+      "proposals": [
+        {
+          "tile_size": "4x4",
+          "FUs": {
+            "tile0": [
+              "Ld",
+              "FMul"
+            ],
+            "tile1": [
+              "FMul"
+            ],
+            "tile2": [
+              "FMul"
+            ],
+            "tile3": [
+              "St"
+            ],
+            "tile4": [
+              "Ld",
+              "FAdd"
+            ],
+            "tile5": [
+              "FMul",
+              "FAdd"
+            ],
+            "tile6": [
+              "FMul",
+              "FAdd"
+            ],
+            "tile7": [
+              "St"
+            ],
+            "tile8": [
+              "Ld"
+            ],
+            "tile9": [
+              "FMul"
+            ],
+            "tile10": [
+              "FMul"
+            ],
+            "tile11": [
+              "St"
+            ],
+            "tile12": [
+              "Ld",
+              "FAdd"
+            ],
+            "tile13": [
+              "FMul",
+              "FAdd"
+            ],
+            "tile14": [
+              "FMul",
+              "FAdd"
+            ],
+            "tile15": [
+              "St"
+            ]
+          },
+          "config_mem": 16,
+          "data_spm_kb": 64,
+          "memory_banks": 4,
+          "unroll": {
+            "window": 4,
+            "fft": 4,
+            "transpose": 4,
+            "power": 4,
+            "cfar": 1
+          },
+          "vectorize": "all",
+          "reasoning": "Balanced 4x4 mesh with high unroll for FFT and window; vectorization maximizes throughput."
+        },
+        {
+          "tile_size": "4x4",
+          "FUs": {
+            "tile0": [
+              "Ld",
+              "FMul"
+            ],
+            "tile1": [
+              "FMul"
+            ],
+            "tile2": [
+              "FMul"
+            ],
+            "tile3": [
+              "St"
+            ],
+            "tile4": [
+              "Ld",
+              "FAdd"
+            ],
+            "tile5": [
+              "FMul",
+              "FAdd"
+            ],
+            "tile6": [
+              "FMul",
+              "FAdd"
+            ],
+            "tile7": [
+              "St"
+            ],
+            "tile8": [
+              "Ld"
+            ],
+            "tile9": [
+              "FMul"
+            ],
+            "tile10": [
+              "FMul"
+            ],
+            "tile11": [
+              "St"
+            ],
+            "tile12": [
+              "Ld",
+              "FAdd"
+            ],
+            "tile13": [
+              "FMul",
+              "FAdd"
+            ],
+            "tile14": [
+              "FMul",
+              "FAdd"
+            ],
+            "tile15": [
+              "St"
+            ]
+          },
+          "config_mem": 16,
+          "data_spm_kb": 128,
+          "memory_banks": 8,
+          "unroll": {
+            "window": 2,
+            "fft": 2,
+            "transpose": 2,
+            "power": 2,
+            "cfar": 1
+          },
+          "vectorize": "interleaved",
+          "reasoning": "Larger SPM and banks reduce memory bottlenecks; lower unroll fits tighter config constraints."
+        }
+      ],
+      "repaired": [
+        {
+          "tile_size": "4x4",
+          "FUs": {
+            "tile0": [
+              "Ld",
+              "Mul"
+            ],
+            "tile1": [
+              "Mul"
+            ],
+            "tile2": [
+              "Mul"
+            ],
+            "tile3": [
+              "St"
+            ],
+            "tile4": [
+              "Ld",
+              "FAdd"
+            ],
+            "tile5": [
+              "Mul",
+              "FAdd"
+            ],
+            "tile6": [
+              "Mul",
+              "FAdd"
+            ],
+            "tile7": [
+              "St"
+            ],
+            "tile8": [
+              "Ld"
+            ],
+            "tile9": [
+              "Mul"
+            ],
+            "tile10": [
+              "Mul"
+            ],
+            "tile11": [
+              "St"
+            ],
+            "tile12": [
+              "Ld",
+              "FAdd"
+            ],
+            "tile13": [
+              "Mul",
+              "FAdd"
+            ],
+            "tile14": [
+              "Mul",
+              "FAdd"
+            ],
+            "tile15": [
+              "St"
+            ]
+          },
+          "config_mem": 16,
+          "data_spm_kb": 64,
+          "memory_banks": 4,
+          "unroll": {
+            "window": 4,
+            "fft": 4,
+            "transpose": 4,
+            "power": 4,
+            "cfar": 1
+          },
+          "vectorize": "all",
+          "reasoning": "Balanced 4x4 mesh with high unroll for FFT and window; vectorization maximizes throughput."
+        },
+        {
+          "tile_size": "4x4",
+          "FUs": {
+            "tile0": [
+              "Ld",
+              "Mul"
+            ],
+            "tile1": [
+              "Mul"
+            ],
+            "tile2": [
+              "Mul"
+            ],
+            "tile3": [
+              "St"
+            ],
+            "tile4": [
+              "Ld",
+              "FAdd"
+            ],
+            "tile5": [
+              "Mul",
+              "FAdd"
+            ],
+            "tile6": [
+              "Mul",
+              "FAdd"
+            ],
+            "tile7": [
+              "St"
+            ],
+            "tile8": [
+              "Ld"
+            ],
+            "tile9": [
+              "Mul"
+            ],
+            "tile10": [
+              "Mul"
+            ],
+            "tile11": [
+              "St"
+            ],
+            "tile12": [
+              "Ld",
+              "FAdd"
+            ],
+            "tile13": [
+              "Mul",
+              "FAdd"
+            ],
+            "tile14": [
+              "Mul",
+              "FAdd"
+            ],
+            "tile15": [
+              "St"
+            ]
+          },
+          "config_mem": 16,
+          "data_spm_kb": 128,
+          "memory_banks": 8,
+          "unroll": {
+            "window": 2,
+            "fft": 2,
+            "transpose": 2,
+            "power": 2,
+            "cfar": 1
+          },
+          "vectorize": "interleaved",
+          "reasoning": "Larger SPM and banks reduce memory bottlenecks; lower unroll fits tighter config constraints."
+        }
+      ],
+      "shortlist": [
+        {
+          "tile_size": "4x4",
+          "FUs": {
+            "tile0": [
+              "Ld",
+              "Mul"
+            ],
+            "tile1": [
+              "Mul"
+            ],
+            "tile2": [
+              "Mul"
+            ],
+            "tile3": [
+              "St"
+            ],
+            "tile4": [
+              "Ld",
+              "FAdd"
+            ],
+            "tile5": [
+              "Mul",
+              "FAdd"
+            ],
+            "tile6": [
+              "Mul",
+              "FAdd"
+            ],
+            "tile7": [
+              "St"
+            ],
+            "tile8": [
+              "Ld"
+            ],
+            "tile9": [
+              "Mul"
+            ],
+            "tile10": [
+              "Mul"
+            ],
+            "tile11": [
+              "St"
+            ],
+            "tile12": [
+              "Ld",
+              "FAdd"
+            ],
+            "tile13": [
+              "Mul",
+              "FAdd"
+            ],
+            "tile14": [
+              "Mul",
+              "FAdd"
+            ],
+            "tile15": [
+              "St"
+            ]
+          },
+          "config_mem": 16,
+          "data_spm_kb": 64,
+          "memory_banks": 4,
+          "unroll": {
+            "window": 4,
+            "fft": 4,
+            "transpose": 4,
+            "power": 4,
+            "cfar": 1
+          },
+          "vectorize": "all",
+          "reasoning": "Balanced 4x4 mesh with high unroll for FFT and window; vectorization maximizes throughput."
+        },
+        {
+          "tile_size": "4x4",
+          "FUs": {
+            "tile0": [
+              "Ld",
+              "Mul"
+            ],
+            "tile1": [
+              "Mul"
+            ],
+            "tile2": [
+              "Mul"
+            ],
+            "tile3": [
+              "St"
+            ],
+            "tile4": [
+              "Ld",
+              "FAdd"
+            ],
+            "tile5": [
+              "Mul",
+              "FAdd"
+            ],
+            "tile6": [
+              "Mul",
+              "FAdd"
+            ],
+            "tile7": [
+              "St"
+            ],
+            "tile8": [
+              "Ld"
+            ],
+            "tile9": [
+              "Mul"
+            ],
+            "tile10": [
+              "Mul"
+            ],
+            "tile11": [
+              "St"
+            ],
+            "tile12": [
+              "Ld",
+              "FAdd"
+            ],
+            "tile13": [
+              "Mul",
+              "FAdd"
+            ],
+            "tile14": [
+              "Mul",
+              "FAdd"
+            ],
+            "tile15": [
+              "St"
+            ]
+          },
+          "config_mem": 16,
+          "data_spm_kb": 128,
+          "memory_banks": 8,
+          "unroll": {
+            "window": 2,
+            "fft": 2,
+            "transpose": 2,
+            "power": 2,
+            "cfar": 1
+          },
+          "vectorize": "interleaved",
+          "reasoning": "Larger SPM and banks reduce memory bottlenecks; lower unroll fits tighter config constraints."
+        }
+      ],
+      "llm_choice": {
+        "tile_size": "4x4",
+        "FUs": {
+          "tile0": [
+            "Ld",
+            "Mul"
+          ],
+          "tile1": [
+            "Mul"
+          ],
+          "tile2": [
+            "Mul"
+          ],
+          "tile3": [
+            "St"
+          ],
+          "tile4": [
+            "Ld",
+            "FAdd"
+          ],
+          "tile5": [
+            "Mul",
+            "FAdd"
+          ],
+          "tile6": [
+            "Mul",
+            "FAdd"
+          ],
+          "tile7": [
+            "St"
+          ],
+          "tile8": [
+            "Ld"
+          ],
+          "tile9": [
+            "Mul"
+          ],
+          "tile10": [
+            "Mul"
+          ],
+          "tile11": [
+            "St"
+          ],
+          "tile12": [
+            "Ld",
+            "FAdd"
+          ],
+          "tile13": [
+            "Mul",
+            "FAdd"
+          ],
+          "tile14": [
+            "Mul",
+            "FAdd"
+          ],
+          "tile15": [
+            "St"
+          ]
+        },
+        "config_mem": 16,
+        "data_spm_kb": 64,
+        "memory_banks": 4,
+        "unroll": {
+          "window": 4,
+          "fft": 4,
+          "transpose": 4,
+          "power": 4,
+          "cfar": 1
+        },
+        "vectorize": "all",
+        "reasoning": "Balanced 4x4 mesh with high unroll for FFT and window; vectorization maximizes throughput."
+      },
+      "measured_winner": {
+        "design": {
+          "tile_size": "4x4",
+          "FUs": {
+            "tile0": [
+              "Ld",
+              "Mul"
+            ],
+            "tile1": [
+              "Mul"
+            ],
+            "tile2": [
+              "Mul"
+            ],
+            "tile3": [
+              "St"
+            ],
+            "tile4": [
+              "Ld",
+              "FAdd"
+            ],
+            "tile5": [
+              "Mul",
+              "FAdd"
+            ],
+            "tile6": [
+              "Mul",
+              "FAdd"
+            ],
+            "tile7": [
+              "St"
+            ],
+            "tile8": [
+              "Ld"
+            ],
+            "tile9": [
+              "Mul"
+            ],
+            "tile10": [
+              "Mul"
+            ],
+            "tile11": [
+              "St"
+            ],
+            "tile12": [
+              "Ld",
+              "FAdd"
+            ],
+            "tile13": [
+              "Mul",
+              "FAdd"
+            ],
+            "tile14": [
+              "Mul",
+              "FAdd"
+            ],
+            "tile15": [
+              "St"
+            ]
+          },
+          "config_mem": 16,
+          "data_spm_kb": 64,
+          "memory_banks": 4,
+          "unroll": {
+            "window": 4,
+            "fft": 4,
+            "transpose": 4,
+            "power": 4,
+            "cfar": 1
+          },
+          "vectorize": "all",
+          "reasoning": "Balanced 4x4 mesh with high unroll for FFT and window; vectorization maximizes throughput."
+        },
+        "frame_estimate": {
+          "valid": true,
+          "model": "steady_state_scheduled_groups_x_mapping_ii",
+          "excluded_costs": [
+            "loop_setup",
+            "memory_stalls",
+            "fft_bit_reversal",
+            "host_cgra_transfers"
+          ],
+          "breakdown": {
+            "fmcw_window": {
+              "dynamic_iterations": 131072,
+              "compiler_unroll_factor": 4,
+              "scheduled_loop_groups": 32768,
+              "measured_mapping_ii": 6,
+              "estimated_cycles": 196608
+            },
+            "fmcw_fft_stage": {
+              "dynamic_iterations": 983040,
+              "compiler_unroll_factor": 4,
+              "scheduled_loop_groups": 376832,
+              "measured_mapping_ii": 8,
+              "estimated_cycles": 3014656
+            },
+            "fmcw_transpose": {
+              "dynamic_iterations": 262144,
+              "compiler_unroll_factor": 4,
+              "scheduled_loop_groups": 65536,
+              "measured_mapping_ii": 4,
+              "estimated_cycles": 262144
+            },
+            "fmcw_accumulate_power": {
+              "dynamic_iterations": 131072,
+              "compiler_unroll_factor": 4,
+              "scheduled_loop_groups": 32768,
+              "measured_mapping_ii": 4,
+              "estimated_cycles": 131072
+            },
+            "fmcw_cfar_2d": {
+              "dynamic_iterations": 3512388,
+              "compiler_unroll_factor": 1,
+              "scheduled_loop_groups": 3512388,
+              "measured_mapping_ii": 10,
+              "estimated_cycles": 35123880
+            }
+          },
+          "estimated_cycles": 38728360
+        },
+        "evaluations_so_far": 5,
+        "round": 1,
+        "architecture": {
+          "tiles": {
+            "0": {
+              "disabled": false,
+              "supportAllFUs": false,
+              "supportedFUs": [
+                "Add",
+                "Br",
+                "Cmp",
+                "Logic",
+                "Phi",
+                "Ret",
+                "Sel",
+                "Shift",
+                "Ld",
+                "Mul"
+              ],
+              "accessMem": true
+            },
+            "1": {
+              "disabled": false,
+              "supportAllFUs": false,
+              "supportedFUs": [
+                "Add",
+                "Br",
+                "Cmp",
+                "Logic",
+                "Phi",
+                "Ret",
+                "Sel",
+                "Shift",
+                "Mul"
+              ],
+              "accessMem": false
+            },
+            "2": {
+              "disabled": false,
+              "supportAllFUs": false,
+              "supportedFUs": [
+                "Add",
+                "Br",
+                "Cmp",
+                "Logic",
+                "Phi",
+                "Ret",
+                "Sel",
+                "Shift",
+                "Mul"
+              ],
+              "accessMem": false
+            },
+            "3": {
+              "disabled": false,
+              "supportAllFUs": false,
+              "supportedFUs": [
+                "Add",
+                "Br",
+                "Cmp",
+                "Logic",
+                "Phi",
+                "Ret",
+                "Sel",
+                "Shift",
+                "St"
+              ],
+              "accessMem": true
+            },
+            "4": {
+              "disabled": false,
+              "supportAllFUs": false,
+              "supportedFUs": [
+                "Add",
+                "Br",
+                "Cmp",
+                "Logic",
+                "Phi",
+                "Ret",
+                "Sel",
+                "Shift",
+                "Ld",
+                "FAdd"
+              ],
+              "accessMem": true
+            },
+            "5": {
+              "disabled": false,
+              "supportAllFUs": false,
+              "supportedFUs": [
+                "Add",
+                "Br",
+                "Cmp",
+                "Logic",
+                "Phi",
+                "Ret",
+                "Sel",
+                "Shift",
+                "Mul",
+                "FAdd"
+              ],
+              "accessMem": false
+            },
+            "6": {
+              "disabled": false,
+              "supportAllFUs": false,
+              "supportedFUs": [
+                "Add",
+                "Br",
+                "Cmp",
+                "Logic",
+                "Phi",
+                "Ret",
+                "Sel",
+                "Shift",
+                "Mul",
+                "FAdd"
+              ],
+              "accessMem": false
+            },
+            "7": {
+              "disabled": false,
+              "supportAllFUs": false,
+              "supportedFUs": [
+                "Add",
+                "Br",
+                "Cmp",
+                "Logic",
+                "Phi",
+                "Ret",
+                "Sel",
+                "Shift",
+                "St"
+              ],
+              "accessMem": true
+            },
+            "8": {
+              "disabled": false,
+              "supportAllFUs": false,
+              "supportedFUs": [
+                "Add",
+                "Br",
+                "Cmp",
+                "Logic",
+                "Phi",
+                "Ret",
+                "Sel",
+                "Shift",
+                "Ld"
+              ],
+              "accessMem": true
+            },
+            "9": {
+              "disabled": false,
+              "supportAllFUs": false,
+              "supportedFUs": [
+                "Add",
+                "Br",
+                "Cmp",
+                "Logic",
+                "Phi",
+                "Ret",
+                "Sel",
+                "Shift",
+                "Mul"
+              ],
+              "accessMem": false
+            },
+            "10": {
+              "disabled": false,
+              "supportAllFUs": false,
+              "supportedFUs": [
+                "Add",
+                "Br",
+                "Cmp",
+                "Logic",
+                "Phi",
+                "Ret",
+                "Sel",
+                "Shift",
+                "Mul"
+              ],
+              "accessMem": false
+            },
+            "11": {
+              "disabled": false,
+              "supportAllFUs": false,
+              "supportedFUs": [
+                "Add",
+                "Br",
+                "Cmp",
+                "Logic",
+                "Phi",
+                "Ret",
+                "Sel",
+                "Shift",
+                "St"
+              ],
+              "accessMem": true
+            },
+            "12": {
+              "disabled": false,
+              "supportAllFUs": false,
+              "supportedFUs": [
+                "Add",
+                "Br",
+                "Cmp",
+                "Logic",
+                "Phi",
+                "Ret",
+                "Sel",
+                "Shift",
+                "Ld",
+                "FAdd"
+              ],
+              "accessMem": true
+            },
+            "13": {
+              "disabled": false,
+              "supportAllFUs": false,
+              "supportedFUs": [
+                "Add",
+                "Br",
+                "Cmp",
+                "Logic",
+                "Phi",
+                "Ret",
+                "Sel",
+                "Shift",
+                "Mul",
+                "FAdd"
+              ],
+              "accessMem": false
+            },
+            "14": {
+              "disabled": false,
+              "supportAllFUs": false,
+              "supportedFUs": [
+                "Add",
+                "Br",
+                "Cmp",
+                "Logic",
+                "Phi",
+                "Ret",
+                "Sel",
+                "Shift",
+                "Mul",
+                "FAdd"
+              ],
+              "accessMem": false
+            },
+            "15": {
+              "disabled": false,
+              "supportAllFUs": false,
+              "supportedFUs": [
+                "Add",
+                "Br",
+                "Cmp",
+                "Logic",
+                "Phi",
+                "Ret",
+                "Sel",
+                "Shift",
+                "St"
+              ],
+              "accessMem": true
+            }
+          },
+          "links": [
+            {
+              "srcTile": 0,
+              "dstTile": 1
+            },
+            {
+              "srcTile": 1,
+              "dstTile": 0
+            },
+            {
+              "srcTile": 0,
+              "dstTile": 4
+            },
+            {
+              "srcTile": 4,
+              "dstTile": 0
+            },
+            {
+              "srcTile": 1,
+              "dstTile": 2
+            },
+            {
+              "srcTile": 2,
+              "dstTile": 1
+            },
+            {
+              "srcTile": 1,
+              "dstTile": 5
+            },
+            {
+              "srcTile": 5,
+              "dstTile": 1
+            },
+            {
+              "srcTile": 2,
+              "dstTile": 3
+            },
+            {
+              "srcTile": 3,
+              "dstTile": 2
+            },
+            {
+              "srcTile": 2,
+              "dstTile": 6
+            },
+            {
+              "srcTile": 6,
+              "dstTile": 2
+            },
+            {
+              "srcTile": 3,
+              "dstTile": 7
+            },
+            {
+              "srcTile": 7,
+              "dstTile": 3
+            },
+            {
+              "srcTile": 4,
+              "dstTile": 5
+            },
+            {
+              "srcTile": 5,
+              "dstTile": 4
+            },
+            {
+              "srcTile": 4,
+              "dstTile": 8
+            },
+            {
+              "srcTile": 8,
+              "dstTile": 4
+            },
+            {
+              "srcTile": 5,
+              "dstTile": 6
+            },
+            {
+              "srcTile": 6,
+              "dstTile": 5
+            },
+            {
+              "srcTile": 5,
+              "dstTile": 9
+            },
+            {
+              "srcTile": 9,
+              "dstTile": 5
+            },
+            {
+              "srcTile": 6,
+              "dstTile": 7
+            },
+            {
+              "srcTile": 7,
+              "dstTile": 6
+            },
+            {
+              "srcTile": 6,
+              "dstTile": 10
+            },
+            {
+              "srcTile": 10,
+              "dstTile": 6
+            },
+            {
+              "srcTile": 7,
+              "dstTile": 11
+            },
+            {
+              "srcTile": 11,
+              "dstTile": 7
+            },
+            {
+              "srcTile": 8,
+              "dstTile": 9
+            },
+            {
+              "srcTile": 9,
+              "dstTile": 8
+            },
+            {
+              "srcTile": 8,
+              "dstTile": 12
+            },
+            {
+              "srcTile": 12,
+              "dstTile": 8
+            },
+            {
+              "srcTile": 9,
+              "dstTile": 10
+            },
+            {
+              "srcTile": 10,
+              "dstTile": 9
+            },
+            {
+              "srcTile": 9,
+              "dstTile": 13
+            },
+            {
+              "srcTile": 13,
+              "dstTile": 9
+            },
+            {
+              "srcTile": 10,
+              "dstTile": 11
+            },
+            {
+              "srcTile": 11,
+              "dstTile": 10
+            },
+            {
+              "srcTile": 10,
+              "dstTile": 14
+            },
+            {
+              "srcTile": 14,
+              "dstTile": 10
+            },
+            {
+              "srcTile": 11,
+              "dstTile": 15
+            },
+            {
+              "srcTile": 15,
+              "dstTile": 11
+            },
+            {
+              "srcTile": 12,
+              "dstTile": 13
+            },
+            {
+              "srcTile": 13,
+              "dstTile": 12
+            },
+            {
+              "srcTile": 13,
+              "dstTile": 14
+            },
+            {
+              "srcTile": 14,
+              "dstTile": 13
+            },
+            {
+              "srcTile": 14,
+              "dstTile": 15
+            },
+            {
+              "srcTile": 15,
+              "dstTile": 14
+            }
+          ],
+          "control_memory": 16,
+          "memory": {
+            "banks": 4,
+            "bank_kib": 16,
+            "capacity_kib": 64,
+            "interface_tiles": [
+              0,
+              3,
+              4,
+              7,
+              8,
+              11,
+              12,
+              15
+            ],
+            "model": "ideal bank interfaces; no address-conflict or spill simulation"
+          },
+          "fu_profile": "custom",
+          "multiplier_tiles": 9,
+          "scope": "mapper operation classes; not precision-verified RTL"
+        },
+        "memory": {
+          "read_nj": 0.0171583,
+          "write_nj": 0.0155975,
+          "area_mm2": 0.459527,
+          "access_ns": 0.64119,
+          "banks": 4,
+          "bank_kib": 16,
+          "technology_nm": 45,
+          "source": "CGRA-Flow CACTI",
+          "scope": "SRAM only; one read and one write port per bank",
+          "evidence": "memory_4x16/cacti.log",
+          "estimated_reads": 20629708,
+          "estimated_writes": 13611144,
+          "dynamic_energy_uj": 566.2705373164001,
+          "activity_source": "scheduled DFG load/store counts \u00d7 steady-state loop groups",
+          "excluded": [
+            "PE energy",
+            "interconnect energy",
+            "leakage",
+            "bank conflicts",
+            "capacity spills",
+            "host transfers"
+          ]
+        },
+        "energy": {
+          "total_dynamic_energy_uj": 818.7417285164001,
+          "core_dynamic_energy_uj": 252.47119120000002,
+          "sram_dynamic_energy_uj": 566.2705373164001,
+          "components_uj": {
+            "compute": 45.8712944,
+            "register_and_control": 165.197544,
+            "interconnect": 41.4023528,
+            "sram": 566.2705373164001
+          },
+          "activity": {
+            "operations": {
+              "int_alu": 99847436,
+              "int_mul": 32768,
+              "fp_add": 12818500,
+              "fp_mul": 6553600,
+              "div": 0
+            },
+            "register_transfers": 134214856,
+            "route_hops": 207011764,
+            "per_kernel": {
+              "fmcw_window": {
+                "operations": 1933312,
+                "register_transfers": 2457600,
+                "route_hops": 3702784
+              },
+              "fmcw_fft_stage": {
+                "operations": 43335680,
+                "register_transfers": 64438272,
+                "route_hops": 94961664
+              },
+              "fmcw_transpose": {
+                "operations": 2293760,
+                "register_transfers": 2555904,
+                "route_hops": 3670016
+              },
+              "fmcw_accumulate_power": {
+                "operations": 1441792,
+                "register_transfers": 1540096,
+                "route_hops": 2818048
+              },
+              "fmcw_cfar_2d": {
+                "operations": 70247760,
+                "register_transfers": 63222984,
+                "route_hops": 101859252
+              }
+            }
+          },
+          "coefficients_pj": {
+            "int_alu": 0.1,
+            "int_mul": 3.1,
+            "fp_add": 0.9,
+            "fp_mul": 3.7,
+            "div": 20.0,
+            "register_transfer": 1.0,
+            "route_hop": 0.2,
+            "active_tile_cycle": 0.05
+          },
+          "source": "measured mapper schedules + 45 nm operation/activity model + CGRA-Flow CACTI",
+          "scope": "CGRA and SRAM dynamic energy per frame; excludes leakage and host transfers",
+          "reference": "M. Horowitz, ISSCC 2014, Computing's Energy Problem"
+        }
+      },
+      "confidence": 0.3,
+      "agreement": 1.0,
+      "tool_validation": "mandatory; confidence never substitutes for measurements"
+    }
+  ],
+  "best_evaluated_plan": {
+    "design": {
+      "tile_size": "4x4",
+      "FUs": {
+        "tile0": [
+          "Ld",
+          "Mul"
+        ],
+        "tile1": [
+          "Mul"
+        ],
+        "tile2": [
+          "Mul"
+        ],
+        "tile3": [
+          "St"
+        ],
+        "tile4": [
+          "Ld",
+          "FAdd"
+        ],
+        "tile5": [
+          "Mul",
+          "FAdd"
+        ],
+        "tile6": [
+          "Mul",
+          "FAdd"
+        ],
+        "tile7": [
+          "St"
+        ],
+        "tile8": [
+          "Ld"
+        ],
+        "tile9": [
+          "Mul"
+        ],
+        "tile10": [
+          "Mul"
+        ],
+        "tile11": [
+          "St"
+        ],
+        "tile12": [
+          "Ld",
+          "FAdd"
+        ],
+        "tile13": [
+          "Mul",
+          "FAdd"
+        ],
+        "tile14": [
+          "Mul",
+          "FAdd"
+        ],
+        "tile15": [
+          "St"
+        ]
+      },
+      "config_mem": 16,
+      "data_spm_kb": 64,
+      "memory_banks": 4,
+      "unroll": {
+        "window": 4,
+        "fft": 4,
+        "transpose": 4,
+        "power": 4,
+        "cfar": 1
+      },
+      "vectorize": "all",
+      "reasoning": "Balanced 4x4 mesh with high unroll for FFT and window; vectorization maximizes throughput."
+    },
+    "frame_estimate": {
+      "valid": true,
+      "model": "steady_state_scheduled_groups_x_mapping_ii",
+      "excluded_costs": [
+        "loop_setup",
+        "memory_stalls",
+        "fft_bit_reversal",
+        "host_cgra_transfers"
+      ],
+      "breakdown": {
+        "fmcw_window": {
+          "dynamic_iterations": 131072,
+          "compiler_unroll_factor": 4,
+          "scheduled_loop_groups": 32768,
+          "measured_mapping_ii": 6,
+          "estimated_cycles": 196608
+        },
+        "fmcw_fft_stage": {
+          "dynamic_iterations": 983040,
+          "compiler_unroll_factor": 4,
+          "scheduled_loop_groups": 376832,
+          "measured_mapping_ii": 8,
+          "estimated_cycles": 3014656
+        },
+        "fmcw_transpose": {
+          "dynamic_iterations": 262144,
+          "compiler_unroll_factor": 4,
+          "scheduled_loop_groups": 65536,
+          "measured_mapping_ii": 4,
+          "estimated_cycles": 262144
+        },
+        "fmcw_accumulate_power": {
+          "dynamic_iterations": 131072,
+          "compiler_unroll_factor": 4,
+          "scheduled_loop_groups": 32768,
+          "measured_mapping_ii": 4,
+          "estimated_cycles": 131072
+        },
+        "fmcw_cfar_2d": {
+          "dynamic_iterations": 3512388,
+          "compiler_unroll_factor": 1,
+          "scheduled_loop_groups": 3512388,
+          "measured_mapping_ii": 10,
+          "estimated_cycles": 35123880
+        }
+      },
+      "estimated_cycles": 38728360
+    },
+    "evaluations_so_far": 5,
+    "round": 1,
+    "architecture": {
+      "tiles": {
+        "0": {
+          "disabled": false,
+          "supportAllFUs": false,
+          "supportedFUs": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Ld",
+            "Mul"
+          ],
+          "accessMem": true
+        },
+        "1": {
+          "disabled": false,
+          "supportAllFUs": false,
+          "supportedFUs": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul"
+          ],
+          "accessMem": false
+        },
+        "2": {
+          "disabled": false,
+          "supportAllFUs": false,
+          "supportedFUs": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul"
+          ],
+          "accessMem": false
+        },
+        "3": {
+          "disabled": false,
+          "supportAllFUs": false,
+          "supportedFUs": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "St"
+          ],
+          "accessMem": true
+        },
+        "4": {
+          "disabled": false,
+          "supportAllFUs": false,
+          "supportedFUs": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Ld",
+            "FAdd"
+          ],
+          "accessMem": true
+        },
+        "5": {
+          "disabled": false,
+          "supportAllFUs": false,
+          "supportedFUs": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul",
+            "FAdd"
+          ],
+          "accessMem": false
+        },
+        "6": {
+          "disabled": false,
+          "supportAllFUs": false,
+          "supportedFUs": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul",
+            "FAdd"
+          ],
+          "accessMem": false
+        },
+        "7": {
+          "disabled": false,
+          "supportAllFUs": false,
+          "supportedFUs": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "St"
+          ],
+          "accessMem": true
+        },
+        "8": {
+          "disabled": false,
+          "supportAllFUs": false,
+          "supportedFUs": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Ld"
+          ],
+          "accessMem": true
+        },
+        "9": {
+          "disabled": false,
+          "supportAllFUs": false,
+          "supportedFUs": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul"
+          ],
+          "accessMem": false
+        },
+        "10": {
+          "disabled": false,
+          "supportAllFUs": false,
+          "supportedFUs": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul"
+          ],
+          "accessMem": false
+        },
+        "11": {
+          "disabled": false,
+          "supportAllFUs": false,
+          "supportedFUs": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "St"
+          ],
+          "accessMem": true
+        },
+        "12": {
+          "disabled": false,
+          "supportAllFUs": false,
+          "supportedFUs": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Ld",
+            "FAdd"
+          ],
+          "accessMem": true
+        },
+        "13": {
+          "disabled": false,
+          "supportAllFUs": false,
+          "supportedFUs": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul",
+            "FAdd"
+          ],
+          "accessMem": false
+        },
+        "14": {
+          "disabled": false,
+          "supportAllFUs": false,
+          "supportedFUs": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "Mul",
+            "FAdd"
+          ],
+          "accessMem": false
+        },
+        "15": {
+          "disabled": false,
+          "supportAllFUs": false,
+          "supportedFUs": [
+            "Add",
+            "Br",
+            "Cmp",
+            "Logic",
+            "Phi",
+            "Ret",
+            "Sel",
+            "Shift",
+            "St"
+          ],
+          "accessMem": true
+        }
+      },
+      "links": [
+        {
+          "srcTile": 0,
+          "dstTile": 1
+        },
+        {
+          "srcTile": 1,
+          "dstTile": 0
+        },
+        {
+          "srcTile": 0,
+          "dstTile": 4
+        },
+        {
+          "srcTile": 4,
+          "dstTile": 0
+        },
+        {
+          "srcTile": 1,
+          "dstTile": 2
+        },
+        {
+          "srcTile": 2,
+          "dstTile": 1
+        },
+        {
+          "srcTile": 1,
+          "dstTile": 5
+        },
+        {
+          "srcTile": 5,
+          "dstTile": 1
+        },
+        {
+          "srcTile": 2,
+          "dstTile": 3
+        },
+        {
+          "srcTile": 3,
+          "dstTile": 2
+        },
+        {
+          "srcTile": 2,
+          "dstTile": 6
+        },
+        {
+          "srcTile": 6,
+          "dstTile": 2
+        },
+        {
+          "srcTile": 3,
+          "dstTile": 7
+        },
+        {
+          "srcTile": 7,
+          "dstTile": 3
+        },
+        {
+          "srcTile": 4,
+          "dstTile": 5
+        },
+        {
+          "srcTile": 5,
+          "dstTile": 4
+        },
+        {
+          "srcTile": 4,
+          "dstTile": 8
+        },
+        {
+          "srcTile": 8,
+          "dstTile": 4
+        },
+        {
+          "srcTile": 5,
+          "dstTile": 6
+        },
+        {
+          "srcTile": 6,
+          "dstTile": 5
+        },
+        {
+          "srcTile": 5,
+          "dstTile": 9
+        },
+        {
+          "srcTile": 9,
+          "dstTile": 5
+        },
+        {
+          "srcTile": 6,
+          "dstTile": 7
+        },
+        {
+          "srcTile": 7,
+          "dstTile": 6
+        },
+        {
+          "srcTile": 6,
+          "dstTile": 10
+        },
+        {
+          "srcTile": 10,
+          "dstTile": 6
+        },
+        {
+          "srcTile": 7,
+          "dstTile": 11
+        },
+        {
+          "srcTile": 11,
+          "dstTile": 7
+        },
+        {
+          "srcTile": 8,
+          "dstTile": 9
+        },
+        {
+          "srcTile": 9,
+          "dstTile": 8
+        },
+        {
+          "srcTile": 8,
+          "dstTile": 12
+        },
+        {
+          "srcTile": 12,
+          "dstTile": 8
+        },
+        {
+          "srcTile": 9,
+          "dstTile": 10
+        },
+        {
+          "srcTile": 10,
+          "dstTile": 9
+        },
+        {
+          "srcTile": 9,
+          "dstTile": 13
+        },
+        {
+          "srcTile": 13,
+          "dstTile": 9
+        },
+        {
+          "srcTile": 10,
+          "dstTile": 11
+        },
+        {
+          "srcTile": 11,
+          "dstTile": 10
+        },
+        {
+          "srcTile": 10,
+          "dstTile": 14
+        },
+        {
+          "srcTile": 14,
+          "dstTile": 10
+        },
+        {
+          "srcTile": 11,
+          "dstTile": 15
+        },
+        {
+          "srcTile": 15,
+          "dstTile": 11
+        },
+        {
+          "srcTile": 12,
+          "dstTile": 13
+        },
+        {
+          "srcTile": 13,
+          "dstTile": 12
+        },
+        {
+          "srcTile": 13,
+          "dstTile": 14
+        },
+        {
+          "srcTile": 14,
+          "dstTile": 13
+        },
+        {
+          "srcTile": 14,
+          "dstTile": 15
+        },
+        {
+          "srcTile": 15,
+          "dstTile": 14
+        }
+      ],
+      "control_memory": 16,
+      "memory": {
+        "banks": 4,
+        "bank_kib": 16,
+        "capacity_kib": 64,
+        "interface_tiles": [
+          0,
+          3,
+          4,
+          7,
+          8,
+          11,
+          12,
+          15
+        ],
+        "model": "ideal bank interfaces; no address-conflict or spill simulation"
+      },
+      "fu_profile": "custom",
+      "multiplier_tiles": 9,
+      "scope": "mapper operation classes; not precision-verified RTL"
+    },
+    "memory": {
+      "read_nj": 0.0171583,
+      "write_nj": 0.0155975,
+      "area_mm2": 0.459527,
+      "access_ns": 0.64119,
+      "banks": 4,
+      "bank_kib": 16,
+      "technology_nm": 45,
+      "source": "CGRA-Flow CACTI",
+      "scope": "SRAM only; one read and one write port per bank",
+      "evidence": "memory_4x16/cacti.log",
+      "estimated_reads": 20629708,
+      "estimated_writes": 13611144,
+      "dynamic_energy_uj": 566.2705373164001,
+      "activity_source": "scheduled DFG load/store counts \u00d7 steady-state loop groups",
+      "excluded": [
+        "PE energy",
+        "interconnect energy",
+        "leakage",
+        "bank conflicts",
+        "capacity spills",
+        "host transfers"
+      ]
+    },
+    "energy": {
+      "total_dynamic_energy_uj": 818.7417285164001,
+      "core_dynamic_energy_uj": 252.47119120000002,
+      "sram_dynamic_energy_uj": 566.2705373164001,
+      "components_uj": {
+        "compute": 45.8712944,
+        "register_and_control": 165.197544,
+        "interconnect": 41.4023528,
+        "sram": 566.2705373164001
+      },
+      "activity": {
+        "operations": {
+          "int_alu": 99847436,
+          "int_mul": 32768,
+          "fp_add": 12818500,
+          "fp_mul": 6553600,
+          "div": 0
+        },
+        "register_transfers": 134214856,
+        "route_hops": 207011764,
+        "per_kernel": {
+          "fmcw_window": {
+            "operations": 1933312,
+            "register_transfers": 2457600,
+            "route_hops": 3702784
+          },
+          "fmcw_fft_stage": {
+            "operations": 43335680,
+            "register_transfers": 64438272,
+            "route_hops": 94961664
+          },
+          "fmcw_transpose": {
+            "operations": 2293760,
+            "register_transfers": 2555904,
+            "route_hops": 3670016
+          },
+          "fmcw_accumulate_power": {
+            "operations": 1441792,
+            "register_transfers": 1540096,
+            "route_hops": 2818048
+          },
+          "fmcw_cfar_2d": {
+            "operations": 70247760,
+            "register_transfers": 63222984,
+            "route_hops": 101859252
+          }
+        }
+      },
+      "coefficients_pj": {
+        "int_alu": 0.1,
+        "int_mul": 3.1,
+        "fp_add": 0.9,
+        "fp_mul": 3.7,
+        "div": 20.0,
+        "register_transfer": 1.0,
+        "route_hop": 0.2,
+        "active_tile_cycle": 0.05
+      },
+      "source": "measured mapper schedules + 45 nm operation/activity model + CGRA-Flow CACTI",
+      "scope": "CGRA and SRAM dynamic energy per frame; excludes leakage and host transfers",
+      "reference": "M. Horowitz, ISSCC 2014, Computing's Energy Problem"
+    }
+  },
+  "history": [
+    {
+      "design": {
+        "tile_size": "4x4",
+        "FUs": {
+          "tile0": [
+            "Ld",
+            "Mul"
+          ],
+          "tile1": [
+            "Mul"
+          ],
+          "tile2": [
+            "Mul"
+          ],
+          "tile3": [
+            "St"
+          ],
+          "tile4": [
+            "Ld",
+            "FAdd"
+          ],
+          "tile5": [
+            "Mul",
+            "FAdd"
+          ],
+          "tile6": [
+            "Mul",
+            "FAdd"
+          ],
+          "tile7": [
+            "St"
+          ],
+          "tile8": [
+            "Ld"
+          ],
+          "tile9": [
+            "Mul"
+          ],
+          "tile10": [
+            "Mul"
+          ],
+          "tile11": [
+            "St"
+          ],
+          "tile12": [
+            "Ld",
+            "FAdd"
+          ],
+          "tile13": [
+            "Mul",
+            "FAdd"
+          ],
+          "tile14": [
+            "Mul",
+            "FAdd"
+          ],
+          "tile15": [
+            "St"
+          ]
+        },
+        "config_mem": 16,
+        "data_spm_kb": 64,
+        "memory_banks": 4,
+        "unroll": {
+          "window": 4,
+          "fft": 4,
+          "transpose": 4,
+          "power": 4,
+          "cfar": 1
+        },
+        "vectorize": "all",
+        "reasoning": "Balanced 4x4 mesh with high unroll for FFT and window; vectorization maximizes throughput."
+      },
+      "frame_estimate": {
+        "valid": true,
+        "model": "steady_state_scheduled_groups_x_mapping_ii",
+        "excluded_costs": [
+          "loop_setup",
+          "memory_stalls",
+          "fft_bit_reversal",
+          "host_cgra_transfers"
+        ],
+        "breakdown": {
+          "fmcw_window": {
+            "dynamic_iterations": 131072,
+            "compiler_unroll_factor": 4,
+            "scheduled_loop_groups": 32768,
+            "measured_mapping_ii": 6,
+            "estimated_cycles": 196608
+          },
+          "fmcw_fft_stage": {
+            "dynamic_iterations": 983040,
+            "compiler_unroll_factor": 4,
+            "scheduled_loop_groups": 376832,
+            "measured_mapping_ii": 8,
+            "estimated_cycles": 3014656
+          },
+          "fmcw_transpose": {
+            "dynamic_iterations": 262144,
+            "compiler_unroll_factor": 4,
+            "scheduled_loop_groups": 65536,
+            "measured_mapping_ii": 4,
+            "estimated_cycles": 262144
+          },
+          "fmcw_accumulate_power": {
+            "dynamic_iterations": 131072,
+            "compiler_unroll_factor": 4,
+            "scheduled_loop_groups": 32768,
+            "measured_mapping_ii": 4,
+            "estimated_cycles": 131072
+          },
+          "fmcw_cfar_2d": {
+            "dynamic_iterations": 3512388,
+            "compiler_unroll_factor": 1,
+            "scheduled_loop_groups": 3512388,
+            "measured_mapping_ii": 10,
+            "estimated_cycles": 35123880
+          }
+        },
+        "estimated_cycles": 38728360
+      },
+      "evaluations_so_far": 5,
+      "round": 1,
+      "architecture": {
+        "tiles": {
+          "0": {
+            "disabled": false,
+            "supportAllFUs": false,
+            "supportedFUs": [
+              "Add",
+              "Br",
+              "Cmp",
+              "Logic",
+              "Phi",
+              "Ret",
+              "Sel",
+              "Shift",
+              "Ld",
+              "Mul"
+            ],
+            "accessMem": true
+          },
+          "1": {
+            "disabled": false,
+            "supportAllFUs": false,
+            "supportedFUs": [
+              "Add",
+              "Br",
+              "Cmp",
+              "Logic",
+              "Phi",
+              "Ret",
+              "Sel",
+              "Shift",
+              "Mul"
+            ],
+            "accessMem": false
+          },
+          "2": {
+            "disabled": false,
+            "supportAllFUs": false,
+            "supportedFUs": [
+              "Add",
+              "Br",
+              "Cmp",
+              "Logic",
+              "Phi",
+              "Ret",
+              "Sel",
+              "Shift",
+              "Mul"
+            ],
+            "accessMem": false
+          },
+          "3": {
+            "disabled": false,
+            "supportAllFUs": false,
+            "supportedFUs": [
+              "Add",
+              "Br",
+              "Cmp",
+              "Logic",
+              "Phi",
+              "Ret",
+              "Sel",
+              "Shift",
+              "St"
+            ],
+            "accessMem": true
+          },
+          "4": {
+            "disabled": false,
+            "supportAllFUs": false,
+            "supportedFUs": [
+              "Add",
+              "Br",
+              "Cmp",
+              "Logic",
+              "Phi",
+              "Ret",
+              "Sel",
+              "Shift",
+              "Ld",
+              "FAdd"
+            ],
+            "accessMem": true
+          },
+          "5": {
+            "disabled": false,
+            "supportAllFUs": false,
+            "supportedFUs": [
+              "Add",
+              "Br",
+              "Cmp",
+              "Logic",
+              "Phi",
+              "Ret",
+              "Sel",
+              "Shift",
+              "Mul",
+              "FAdd"
+            ],
+            "accessMem": false
+          },
+          "6": {
+            "disabled": false,
+            "supportAllFUs": false,
+            "supportedFUs": [
+              "Add",
+              "Br",
+              "Cmp",
+              "Logic",
+              "Phi",
+              "Ret",
+              "Sel",
+              "Shift",
+              "Mul",
+              "FAdd"
+            ],
+            "accessMem": false
+          },
+          "7": {
+            "disabled": false,
+            "supportAllFUs": false,
+            "supportedFUs": [
+              "Add",
+              "Br",
+              "Cmp",
+              "Logic",
+              "Phi",
+              "Ret",
+              "Sel",
+              "Shift",
+              "St"
+            ],
+            "accessMem": true
+          },
+          "8": {
+            "disabled": false,
+            "supportAllFUs": false,
+            "supportedFUs": [
+              "Add",
+              "Br",
+              "Cmp",
+              "Logic",
+              "Phi",
+              "Ret",
+              "Sel",
+              "Shift",
+              "Ld"
+            ],
+            "accessMem": true
+          },
+          "9": {
+            "disabled": false,
+            "supportAllFUs": false,
+            "supportedFUs": [
+              "Add",
+              "Br",
+              "Cmp",
+              "Logic",
+              "Phi",
+              "Ret",
+              "Sel",
+              "Shift",
+              "Mul"
+            ],
+            "accessMem": false
+          },
+          "10": {
+            "disabled": false,
+            "supportAllFUs": false,
+            "supportedFUs": [
+              "Add",
+              "Br",
+              "Cmp",
+              "Logic",
+              "Phi",
+              "Ret",
+              "Sel",
+              "Shift",
+              "Mul"
+            ],
+            "accessMem": false
+          },
+          "11": {
+            "disabled": false,
+            "supportAllFUs": false,
+            "supportedFUs": [
+              "Add",
+              "Br",
+              "Cmp",
+              "Logic",
+              "Phi",
+              "Ret",
+              "Sel",
+              "Shift",
+              "St"
+            ],
+            "accessMem": true
+          },
+          "12": {
+            "disabled": false,
+            "supportAllFUs": false,
+            "supportedFUs": [
+              "Add",
+              "Br",
+              "Cmp",
+              "Logic",
+              "Phi",
+              "Ret",
+              "Sel",
+              "Shift",
+              "Ld",
+              "FAdd"
+            ],
+            "accessMem": true
+          },
+          "13": {
+            "disabled": false,
+            "supportAllFUs": false,
+            "supportedFUs": [
+              "Add",
+              "Br",
+              "Cmp",
+              "Logic",
+              "Phi",
+              "Ret",
+              "Sel",
+              "Shift",
+              "Mul",
+              "FAdd"
+            ],
+            "accessMem": false
+          },
+          "14": {
+            "disabled": false,
+            "supportAllFUs": false,
+            "supportedFUs": [
+              "Add",
+              "Br",
+              "Cmp",
+              "Logic",
+              "Phi",
+              "Ret",
+              "Sel",
+              "Shift",
+              "Mul",
+              "FAdd"
+            ],
+            "accessMem": false
+          },
+          "15": {
+            "disabled": false,
+            "supportAllFUs": false,
+            "supportedFUs": [
+              "Add",
+              "Br",
+              "Cmp",
+              "Logic",
+              "Phi",
+              "Ret",
+              "Sel",
+              "Shift",
+              "St"
+            ],
+            "accessMem": true
+          }
+        },
+        "links": [
+          {
+            "srcTile": 0,
+            "dstTile": 1
+          },
+          {
+            "srcTile": 1,
+            "dstTile": 0
+          },
+          {
+            "srcTile": 0,
+            "dstTile": 4
+          },
+          {
+            "srcTile": 4,
+            "dstTile": 0
+          },
+          {
+            "srcTile": 1,
+            "dstTile": 2
+          },
+          {
+            "srcTile": 2,
+            "dstTile": 1
+          },
+          {
+            "srcTile": 1,
+            "dstTile": 5
+          },
+          {
+            "srcTile": 5,
+            "dstTile": 1
+          },
+          {
+            "srcTile": 2,
+            "dstTile": 3
+          },
+          {
+            "srcTile": 3,
+            "dstTile": 2
+          },
+          {
+            "srcTile": 2,
+            "dstTile": 6
+          },
+          {
+            "srcTile": 6,
+            "dstTile": 2
+          },
+          {
+            "srcTile": 3,
+            "dstTile": 7
+          },
+          {
+            "srcTile": 7,
+            "dstTile": 3
+          },
+          {
+            "srcTile": 4,
+            "dstTile": 5
+          },
+          {
+            "srcTile": 5,
+            "dstTile": 4
+          },
+          {
+            "srcTile": 4,
+            "dstTile": 8
+          },
+          {
+            "srcTile": 8,
+            "dstTile": 4
+          },
+          {
+            "srcTile": 5,
+            "dstTile": 6
+          },
+          {
+            "srcTile": 6,
+            "dstTile": 5
+          },
+          {
+            "srcTile": 5,
+            "dstTile": 9
+          },
+          {
+            "srcTile": 9,
+            "dstTile": 5
+          },
+          {
+            "srcTile": 6,
+            "dstTile": 7
+          },
+          {
+            "srcTile": 7,
+            "dstTile": 6
+          },
+          {
+            "srcTile": 6,
+            "dstTile": 10
+          },
+          {
+            "srcTile": 10,
+            "dstTile": 6
+          },
+          {
+            "srcTile": 7,
+            "dstTile": 11
+          },
+          {
+            "srcTile": 11,
+            "dstTile": 7
+          },
+          {
+            "srcTile": 8,
+            "dstTile": 9
+          },
+          {
+            "srcTile": 9,
+            "dstTile": 8
+          },
+          {
+            "srcTile": 8,
+            "dstTile": 12
+          },
+          {
+            "srcTile": 12,
+            "dstTile": 8
+          },
+          {
+            "srcTile": 9,
+            "dstTile": 10
+          },
+          {
+            "srcTile": 10,
+            "dstTile": 9
+          },
+          {
+            "srcTile": 9,
+            "dstTile": 13
+          },
+          {
+            "srcTile": 13,
+            "dstTile": 9
+          },
+          {
+            "srcTile": 10,
+            "dstTile": 11
+          },
+          {
+            "srcTile": 11,
+            "dstTile": 10
+          },
+          {
+            "srcTile": 10,
+            "dstTile": 14
+          },
+          {
+            "srcTile": 14,
+            "dstTile": 10
+          },
+          {
+            "srcTile": 11,
+            "dstTile": 15
+          },
+          {
+            "srcTile": 15,
+            "dstTile": 11
+          },
+          {
+            "srcTile": 12,
+            "dstTile": 13
+          },
+          {
+            "srcTile": 13,
+            "dstTile": 12
+          },
+          {
+            "srcTile": 13,
+            "dstTile": 14
+          },
+          {
+            "srcTile": 14,
+            "dstTile": 13
+          },
+          {
+            "srcTile": 14,
+            "dstTile": 15
+          },
+          {
+            "srcTile": 15,
+            "dstTile": 14
+          }
+        ],
+        "control_memory": 16,
+        "memory": {
+          "banks": 4,
+          "bank_kib": 16,
+          "capacity_kib": 64,
+          "interface_tiles": [
+            0,
+            3,
+            4,
+            7,
+            8,
+            11,
+            12,
+            15
+          ],
+          "model": "ideal bank interfaces; no address-conflict or spill simulation"
+        },
+        "fu_profile": "custom",
+        "multiplier_tiles": 9,
+        "scope": "mapper operation classes; not precision-verified RTL"
+      },
+      "memory": {
+        "read_nj": 0.0171583,
+        "write_nj": 0.0155975,
+        "area_mm2": 0.459527,
+        "access_ns": 0.64119,
+        "banks": 4,
+        "bank_kib": 16,
+        "technology_nm": 45,
+        "source": "CGRA-Flow CACTI",
+        "scope": "SRAM only; one read and one write port per bank",
+        "evidence": "memory_4x16/cacti.log",
+        "estimated_reads": 20629708,
+        "estimated_writes": 13611144,
+        "dynamic_energy_uj": 566.2705373164001,
+        "activity_source": "scheduled DFG load/store counts \u00d7 steady-state loop groups",
+        "excluded": [
+          "PE energy",
+          "interconnect energy",
+          "leakage",
+          "bank conflicts",
+          "capacity spills",
+          "host transfers"
+        ]
+      },
+      "energy": {
+        "total_dynamic_energy_uj": 818.7417285164001,
+        "core_dynamic_energy_uj": 252.47119120000002,
+        "sram_dynamic_energy_uj": 566.2705373164001,
+        "components_uj": {
+          "compute": 45.8712944,
+          "register_and_control": 165.197544,
+          "interconnect": 41.4023528,
+          "sram": 566.2705373164001
+        },
+        "activity": {
+          "operations": {
+            "int_alu": 99847436,
+            "int_mul": 32768,
+            "fp_add": 12818500,
+            "fp_mul": 6553600,
+            "div": 0
+          },
+          "register_transfers": 134214856,
+          "route_hops": 207011764,
+          "per_kernel": {
+            "fmcw_window": {
+              "operations": 1933312,
+              "register_transfers": 2457600,
+              "route_hops": 3702784
+            },
+            "fmcw_fft_stage": {
+              "operations": 43335680,
+              "register_transfers": 64438272,
+              "route_hops": 94961664
+            },
+            "fmcw_transpose": {
+              "operations": 2293760,
+              "register_transfers": 2555904,
+              "route_hops": 3670016
+            },
+            "fmcw_accumulate_power": {
+              "operations": 1441792,
+              "register_transfers": 1540096,
+              "route_hops": 2818048
+            },
+            "fmcw_cfar_2d": {
+              "operations": 70247760,
+              "register_transfers": 63222984,
+              "route_hops": 101859252
+            }
+          }
+        },
+        "coefficients_pj": {
+          "int_alu": 0.1,
+          "int_mul": 3.1,
+          "fp_add": 0.9,
+          "fp_mul": 3.7,
+          "div": 20.0,
+          "register_transfer": 1.0,
+          "route_hop": 0.2,
+          "active_tile_cycle": 0.05
+        },
+        "source": "measured mapper schedules + 45 nm operation/activity model + CGRA-Flow CACTI",
+        "scope": "CGRA and SRAM dynamic energy per frame; excludes leakage and host transfers",
+        "reference": "M. Horowitz, ISSCC 2014, Computing's Energy Problem"
+      }
+    },
+    {
+      "design": {
+        "tile_size": "4x4",
+        "FUs": {
+          "tile0": [
+            "Ld",
+            "Mul"
+          ],
+          "tile1": [
+            "Mul"
+          ],
+          "tile2": [
+            "Mul"
+          ],
+          "tile3": [
+            "St"
+          ],
+          "tile4": [
+            "Ld",
+            "FAdd"
+          ],
+          "tile5": [
+            "Mul",
+            "FAdd"
+          ],
+          "tile6": [
+            "Mul",
+            "FAdd"
+          ],
+          "tile7": [
+            "St"
+          ],
+          "tile8": [
+            "Ld"
+          ],
+          "tile9": [
+            "Mul"
+          ],
+          "tile10": [
+            "Mul"
+          ],
+          "tile11": [
+            "St"
+          ],
+          "tile12": [
+            "Ld",
+            "FAdd"
+          ],
+          "tile13": [
+            "Mul",
+            "FAdd"
+          ],
+          "tile14": [
+            "Mul",
+            "FAdd"
+          ],
+          "tile15": [
+            "St"
+          ]
+        },
+        "config_mem": 16,
+        "data_spm_kb": 128,
+        "memory_banks": 8,
+        "unroll": {
+          "window": 2,
+          "fft": 2,
+          "transpose": 2,
+          "power": 2,
+          "cfar": 1
+        },
+        "vectorize": "interleaved",
+        "reasoning": "Larger SPM and banks reduce memory bottlenecks; lower unroll fits tighter config constraints."
+      },
+      "frame_estimate": {
+        "valid": true,
+        "model": "steady_state_scheduled_groups_x_mapping_ii",
+        "excluded_costs": [
+          "loop_setup",
+          "memory_stalls",
+          "fft_bit_reversal",
+          "host_cgra_transfers"
+        ],
+        "breakdown": {
+          "fmcw_window": {
+            "dynamic_iterations": 131072,
+            "compiler_unroll_factor": 2,
+            "scheduled_loop_groups": 65536,
+            "measured_mapping_ii": 4,
+            "estimated_cycles": 262144
+          },
+          "fmcw_fft_stage": {
+            "dynamic_iterations": 983040,
+            "compiler_unroll_factor": 2,
+            "scheduled_loop_groups": 557056,
+            "measured_mapping_ii": 7,
+            "estimated_cycles": 3899392
+          },
+          "fmcw_transpose": {
+            "dynamic_iterations": 262144,
+            "compiler_unroll_factor": 2,
+            "scheduled_loop_groups": 131072,
+            "measured_mapping_ii": 5,
+            "estimated_cycles": 655360
+          },
+          "fmcw_accumulate_power": {
+            "dynamic_iterations": 131072,
+            "compiler_unroll_factor": 2,
+            "scheduled_loop_groups": 65536,
+            "measured_mapping_ii": 4,
+            "estimated_cycles": 262144
+          },
+          "fmcw_cfar_2d": {
+            "dynamic_iterations": 3512388,
+            "compiler_unroll_factor": 1,
+            "scheduled_loop_groups": 3512388,
+            "measured_mapping_ii": 10,
+            "estimated_cycles": 35123880
+          }
+        },
+        "estimated_cycles": 40202920
+      },
+      "evaluations_so_far": 10,
+      "round": 1,
+      "architecture": {
+        "tiles": {
+          "0": {
+            "disabled": false,
+            "supportAllFUs": false,
+            "supportedFUs": [
+              "Add",
+              "Br",
+              "Cmp",
+              "Logic",
+              "Phi",
+              "Ret",
+              "Sel",
+              "Shift",
+              "Ld",
+              "Mul"
+            ],
+            "accessMem": true
+          },
+          "1": {
+            "disabled": false,
+            "supportAllFUs": false,
+            "supportedFUs": [
+              "Add",
+              "Br",
+              "Cmp",
+              "Logic",
+              "Phi",
+              "Ret",
+              "Sel",
+              "Shift",
+              "Mul"
+            ],
+            "accessMem": false
+          },
+          "2": {
+            "disabled": false,
+            "supportAllFUs": false,
+            "supportedFUs": [
+              "Add",
+              "Br",
+              "Cmp",
+              "Logic",
+              "Phi",
+              "Ret",
+              "Sel",
+              "Shift",
+              "Mul"
+            ],
+            "accessMem": false
+          },
+          "3": {
+            "disabled": false,
+            "supportAllFUs": false,
+            "supportedFUs": [
+              "Add",
+              "Br",
+              "Cmp",
+              "Logic",
+              "Phi",
+              "Ret",
+              "Sel",
+              "Shift",
+              "St"
+            ],
+            "accessMem": true
+          },
+          "4": {
+            "disabled": false,
+            "supportAllFUs": false,
+            "supportedFUs": [
+              "Add",
+              "Br",
+              "Cmp",
+              "Logic",
+              "Phi",
+              "Ret",
+              "Sel",
+              "Shift",
+              "Ld",
+              "FAdd"
+            ],
+            "accessMem": true
+          },
+          "5": {
+            "disabled": false,
+            "supportAllFUs": false,
+            "supportedFUs": [
+              "Add",
+              "Br",
+              "Cmp",
+              "Logic",
+              "Phi",
+              "Ret",
+              "Sel",
+              "Shift",
+              "Mul",
+              "FAdd"
+            ],
+            "accessMem": false
+          },
+          "6": {
+            "disabled": false,
+            "supportAllFUs": false,
+            "supportedFUs": [
+              "Add",
+              "Br",
+              "Cmp",
+              "Logic",
+              "Phi",
+              "Ret",
+              "Sel",
+              "Shift",
+              "Mul",
+              "FAdd"
+            ],
+            "accessMem": false
+          },
+          "7": {
+            "disabled": false,
+            "supportAllFUs": false,
+            "supportedFUs": [
+              "Add",
+              "Br",
+              "Cmp",
+              "Logic",
+              "Phi",
+              "Ret",
+              "Sel",
+              "Shift",
+              "St"
+            ],
+            "accessMem": true
+          },
+          "8": {
+            "disabled": false,
+            "supportAllFUs": false,
+            "supportedFUs": [
+              "Add",
+              "Br",
+              "Cmp",
+              "Logic",
+              "Phi",
+              "Ret",
+              "Sel",
+              "Shift",
+              "Ld"
+            ],
+            "accessMem": true
+          },
+          "9": {
+            "disabled": false,
+            "supportAllFUs": false,
+            "supportedFUs": [
+              "Add",
+              "Br",
+              "Cmp",
+              "Logic",
+              "Phi",
+              "Ret",
+              "Sel",
+              "Shift",
+              "Mul"
+            ],
+            "accessMem": false
+          },
+          "10": {
+            "disabled": false,
+            "supportAllFUs": false,
+            "supportedFUs": [
+              "Add",
+              "Br",
+              "Cmp",
+              "Logic",
+              "Phi",
+              "Ret",
+              "Sel",
+              "Shift",
+              "Mul"
+            ],
+            "accessMem": false
+          },
+          "11": {
+            "disabled": false,
+            "supportAllFUs": false,
+            "supportedFUs": [
+              "Add",
+              "Br",
+              "Cmp",
+              "Logic",
+              "Phi",
+              "Ret",
+              "Sel",
+              "Shift",
+              "St"
+            ],
+            "accessMem": true
+          },
+          "12": {
+            "disabled": false,
+            "supportAllFUs": false,
+            "supportedFUs": [
+              "Add",
+              "Br",
+              "Cmp",
+              "Logic",
+              "Phi",
+              "Ret",
+              "Sel",
+              "Shift",
+              "Ld",
+              "FAdd"
+            ],
+            "accessMem": true
+          },
+          "13": {
+            "disabled": false,
+            "supportAllFUs": false,
+            "supportedFUs": [
+              "Add",
+              "Br",
+              "Cmp",
+              "Logic",
+              "Phi",
+              "Ret",
+              "Sel",
+              "Shift",
+              "Mul",
+              "FAdd"
+            ],
+            "accessMem": false
+          },
+          "14": {
+            "disabled": false,
+            "supportAllFUs": false,
+            "supportedFUs": [
+              "Add",
+              "Br",
+              "Cmp",
+              "Logic",
+              "Phi",
+              "Ret",
+              "Sel",
+              "Shift",
+              "Mul",
+              "FAdd"
+            ],
+            "accessMem": false
+          },
+          "15": {
+            "disabled": false,
+            "supportAllFUs": false,
+            "supportedFUs": [
+              "Add",
+              "Br",
+              "Cmp",
+              "Logic",
+              "Phi",
+              "Ret",
+              "Sel",
+              "Shift",
+              "St"
+            ],
+            "accessMem": true
+          }
+        },
+        "links": [
+          {
+            "srcTile": 0,
+            "dstTile": 1
+          },
+          {
+            "srcTile": 1,
+            "dstTile": 0
+          },
+          {
+            "srcTile": 0,
+            "dstTile": 4
+          },
+          {
+            "srcTile": 4,
+            "dstTile": 0
+          },
+          {
+            "srcTile": 1,
+            "dstTile": 2
+          },
+          {
+            "srcTile": 2,
+            "dstTile": 1
+          },
+          {
+            "srcTile": 1,
+            "dstTile": 5
+          },
+          {
+            "srcTile": 5,
+            "dstTile": 1
+          },
+          {
+            "srcTile": 2,
+            "dstTile": 3
+          },
+          {
+            "srcTile": 3,
+            "dstTile": 2
+          },
+          {
+            "srcTile": 2,
+            "dstTile": 6
+          },
+          {
+            "srcTile": 6,
+            "dstTile": 2
+          },
+          {
+            "srcTile": 3,
+            "dstTile": 7
+          },
+          {
+            "srcTile": 7,
+            "dstTile": 3
+          },
+          {
+            "srcTile": 4,
+            "dstTile": 5
+          },
+          {
+            "srcTile": 5,
+            "dstTile": 4
+          },
+          {
+            "srcTile": 4,
+            "dstTile": 8
+          },
+          {
+            "srcTile": 8,
+            "dstTile": 4
+          },
+          {
+            "srcTile": 5,
+            "dstTile": 6
+          },
+          {
+            "srcTile": 6,
+            "dstTile": 5
+          },
+          {
+            "srcTile": 5,
+            "dstTile": 9
+          },
+          {
+            "srcTile": 9,
+            "dstTile": 5
+          },
+          {
+            "srcTile": 6,
+            "dstTile": 7
+          },
+          {
+            "srcTile": 7,
+            "dstTile": 6
+          },
+          {
+            "srcTile": 6,
+            "dstTile": 10
+          },
+          {
+            "srcTile": 10,
+            "dstTile": 6
+          },
+          {
+            "srcTile": 7,
+            "dstTile": 11
+          },
+          {
+            "srcTile": 11,
+            "dstTile": 7
+          },
+          {
+            "srcTile": 8,
+            "dstTile": 9
+          },
+          {
+            "srcTile": 9,
+            "dstTile": 8
+          },
+          {
+            "srcTile": 8,
+            "dstTile": 12
+          },
+          {
+            "srcTile": 12,
+            "dstTile": 8
+          },
+          {
+            "srcTile": 9,
+            "dstTile": 10
+          },
+          {
+            "srcTile": 10,
+            "dstTile": 9
+          },
+          {
+            "srcTile": 9,
+            "dstTile": 13
+          },
+          {
+            "srcTile": 13,
+            "dstTile": 9
+          },
+          {
+            "srcTile": 10,
+            "dstTile": 11
+          },
+          {
+            "srcTile": 11,
+            "dstTile": 10
+          },
+          {
+            "srcTile": 10,
+            "dstTile": 14
+          },
+          {
+            "srcTile": 14,
+            "dstTile": 10
+          },
+          {
+            "srcTile": 11,
+            "dstTile": 15
+          },
+          {
+            "srcTile": 15,
+            "dstTile": 11
+          },
+          {
+            "srcTile": 12,
+            "dstTile": 13
+          },
+          {
+            "srcTile": 13,
+            "dstTile": 12
+          },
+          {
+            "srcTile": 13,
+            "dstTile": 14
+          },
+          {
+            "srcTile": 14,
+            "dstTile": 13
+          },
+          {
+            "srcTile": 14,
+            "dstTile": 15
+          },
+          {
+            "srcTile": 15,
+            "dstTile": 14
+          }
+        ],
+        "control_memory": 16,
+        "memory": {
+          "banks": 8,
+          "bank_kib": 16,
+          "capacity_kib": 128,
+          "interface_tiles": [
+            0,
+            3,
+            4,
+            7,
+            8,
+            11,
+            12,
+            15
+          ],
+          "model": "ideal bank interfaces; no address-conflict or spill simulation"
+        },
+        "fu_profile": "custom",
+        "multiplier_tiles": 9,
+        "scope": "mapper operation classes; not precision-verified RTL"
+      },
+      "memory": {
+        "read_nj": 0.0248038,
+        "write_nj": 0.0205558,
+        "area_mm2": 0.931055,
+        "access_ns": 0.745084,
+        "banks": 8,
+        "bank_kib": 16,
+        "technology_nm": 45,
+        "source": "CGRA-Flow CACTI",
+        "scope": "SRAM only; one read and one write port per bank",
+        "evidence": "memory_8x16/cacti.log",
+        "estimated_reads": 18270412,
+        "estimated_writes": 12005512,
+        "dynamic_energy_uj": 699.9585487352,
+        "activity_source": "scheduled DFG load/store counts \u00d7 steady-state loop groups",
+        "excluded": [
+          "PE energy",
+          "interconnect energy",
+          "leakage",
+          "bank conflicts",
+          "capacity spills",
+          "host transfers"
+        ]
+      },
+      "energy": {
+        "total_dynamic_energy_uj": 926.5184439352,
+        "core_dynamic_energy_uj": 226.5598952,
+        "sram_dynamic_energy_uj": 699.9585487352,
+        "components_uj": {
+          "compute": 37.618673599999994,
+          "register_and_control": 150.92708,
+          "interconnect": 38.0141416,
+          "sram": 699.9585487352
+        },
+        "activity": {
+          "operations": {
+            "int_alu": 93703436,
+            "int_mul": 131072,
+            "fp_add": 10459204,
+            "fp_mul": 4980736,
+            "div": 0
+          },
+          "register_transfers": 118764744,
+          "route_hops": 190070708,
+          "per_kernel": {
+            "fmcw_window": {
+              "operations": 2031616,
+              "register_transfers": 2555904,
+              "route_hops": 4128768
+            },
+            "fmcw_fft_stage": {
+              "operations": 32866304,
+              "register_transfers": 48463872,
+              "route_hops": 77987840
+            },
+            "fmcw_transpose": {
+              "operations": 2490368,
+              "register_transfers": 2752512,
+              "route_hops": 3407872
+            },
+            "fmcw_accumulate_power": {
+              "operations": 1638400,
+              "register_transfers": 1769472,
+              "route_hops": 2686976
+            },
+            "fmcw_cfar_2d": {
+              "operations": 70247760,
+              "register_transfers": 63222984,
+              "route_hops": 101859252
+            }
+          }
+        },
+        "coefficients_pj": {
+          "int_alu": 0.1,
+          "int_mul": 3.1,
+          "fp_add": 0.9,
+          "fp_mul": 3.7,
+          "div": 20.0,
+          "register_transfer": 1.0,
+          "route_hop": 0.2,
+          "active_tile_cycle": 0.05
+        },
+        "source": "measured mapper schedules + 45 nm operation/activity model + CGRA-Flow CACTI",
+        "scope": "CGRA and SRAM dynamic energy per frame; excludes leakage and host transfers",
+        "reference": "M. Horowitz, ISSCC 2014, Computing's Energy Problem"
+      }
+    }
+  ],
+  "llm_calls": 4,
+  "llm_usage": {
+    "prompt_tokens": 8623,
+    "completion_tokens": 1511,
+    "total_tokens": 10134
+  },
+  "monetary_cost": null,
+  "cost_note": "Local inference; no monetary rate assumed. Token counts and latency recorded.",
+  "limitations": [
+    "bounded mapper search; no full-frame RTL or total-CGRA energy evidence",
+    "confidence formula adapted to cycle regret; no tool skipping",
+    "architecture aggregates may combine measured per-kernel settings",
+    "best_evaluated_plan identifies an actually evaluated whole-frame plan"
+  ]
+}

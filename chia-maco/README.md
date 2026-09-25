@@ -1,7 +1,6 @@
-# CHIA-MACO
+# RACO
 
-Agentic compiler/architecture co-design for an FMCW radar pipeline on a
-parameterized CGRA.
+Agentic CGRA hardware/software co-design for FMCW radar with CHIA.
 
 Current implementation and open validation issues:
 [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md). Hardware feasibility is
@@ -55,53 +54,12 @@ The archived certified run is `results/codesign_search_certified.json`: all
 cycle-times-tile product. These are mapper-derived analytical estimates, not
 cycle-accurate, PPA, energy, or throughput measurements.
 
-## MACO agents with Qwen 3.8 27B
+## Reported RACO comparison
 
-The four original MACO agent classes are reused: Co-designer → Fixer → Coarse
-Judge → Fine Judge. Qwen proposes and ranks whole-frame plans; CHIA executes
-real LLVM/CGRA-Mapper evaluations and feeds measured costs into the next round.
-The enumeration above remains a separate baseline, never input to the agents.
+The [matched-budget records](results/matched_budget_10/) contain the manuscript's seed-37 runs: RACO, HW-only, and single-agent one-shot, each with a budget of 10 unique kernel-mapper evaluations. RACO reaches 38,728,360 estimated cycles/frame, compared with 42,136,232 and 41,448,104. These are one-round runs; the separate 20-evaluation trace records cross-round feedback. Each run retains `request.json`, `result.json`, `agent_trace.json`, and raw `mapper_logs/`.
 
-```bash
-# From chia-maco; install this package in ../.venv first.
-export MACO_LLM_BASE_URL=http://127.0.0.1:18161/v1
-export MACO_LLM_MODEL=harp-raw-base
-../.venv/bin/python -m chia_maco.cli agent-search \
-  --output-dir results/my_agent_run --rounds 3 --mapping-budget 30 --seed 37
-```
+The browser's **Live exploration** mode runs the broader design space and offers **Multi-agent**, **Hardware only**, and **Single agent** methods. See the release-root README for model, mapper, and GUI setup. Set `RACO_LLM_BASE_URL`, `RACO_LLM_MODEL`, and, if needed, `RACO_LLM_API_KEY`; the model service and weights are not bundled. Set `RACO_AGENT_DIR` to the pinned upstream agent checkout when running from a fresh clone. Use a new output directory for every run.
 
-Use a new output directory each time. The configured local service serves the
-raw Qwen3.8-27B model with NF4 double quantization, not a HARP policy adapter.
-The service must already be running and permit at least 4096 completion tokens;
-model weights and the serving process are not bundled. Other compatible endpoints use the same environment variables and,
-if needed, `MACO_LLM_API_KEY`. No key is written into the artifact.
+The `agent-search` CLI command without a workload argument still executes the earlier array/unroll experiment; it does **not** reproduce the new matched-budget RACO comparison. Likewise, `make codesign-search` creates the earlier 36-evaluation reference. Their archived records remain under `results/` for provenance, not as substitutes for the manuscript's current three-method comparison.
 
-- Search: arrays 2×2/4×4/6×6 and five legal per-kernel unroll factors. Other
-  hardware parameters stay fixed; unsupported knobs are rejected.
-- Budget: 3 rounds, 2 proposals/round, at most 12 model calls and 30 unique
-  mappings. Duplicate mappings reuse only this run's cache.
-- Evidence: `agent_trace.json` contains prompts, responses, usage and events;
-  `mapper_logs/` contains raw tool output; `result.json` contains measured plans.
-- Failure: malformed/truncated model output stops the run visibly. No random
-  candidates, replayed results or fabricated metrics replace failures.
-- Scope: decaying-epsilon exploration hints and a confidence diagnostic are adapted
-  from MACO. Every shortlisted plan that fits the budget is tool-validated;
-  confidence does not skip tools. This is not full MACO PPA/CAS reproduction.
-
-`best_evaluated_plan` is an actually evaluated whole-frame plan. The separate
-`architectures` frontier may combine independently measured kernel settings.
-Do not confuse these two results or claim agent search beats enumeration.
-
-For the live GUI, run `bash gui/start.sh` and open port 8765. Select **MACO agents**
-or **Enumeration baseline**, then **Run new search**. The agent view shows model
-identity, four roles, round decisions, measured winners, token counts and events.
-See `../gui/README.md` for the frontend build and remote access.
-
-Source provenance and the upstream licensing caveat are in
-`src/chia_maco/vendor/maco/NOTICE.md`. Public publishing remains a separate step.
-
-Validated run: `results/agent_qwen38_27b_seed37_v3/` — 3 rounds, 12 model calls,
-18/18 real mappings, 210.43 s. Best: 4×4, unroll `[4,2,4,4,1]`, 39,154,344 cycles.
-It matches the separate 36-mapping reference but is slower end-to-end. The v1
-integration trial and failed v2 trace are retained separately, not reported as
-the validated result.
+`best_evaluated_plan` is an actually evaluated whole-frame plan. Mapping success establishes a schedulable extracted graph, not end-to-end hardware correctness. Source provenance and licensing information are in `src/chia_maco/vendor/maco/NOTICE.md`.

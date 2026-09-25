@@ -1,24 +1,24 @@
-# MACO submission text
+# RACO submission text
 
 Paper authors: Zesong Jiang, Cheng Tan, Jeff Zhang (Arizona State University).
 
 ## Summary of project contributions
 
-- We built a CHIA-managed MACO agent loop that evaluates compiler and CGRA choices for five FMCW radar hotspots using real LLVM/CGRA-Mapper feedback.
-- We provide an executable FMCW C workload, explicit frame-cost model, deterministic 36-mapping reference search, and retained numerical-validation failures.
-- In one three-round Qwen run, the agent matched the reference's 39.15-million-cycle estimate with 18 rather than 36 unique mappings, while taking longer overall. Mapper feedback corrected an initial 6×6 preference in favor of 4×4; CA-CFAR accounts for 89.7% of modeled cycles.
+- RACO combines HW/SW candidate generation, design correction, multi-judge selection, and CHIA-based mapping feedback for one CGRA shared by five FMCW kernel views.
+- Its executable workload and frame-cost model combine mapper-reported initiation intervals with scheduled loop counts, while retaining complete agent traces and raw mapper logs.
+- Under 10 unique kernel-mapper evaluations per method, RACO reaches 38.73 million estimated cycles/frame, versus 42.14 million for HW-only and 41.45 million for single-agent one-shot.
 
 ## Artifact statement
 
-The repository contains the CHIA/MACO integration loop, FMCW workload and mapping views, tests, archived mapper and model traces, result JSON, and a local browser demo that opens on the paper's frozen experiment. It documents pinned tool dependencies and distinguishes mapper-derived estimates from unverified hardware metrics.
+The repository contains the RACO workflow, five FMCW mapping views, CHIA evaluator, tests, and result JSON, agent traces, and raw mapper logs for all three budget-matched runs and the separate two-round run discussed in the paper. The browser's default Earlier demo tab shows an older search; the paper runs are available under `chia-maco/results/matched_budget_10/`.
 
 ## Abstract
 
-We present a CHIA workflow for compiler–architecture exploration of an FMCW radar pipeline on a coarse-grained reconfigurable array. Four original MACO agent roles, driven by Qwen3.8-27B, propose and rank bounded array/unroll configurations using real mapper feedback. In one three-round run, 12 model calls and 18 unique mappings find the same 39.15-million-cycle estimate as a 36-mapping exhaustive reference, but require more wall time. Tool feedback reverses the agent's initial preference for a larger array; CA-CFAR accounts for 89.7% of the final modeled cycles. The artifact includes the C workload, agent/model traces, mapper logs, and a local GUI. Cycle results are analytical estimates from mapper initiation intervals; end-to-end CGRA correctness and physical performance remain unverified.
+We present RACO, an agentic CGRA hardware/software co-design workflow for FMCW radar built with CHIA. It evaluates one architecture shared by five kernel views and uses mapper-reported initiation intervals to estimate steady-state frame cost. Under a common budget of 10 unique kernel-mapper evaluations, RACO achieves 38.73 million estimated cycles/frame, compared with 42.14 million for a hardware-only ablation and 41.45 million for a single-agent one-shot baseline. The artifact includes the executable workflow, decision traces, and raw mapper logs. These cycle counts are analytical estimates, not measured end-to-end execution time.
 
 ## Upload / URL
 
-- PDF: `paper/paper.pdf` (four pages, IEEE two-column).
-- Open-source artifact URL: https://github.com/zsjiang99/CHIA-MACO-FMCW
+- Current manuscript source: `paper/paper.tex`; its referenced figures and `ref.bib` must be supplied before rebuilding the PDF.
+- Artifact URL: https://github.com/zsjiang99/RACO.
 
 Human authors should review these claims against the final PDF and artifact before submission.
