@@ -171,7 +171,7 @@ class MapperEvaluator:
             )
             if artifact_dir is not None:
                 container_command += " && llvm-dis-12 kernel_map.bc -o kernel_map.ll"
-            container_name = f"chia-maco-{uuid.uuid4().hex[:12]}"
+            container_name = f"chia-raco-{uuid.uuid4().hex[:12]}"
             command = [
                 "docker",
                 "run",

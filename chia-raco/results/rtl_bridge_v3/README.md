@@ -34,14 +34,14 @@ From the artifact root, with a NEW output name:
 
 ```bash
 docker run --rm --network none --user "$(id -u):$(id -g)" \
-  -v "$PWD/chia-maco:/artifact" --entrypoint bash cgra/neura-flow:20260114 -lc \
+  -v "$PWD/chia-raco:/artifact" --entrypoint bash cgra/neura-flow:20260114 -lc \
   'cd /tmp && PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=/WORK_REPO/CGRA-Flow /WORK_REPO/venv/bin/python /artifact/scripts/check_fp32_rtl.py --tile --test-verilog --output /artifact/results/rtl_NEW/tile.json'
 
 .venv/bin/python -m chia_maco.cli export-rtl-opcodes \
-  --artifacts chia-maco/results/rtl_audit/window \
-  --log chia-maco/results/rtl_audit/window.log \
-  --mapping chia-maco/results/rtl_audit/window_result.json \
-  --output-dir chia-maco/results/rtl_NEW/window
+  --artifacts chia-raco/results/rtl_audit/window \
+  --log chia-raco/results/rtl_audit/window.log \
+  --mapping chia-raco/results/rtl_audit/window_result.json \
+  --output-dir chia-raco/results/rtl_NEW/window
 ```
 
 Omit `--tile` for FU tests. Add `--original` for the expected failing control.

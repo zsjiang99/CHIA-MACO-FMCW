@@ -7,7 +7,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 ARCHIVES = {
-    "maco": ROOT / "chia-maco/results/codesign_search_certified.json",
+    "maco": ROOT / "chia-raco/results/codesign_search_certified.json",
 }
 
 

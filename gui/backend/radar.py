@@ -8,7 +8,7 @@ from chia_maco.schema import CoDesignCandidate
 from chia_maco.workload import Workload
 from chia_maco.evidence import candidate_id, mapper_metrics, parse_schedule
 
-VALIDATION = ROOT / "chia-maco/results/validation_v1"
+VALIDATION = ROOT / "chia-raco/results/validation_v1"
 
 
 @lru_cache(maxsize=128)
@@ -59,7 +59,7 @@ def design_view(run: Path):
                         "design": design, "frame_estimate": event["frame_estimate"], "mappings": mappings,
                         "architecture": architecture, "memory": event.get("memory"), "energy": event.get("energy"),
                         "metrics": mapper_metrics(event["frame_estimate"].get("estimated_cycles"), f"{run.name}/agent_trace.json#event-{event['sequence']}")})
-    baseline = read_json(ROOT / "chia-maco/configs/baseline.json")
+    baseline = read_json(ROOT / "chia-raco/configs/baseline.json")
     archive = read_json(ARCHIVES["maco"])
     reference_best = min((a["frame_estimate"]["estimated_cycles"] for a in archive["architectures"]
                           if a["all_kernels_feasible"]))

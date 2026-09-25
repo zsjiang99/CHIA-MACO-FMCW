@@ -20,7 +20,7 @@ from typing import Literal
 
 from .data import ARCHIVES, ROOT, array_model, read_json
 
-RUNTIME = ROOT / "chia-maco/gui/runtime"
+RUNTIME = ROOT / "chia-raco/gui/runtime"
 app = FastAPI(title="RACO")
 allowed_hosts = ["127.0.0.1", "localhost", "testserver"]
 allowed_hosts += [host.strip() for host in os.environ.get("A3_GUI_ALLOWED_HOSTS", "").split(",") if host.strip()]
@@ -142,7 +142,7 @@ def interpret_workload(spec: DescriptionRequest):
 
 
 def latest_agent_path() -> Path:
-    paths = list((ROOT / "chia-maco/results").glob("agent_*/agent_trace.json"))
+    paths = list((ROOT / "chia-raco/results").glob("agent_*/agent_trace.json"))
     paths += list(RUNTIME.glob("*/agent_trace.json"))
     if not paths:
         raise HTTPException(404, "No agent execution yet")
@@ -151,7 +151,7 @@ def latest_agent_path() -> Path:
 
 def latest_measured_path() -> Path:
     """Keep the last complete design visible while a new search is starting."""
-    paths = list((ROOT / "chia-maco/results").glob("agent_*/progress.json"))
+    paths = list((ROOT / "chia-raco/results").glob("agent_*/progress.json"))
     paths += list(RUNTIME.glob("*/progress.json"))
     measured = []
     for path in paths:
@@ -193,11 +193,11 @@ def radar_design():
 @app.get("/api/radar/demo")
 @app.get("/api/radar/demo/{resource}")
 def radar_demo(resource: str | None = None):
-    path = ROOT / "chia-maco/results/agent_qwen38_27b_seed37_v3"
+    path = ROOT / "chia-raco/results/agent_qwen38_27b_seed37_v3"
     if resource == "trace":
         return FileResponse(path / "agent_trace.json", filename="maco-demo-seed37.json")
     if resource == "guide":
-        return FileResponse(ROOT / "chia-maco/DEMO.txt", media_type="text/plain", filename="RACO_DEMO.txt")
+        return FileResponse(ROOT / "chia-raco/DEMO.txt", media_type="text/plain", filename="RACO_DEMO.txt")
     if resource is not None:
         raise HTTPException(404, "Unknown demo resource")
     from .radar import design_view
@@ -216,13 +216,13 @@ def radar_validation(scene: str | None = None):
 
 @app.get("/api/radar/rtl-audit")
 def radar_rtl_audit():
-    return read_json(ROOT / "chia-maco/results/rtl_audit/report.json")
+    return read_json(ROOT / "chia-raco/results/rtl_audit/report.json")
 
 
 @app.get("/api/radar/log/{run_id}/{index}")
 def radar_log(run_id: str, index: int):
     latest_agent_path()
-    allowed = {p.name: p for p in (ROOT / "chia-maco/results").glob("agent_*") if p.is_dir()}
+    allowed = {p.name: p for p in (ROOT / "chia-raco/results").glob("agent_*") if p.is_dir()}
     allowed.update({p.name: p for p in RUNTIME.glob("*") if p.is_dir()})
     if run_id not in allowed or not 0 <= index < 36:
         raise HTTPException(404, "Unknown mapper log")
@@ -325,7 +325,7 @@ def start_job(spec: JobRequest):
         save(path / "request.json", spec.model_dump())
         save(path / "meta.json", {"id": job_id, "kind": spec.kind, "state": "running", "started_at": time.time()})
         env = os.environ.copy()
-        env["PYTHONPATH"] = os.pathsep.join([str(ROOT / "gui"), str(ROOT / "chia-maco/src"),
+        env["PYTHONPATH"] = os.pathsep.join([str(ROOT / "gui"), str(ROOT / "chia-raco/src"),
                                            env.get("PYTHONPATH", "")])
         log = (path / "worker.log").open("w")
         try:
@@ -359,7 +359,7 @@ def job_status(job_id: str):
         if (path / f"{name}.json").exists():
             meta[name] = read_json(path / f"{name}.json")
     if meta["state"] == "failed":
-        meta["error"] = f"Worker failed. Inspect chia-maco/gui/runtime/{job_id}/worker.log on the host."
+        meta["error"] = f"Worker failed. Inspect chia-raco/gui/runtime/{job_id}/worker.log on the host."
     return meta
 
 
@@ -404,6 +404,6 @@ def job_rtl(job_id: str):
     return FileResponse(path, media_type="text/plain", filename="candidate.sv")
 
 
-DIST = ROOT / "chia-maco/gui/dist"
+DIST = ROOT / "chia-raco/gui/dist"
 if DIST.is_dir():
     app.mount("/", StaticFiles(directory=DIST, html=True), name="demo")

@@ -4,9 +4,9 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --mode maco",
-    "build": "npm run typecheck && npm run build:maco",
-    "build:maco": "vite build --mode maco",
+    "dev": "vite --mode raco",
+    "build": "npm run typecheck && npm run build:raco",
+    "build:raco": "vite build --mode raco",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

@@ -83,7 +83,7 @@ def run(action: str, payload: dict, output: Path) -> None:
         from .memory import evaluate_memory
         memory = evaluate_memory(arch["maco_memory"]["banks"], arch["maco_memory"]["bank_kib"],
                                  output / "cacti")
-    container = f"chia-maco-cgra-{uuid.uuid4().hex[:12]}"
+    container = f"chia-raco-cgra-{uuid.uuid4().hex[:12]}"
     patch = Path(__file__).resolve().parents[2] / "patches/VectorCGRA/noc/CrossbarRTL.py"
     command = ["docker", "run", "--rm", "--name", container, "--network", "none",
                "-v", f"{output.resolve()}:/job",

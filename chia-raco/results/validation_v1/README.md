@@ -1,6 +1,6 @@
 # Native correctness investigation — not a hardware certificate
 
-Run: `chia-maco validate-native --output-dir results/validation_v1`.
+Run: `chia-raco validate-native --output-dir results/validation_v1`.
 Exit code **1** is expected for this recorded suite: strict detection equality
 fails in four of six scenes. Nothing was relaxed after observing the results.
 

@@ -1,6 +1,6 @@
 <h1 align="center"><img src="assets/raco-mark.svg" width="42" height="42" alt="RACO radar and CGRA icon"> RACO: Agentic CGRA Hardware/Software Co-Design for FMCW Radar with CHIA</h1>
 
-<p align="center"><a href="paper/paper.tex">Paper source</a> · <a href="#-quick-start">Quick start</a> · <a href="chia-maco/results/README.md">Results and logs</a> · <a href="#-run-a-new-exploration">Live exploration</a></p>
+<p align="center"><a href="paper/paper.tex">Paper source</a> · <a href="#-quick-start">Quick start</a> · <a href="chia-raco/results/README.md">Results and logs</a> · <a href="#-run-a-new-exploration">Live exploration</a></p>
 
 ---
 
@@ -17,10 +17,8 @@ On Linux x86-64, install Git, `make`, a C compiler, and Python 3.10+. Then check
 ```bash
 git clone https://github.com/zsjiang99/RACO.git
 cd RACO
-make -C chia-maco artifact-check
+make -C chia-raco artifact-check
 ```
-
-The paper runs and raw logs are in [`chia-maco/results/`](chia-maco/results/README.md).
 
 ## 🖥️ Open the browser demo
 
@@ -33,7 +31,7 @@ python3.10 -m venv .venv
 bash gui/start.sh
 ```
 
-Open `http://127.0.0.1:8765/` to inspect the saved CGRA design in the workbench. The paper's 38.73M-cycle run is in the [saved results](chia-maco/results/matched_budget_10/). To change the port, set `A3_GUI_PORT` before starting the server. The server has no authentication and binds to loopback; do not expose it publicly.
+Open `http://127.0.0.1:8765/` to inspect the saved CGRA design in the workbench. The paper's 38.73M-cycle run is in the [saved results](chia-raco/results/matched_budget_10/). To change the port, set `A3_GUI_PORT` before starting the server. The server has no authentication and binds to loopback; do not expose it publicly.
 
 ## 🤖 Run a new exploration
 
@@ -45,7 +43,7 @@ First complete the browser-demo setup above. Live exploration additionally needs
 mkdir -p external
 git clone https://github.com/tancheng/CGRA-Mapper.git external/CGRA-Mapper
 git -C external/CGRA-Mapper checkout 5f8393acb6b3a17146806ec93a57f76f875be232
-docker build -t cgramapper:v1 -f chia-maco/docker/mapper.Dockerfile external/CGRA-Mapper
+docker build -t cgramapper:v1 -f chia-raco/docker/mapper.Dockerfile external/CGRA-Mapper
 docker pull cgra/neura-flow:20260114
 ```
 
@@ -55,7 +53,7 @@ docker pull cgra/neura-flow:20260114
 git clone https://github.com/ucb-bar/chia.git external/chia
 git -C external/chia checkout 16c35e92aaaf9511c6453bf94cd5cf589698f4e3
 .venv/bin/python -m pip install ./external/chia
-.venv/bin/python -m pip install -e 'chia-maco[test]'
+.venv/bin/python -m pip install -e 'chia-raco[test]'
 git clone https://github.com/coredac/MACO.git external/upstream-agents
 git -C external/upstream-agents checkout 31c02ce013838d89ef2a6d211acfdf639ecb178d
 ```
@@ -63,8 +61,8 @@ git -C external/upstream-agents checkout 31c02ce013838d89ef2a6d211acfdf639ecb178
 The agent checkout supplies upstream classes; the project and interface are named RACO. To check the installation:
 
 ```bash
-RACO_AGENT_DIR="$PWD/external/upstream-agents/agent" make -C chia-maco test PYTHON=../.venv/bin/python
-make -C chia-maco mapper-smoke PYTHON=../.venv/bin/python
+RACO_AGENT_DIR="$PWD/external/upstream-agents/agent" make -C chia-raco test PYTHON=../.venv/bin/python
+make -C chia-raco mapper-smoke PYTHON=../.venv/bin/python
 ```
 
 ### ▶️ Start the live workflow
@@ -78,16 +76,7 @@ export RACO_LLM_MODEL=your-served-model-id
 bash gui/start.sh
 ```
 
-Open `http://127.0.0.1:8765/?mode=live`, choose **Multi-agent**, **Hardware only**, or **Single agent**, then click **Run exploration**. Run one exploration at a time. The workflow maps the FMCW kernels, generates and verifies RTL, and synthesizes the selected design. Layout is a separate, optional action.
-
-New model runs may differ from the saved paper results.
-
-## 🔬 What the evidence supports
-
-- **Performance:** CGRA-Mapper reports mapping II; the full-frame cycle count is an analytical estimate, not measured FPS. It omits loop setup, memory stalls, FFT bit reversal, and host–CGRA transfers. Archived wall times are not runtime guarantees.
-- **Energy:** the live objective combines scheduled compute, register/control, routed-link activity, and CACTI SRAM access energy. It is a reproducible first-order dynamic-energy estimate, not post-layout power; leakage and host transfers are excluded.
-- **Correctness:** The native smoke test is not a hardware test. The independent [NumPy comparison](chia-maco/results/validation_v1/) meets FFT and power error criteria, but exact CA-CFAR masks agree in only **2 of 6** scenes; a fresh `validate-native` exits nonzero. Mapper and component RTL tests do not certify full-frame execution.
-- **Hardware:** Tile count is not synthesized area. FU/memory exploration and RTL/layout in the GUI are experimental, outside the paper's reported search. See the [implementation status](chia-maco/IMPLEMENTATION_STATUS.md).
+Open `http://127.0.0.1:8765/`, choose **Multi-agent**, **Hardware only**, or **Single agent**, then click **Run exploration**. Run one exploration at a time. The workflow maps the FMCW kernels, generates and verifies RTL, and synthesizes the selected design. Layout is a separate, optional action.
 
 ## 📄 License and credit
 

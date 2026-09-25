@@ -1,6 +1,6 @@
 # RACO result records
 
-The [matched-budget records](matched_budget_10/) support the current manuscript's comparison: 38,728,360 estimated cycles/frame for RACO, 42,136,232 for HW-only, and 41,448,104 for single-agent one-shot under 10 unique kernel-mapper evaluations per method. They include result JSON, agent traces, and raw mapper logs. From a fresh clone, `make -C chia-maco artifact-check` checks these saved results without invoking a mapper or model service.
+The [matched-budget records](matched_budget_10/) support the current manuscript's comparison: 38,728,360 estimated cycles/frame for RACO, 42,136,232 for HW-only, and 41,448,104 for single-agent one-shot under 10 unique kernel-mapper evaluations per method. They include result JSON, agent traces, and raw mapper logs. From a fresh clone, `make -C chia-raco artifact-check` checks these saved results without invoking a mapper or model service.
 
 ## Earlier array/unroll study
 

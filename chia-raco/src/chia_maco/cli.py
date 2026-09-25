@@ -21,7 +21,7 @@ def _emit(payload: object, output: str | None = None) -> None:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="chia-maco")
+    parser = argparse.ArgumentParser(prog="chia-raco")
     subparsers = parser.add_subparsers(dest="command", required=True)
     bridge = subparsers.add_parser("export-rtl-opcodes", help="restore FP32 opcodes from retained LLVM/mapping evidence (not execution)")
     for name in ("artifacts", "log", "mapping", "output-dir"):

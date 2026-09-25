@@ -32,5 +32,5 @@ the paper's array/unroll comparison. They require separate setup and results
 must not be described as whole-frame candidate hardware validation.
 
 The GUI listens on localhost only; forward port 8765 via SSH for remote access.
-Use `make -C chia-maco artifact-check` to verify the saved paper numbers and
+Use `make -C chia-raco artifact-check` to verify the saved paper numbers and
 the native smoke test without running the mapper or model.

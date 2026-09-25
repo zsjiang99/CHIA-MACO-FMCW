@@ -3,7 +3,7 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "chia-maco"
+name = "chia-raco"
 version = "0.1.0"
 description = "RACO: agentic CGRA hardware/software co-design for FMCW radar with CHIA"
 requires-python = ">=3.10"
@@ -17,7 +17,7 @@ dependencies = [
 test = ["pytest>=8"]
 
 [project.scripts]
-chia-maco = "chia_maco.cli:main"
+chia-raco = "chia_maco.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
