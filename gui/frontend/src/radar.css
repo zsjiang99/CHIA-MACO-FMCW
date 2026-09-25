@@ -128,14 +128,10 @@ body{margin:0;overflow:hidden;background:#171817;color:#e7e9e7}
 .report-panel>.panel-action{margin-top:auto}
 @keyframes loading-spin{to{transform:rotate(360deg)}}
 
-/* The paper archive is the default entry point; experimental hardware tools live in Live exploration. */
-.cgra-web{--title-h:clamp(51px,3.5vw,64px)}
-.app-bar{justify-content:space-between;gap:12px;padding:0 15px}
-.app-bar>div{display:flex;flex-direction:column;gap:2px;min-width:0}
-.app-bar strong{font-size:var(--fs-md)}
-.app-bar span{overflow:hidden;color:#b6c0b8;font-size:var(--fs-xs);text-overflow:ellipsis;white-space:nowrap}
-.app-bar nav{display:flex;flex-shrink:0;gap:5px}
-.app-bar nav a{padding:6px 9px;border:1px solid #434d46;border-radius:3px;color:#bfcbc2;font-size:var(--fs-xs);white-space:nowrap}
+/* Keep the original compact, centered title bar while retaining the mode switch. */
+.app-bar{position:relative}
+.app-bar nav{position:absolute;right:9px;top:50%;transform:translateY(-50%);display:flex;gap:5px}
+.app-bar nav a{padding:3px 7px;border:1px solid #434d46;border-radius:3px;color:#bfcbc2;font-size:var(--fs-xs);white-space:nowrap}
 .app-bar nav a.active{border-color:#4e97c7;background:#204968;color:#fff}
 .maco-panel.archived{grid-template-rows:clamp(35px,2.25vw,45px) auto auto auto minmax(0,1fr)}
 .archive-intent{padding:10px!important;background:#1b2525}
@@ -150,4 +146,4 @@ body{margin:0;overflow:hidden;background:#171817;color:#e7e9e7}
 .archive-evidence p{margin:0;color:#bac9be;font-size:var(--fs-xs);line-height:1.45}
 .archive-evidence a{display:block;font-size:var(--fs-xs)}
 .evidence-badge{align-self:flex-start;padding:5px 6px;border:1px solid #447460;background:#1d3c31;color:#cbeddc;font-size:var(--fs-xs);font-weight:650;letter-spacing:.03em}
-@media(max-width:900px){.app-bar{padding:0 9px}.app-bar span{max-width:48vw}.archive-evidence .flow-panel{min-height:170px}}
+@media(max-width:900px){.app-bar nav a{padding:2px 5px}.archive-evidence .flow-panel{min-height:170px}}
