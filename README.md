@@ -65,14 +65,25 @@ RACO_AGENT_DIR="$PWD/external/upstream-agents/agent" make -C chia-raco test PYTH
 make -C chia-raco mapper-smoke PYTHON=../.venv/bin/python
 ```
 
-### ▶️ Start the live workflow
+### 🔑 Configure model access
 
-Start a model service that permits at least 4096 completion tokens, then set its endpoint and model ID. Set `RACO_LLM_API_KEY` too if your endpoint requires one.
+The GUI has no login or API-key field. Set model access in the **same terminal** that starts the server; the key stays on the server, not in the browser or repository. Live exploration needs an OpenAI-compatible Chat Completions endpoint that accepts this project's `temperature`, `seed`, and `max_tokens` requests and permits at least 4096 completion tokens.
+
+For the OpenAI API, create a key in the [OpenAI dashboard](https://platform.openai.com/api-keys), then enter it without putting the key in shell history:
+
+```bash
+read -rsp 'OpenAI API key: ' RACO_LLM_API_KEY; echo
+export RACO_LLM_API_KEY
+export RACO_LLM_BASE_URL=https://api.openai.com/v1
+export RACO_LLM_MODEL=your-compatible-model-id
+```
+
+For a local OpenAI-compatible service instead, start the service and set `RACO_LLM_BASE_URL` to its reachable `/v1` endpoint and `RACO_LLM_MODEL` to its served model ID. Set `RACO_LLM_API_KEY` only if that service requires one. `OPENAI_API_KEY` alone is **not** read by this workflow; use `RACO_LLM_API_KEY`. Do not commit credentials or paste them into the GUI.
+
+### ▶️ Start the live workflow
 
 ```bash
 export RACO_AGENT_DIR="$PWD/external/upstream-agents/agent"
-export RACO_LLM_BASE_URL=http://127.0.0.1:18161/v1
-export RACO_LLM_MODEL=your-served-model-id
 bash gui/start.sh
 ```
 
