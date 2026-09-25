@@ -151,8 +151,6 @@ def latest_agent_path() -> Path:
 
 def latest_measured_path() -> Path:
     """Keep the last complete design visible while a new search is starting."""
-    if PROJECT != "maco":
-        raise HTTPException(404, "Not available in this project")
     paths = list((ROOT / "chia-maco/results").glob("agent_*/progress.json"))
     paths += list(RUNTIME.glob("*/progress.json"))
     measured = []

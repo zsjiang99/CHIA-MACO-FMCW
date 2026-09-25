@@ -4,19 +4,19 @@
 
 ---
 
-## 🧭 What RACO does
+## RACO Demonstration
 
-RACO connects agent-guided CGRA architecture and compiler decisions to CHIA-managed mapping feedback for an FMCW radar workload. One candidate architecture must support all five kernels; the mapper evaluates each kernel, and a frame-level cost model combines their results.
+The interface presents the selected CGRA architecture, FMCW kernel mappings, agent trace, generated RTL, verification status, and synthesis results.
 
-The **reported comparison** evaluates RACO, a hardware-only ablation, and a single-agent baseline under the same budget of **10 unique kernel-mapper evaluations per method**. One full design requires five evaluations, one for each FMCW kernel view. The objective is **estimated steady-state CGRA cycles/frame**.
+[![RACO interface showing CGRA architecture, kernel mapping, RTL verification, and synthesis results](assets/live-flow-synthesis-passed.png)](assets/live-flow-synthesis-passed.png)
 
-Live exploration extends the search to **2×2–8×8 arrays** (subject to the PE limit), per-tile specialized functional units, scratchpad capacity and bank count, and per-kernel unroll and vectorization. Window, FFT, Transpose, and Power allow unroll factors 1–6; CA-CFAR remains scalar (`unroll=1`, no vectorization) because larger settings exceeded the mapper budget. Configuration memory is fixed at **16 entries per tile** to bound synthesis cost.
+*Recorded RACO run. Cycle figures are mapper-based estimates; layout was not run.*
 
-Every tile retains the mapper-safe base set (`Add`, `Br`, `Cmp`, `Logic`, `Phi`, `Ret`, `Sel`, `Shift`); agents choose where to place load/store, multiply/divide, and floating-point units. If a proposal omits the required integer `Mul`, the evaluator adds one on Tile 0 and records the correction. Users can optimize **Performance** (estimated cycles/frame) or **Energy** (estimated CGRA-core + SRAM dynamic energy/frame).
+## 🧭 Overview
 
-All proposals remain in the trace, but only designs that map all five kernels can win. RTL generation, component verification, synthesis, and optional layout are experimental extensions outside the reported cycle-cost comparison; full candidate-level functional equivalence remains unverified.
+RACO explores a shared CGRA architecture and kernel-specific compiler settings for five FMCW mapping views: Window, FFT, Transpose, Power, and CA-CFAR. CHIA maps each view, and a frame model ranks complete designs by estimated CGRA cycles/frame.
 
-The workload has **256 samples/chirp × 128 chirps/frame × 4 RX channels** of FP32 complex data. Its mapping views cover window, FFT (range and Doppler), transpose, power, and CA-CFAR.
+The live interface also shows RTL verification and synthesis; layout is optional. These hardware steps are outside the paper's matched-budget cycle comparison.
 
 ## 🔁 Agent–tool loop
 
@@ -158,10 +158,6 @@ bash gui/start.sh
 ```
 
 Open `http://127.0.0.1:8765/`, or forward port 8765 over SSH. Set `A3_GUI_PORT` before `bash gui/start.sh` to use another local port. **Earlier demo** shows the older search, not the paper's 38.73M result; the [paper run records](chia-maco/results/matched_budget_10/) contain that result and both baselines. **Live exploration** (`/?mode=live`) runs architecture search, generates and verifies RTL, then synthesizes the selected design. Layout remains an explicit optional action after that flow completes.
-
-![Live RACO flow after RTL generation and Yosys synthesis](assets/live-flow-synthesis-passed.png)
-
-*Live one-round run: five kernel mappings, generated SystemVerilog, completed synthesis, and area/energy estimates. This is a live demonstration, not the archived paper result; layout was not run.*
 
 The server binds to loopback and has no authentication; do not expose it publicly.
 
