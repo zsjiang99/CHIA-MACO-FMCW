@@ -144,7 +144,7 @@ function LoadingWorkbench({error}:{error?:string}){return <div className="flow-w
  </div>;}
 
 function App(){
- const params=new URLSearchParams(location.search),demo=params.get('mode')!=='live'&&params.get('demo')!=='0';
+ const demo=new URLSearchParams(location.search).get('demo')==='1';
  const cacheKey=demo?'maco-radar-demo':'maco-radar-design';
  const[data,setData]=useState<RadarData|null>(()=>{try{return JSON.parse(localStorage.getItem(cacheKey)??'null');}catch{return null;}}),[error,setError]=useState('');
  const[stage,setStageState]=useState(0),[cycle,setCycle]=useState(0),[selectedPE,setSelectedPE]=useState(0);
@@ -164,7 +164,7 @@ function App(){
  const setPrompt=(value:string)=>{edited.current=true;setPromptState(value);};
  async function run(){if(running||interpreting||!prompt.trim())return;setInterpreting(true);setInputError('');try{const result=await api<Interpretation>('/workload/interpret',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({description:prompt})});if(result.unsupported.length){setInputError(result.unsupported.join(' '));return;}const workload={...result.workload,objective};await jobs.startSpec({workload,interpretation:{...result,workload},rounds:1,method});}catch(e){setInputError(String(e));}finally{setInterpreting(false);}}
  function exportArch(){if(!entry)return;const content=JSON.stringify({design:entry.design,architecture:entry.architecture,memory:entry.memory},null,2),url=URL.createObjectURL(new Blob([content],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download='maco-selected-architecture.json';a.click();URL.revokeObjectURL(url);}
- return <main className="cgra-web"><header className="app-bar"><strong>RACO: An Agentic End-to-End Framework for FMCW CGRA Exploration, Compilation, Synthesis and Evaluation</strong><nav aria-label="Experiment mode"><a className={demo?'active':''} href="/?demo=1">Earlier demo</a><a className={!demo?'active':''} href="/?mode=live">Live exploration</a></nav></header>
+ return <main className="cgra-web"><header className="app-bar"><strong>RACO: An Agentic End-to-End Framework for FMCW CGRA Exploration, Compilation, Synthesis and Evaluation</strong></header>
   {!entry||!data?<LoadingWorkbench error={error}/>:<div className="flow-workspace">
    <div className="left-stack"><PipelinePanel entry={entry} workload={data.workload} stage={stage} setStage={setStage}/><KernelPanel entry={entry} stage={stage} setStage={setStage}/></div>
    <ArchitectureWorkbench entry={entry} selected={selectedPE} setSelected={setSelectedPE}/>

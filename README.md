@@ -33,7 +33,7 @@ python3.10 -m venv .venv
 bash gui/start.sh
 ```
 
-Open `http://127.0.0.1:8765/`. The default view is an earlier archived experiment; the paper's 38.73M-cycle run is in the [saved results](chia-maco/results/matched_budget_10/). To change the port, set `A3_GUI_PORT` before starting the server. The server has no authentication and binds to loopback; do not expose it publicly.
+Open `http://127.0.0.1:8765/` to inspect the saved CGRA design in the workbench. The paper's 38.73M-cycle run is in the [saved results](chia-maco/results/matched_budget_10/). To change the port, set `A3_GUI_PORT` before starting the server. The server has no authentication and binds to loopback; do not expose it publicly.
 
 ## 🤖 Run a new exploration
 
